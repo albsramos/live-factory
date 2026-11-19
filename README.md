@@ -1,9 +1,49 @@
 # live-factory
 
-A self-running isometric city for React, in a soft white-clay style. Nothing to configure and no text: drop it in and
-it plays.
+A self-running isometric factory town for React, in a soft white-clay style. Semis back into the docks, robotaxis
+swap passengers, cars charge and humanoid robots walk around. No text and nothing to configure: drop it in and it
+plays.
 
-![The scene in the light theme](docs/preview-light.jpg)
+<p align="center">
+  <a href="https://albsramos.github.io/live-factory/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/demo-dark.gif">
+      <img src="docs/demo-light.gif" width="960" alt="The animated scene: cars and semis at a junction, a semi parked at the factory loading bay, robotaxis at their stop, a tower crane and people and robots walking around">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://albsramos.github.io/live-factory/"><b>Live demo</b></a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#props">Props</a> ·
+  <a href="#dark-mode">Dark mode</a>
+</p>
+
+## Quick start
+
+**1. Install it.** It isn't on npm yet, so install it straight from GitHub. React 17 or newer is the only
+requirement.
+
+```sh
+npm install github:albsramos/live-factory
+```
+
+**2. Render it.**
+
+```tsx
+import { LivingCity } from 'live-factory';
+
+export function Hero() {
+  return <LivingCity style={{ borderRadius: 24 }} />;
+}
+```
+
+That's it. It fills the width of its container at the scene's own shape, follows your site's light or dark mode, and
+pauses while it's scrolled out of view. It works the same in Vite, Next.js (it's already marked `'use client'`) or
+any other React setup.
+
+## What's in the scene
 
 - **Traffic**: cars, SUVs, an angular pickup, two-seat robotaxis and a robovan drive a small road network. They stop
   at an invisible signal at the junction, give way to people already on the zebra crossings, and hold back while a
@@ -25,19 +65,10 @@ it plays.
 - **Ambient detail**: walkers on a walkway network, people chatting, sitting on a bench or playing ball in the park,
   a dog on a walk, trees swaying, glints sweeping across solar roofs and pulsing battery status lights.
 
-There is a light theme and a night theme, and by default the scene matches the page it sits on (see *Dark mode*). Everything is drawn on one `<canvas>`, and the only dependency is React.
+There is a light theme and a night theme, and by default the scene matches the page it sits on (see
+[Dark mode](#dark-mode)). Everything is drawn on one `<canvas>`, and the only dependency is React.
 
-![The scene in the night theme](docs/preview-dark.jpg)
-
-## Use it
-
-```tsx
-import { LivingCity } from 'live-factory';
-
-export function Hero() {
-  return <LivingCity style={{ borderRadius: 24 }} />;
-}
-```
+## Sizing
 
 By default the component is as wide as its container and keeps the scene's own aspect ratio (about 1.86 : 1). Give
 it a height, or put it in a sized box, and it fills that instead, cropping the edges (`fit="cover"`) or letterboxing
@@ -49,7 +80,7 @@ it a height, or put it in a sized box, and it fills that instead, cropping the e
 </div>
 ```
 
-### Props
+## Props
 
 | Prop | Default | |
 |---|---|---|
@@ -66,7 +97,7 @@ it a height, or put it in a sized box, and it fills that instead, cropping the e
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
 | `className`, `style` | none | Applied to the wrapper `div` |
 
-### Dark mode
+## Dark mode
 
 With `theme="auto"` (the default) the scene takes the theme of the page around it, checking these in order:
 
@@ -82,7 +113,7 @@ the theme's ground colour, so it doesn't flash white in a dark layout.
 The same logic is exported as `resolveTheme(element)` and `watchTheme(element, onChange)` if you drive the engine
 yourself.
 
-### Behaviour worth knowing
+## Behaviour worth knowing
 
 - The animation stops while the component is scrolled out of view, and when the tab is hidden.
 - Static scenery is rendered once per size into cached bitmaps, so a frame mostly stamps images and draws the
@@ -91,7 +122,7 @@ yourself.
   than empty.
 - It is safe for server rendering: nothing touches `window` or `document` until it mounts.
 
-### Without React
+## Without React
 
 The engine is framework-free:
 
@@ -103,31 +134,32 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 // scene.set({ paused: true }) · scene.setVisible(false) · scene.destroy()
 ```
 
-## Install
+## Other ways to install
 
-It isn't on npm yet. Any of these work:
-
-- **Straight from GitHub:** `npm install github:albsramos/live-factory`. npm clones it and builds `dist/` on install
-  (the `prepare` script). If the repository is private, the machine installing it needs git access to it.
+- **From GitHub** (the quick start): `npm install github:albsramos/live-factory`. npm clones the repository and builds
+  `dist/` on install (the `prepare` script). pnpm and Yarn take the same `github:` spec; pnpm may ask you to approve
+  that build step. Add `#<tag or commit>` to pin a version.
 - **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.1.0.tgz` in your app.
 - **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports.
 - **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
   ESM, CommonJS and type declarations in `dist/`.
 
-React 17 or newer is a peer dependency.
-
 ## Develop
 
 ```sh
 npm install
-npm run dev        # demo page with theme, speed and density controls
-npm run build      # library build into dist/
+npm run dev              # dev page with theme, speed and density controls
+npm run build            # library build into dist/
 npm run typecheck
-npm run build:artifact   # artifact-dist/live-factory.html: a self-contained demo page (React from cdnjs)
+npm run build:site       # site-dist/: the demo website, with React bundled in
+npm run build:artifact   # artifact-dist/live-factory.html: the same page as one file, React from cdnjs
 ```
 
-The demo has two extra views: `?gallery` shows every vehicle at eight headings, and `?debug` exposes the scene as
+The dev page has two extra views: `?gallery` shows every vehicle at eight headings, and `?debug` exposes the scene as
 `window.scene` for poking at the simulation.
+
+Every push to `main` rebuilds the demo website and publishes it to GitHub Pages (`.github/workflows/pages.yml`). Its
+page lives in `artifact/page.html`.
 
 ### How it works
 

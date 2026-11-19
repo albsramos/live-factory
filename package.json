@@ -28,7 +28,8 @@
     "build:demo": "vite build --mode demo",
     "typecheck": "tsc -p . --noEmit",
     "build:artifact": "node scripts/build-artifact.mjs",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "build:site": "node scripts/build-site.mjs"
   },
   "peerDependencies": {
     "react": ">=17"

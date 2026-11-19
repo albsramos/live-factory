@@ -22,7 +22,11 @@ export default defineConfig(({ command, mode }) => {
         formats: ['es', 'cjs'],
         fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
       },
-      rollupOptions: { external: ['react', 'react-dom', 'react/jsx-runtime'] },
+      rollupOptions: {
+        external: ['react', 'react-dom', 'react/jsx-runtime'],
+        // the component uses hooks: mark it as a client component for React Server Components (Next.js app router)
+        output: { banner: "'use client';" },
+      },
       sourcemap: true,
       emptyOutDir: true,
     },
