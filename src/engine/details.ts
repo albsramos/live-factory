@@ -147,7 +147,7 @@ export function windowsY(r: R, pal: Palette, x0: number, x1: number, y1: number,
 }
 
 /**
- * A roof covered with solar glass (see `solarGlint` for the moving highlight). With `strip` > 0 the panels come in
+ * A roof covered with solar glass. With `strip` > 0 the panels come in
  * rows of that depth with walkways between them, like a factory roof.
  */
 export function solarRoof(r: R, pal: Palette, x0: number, y0: number, x1: number, y1: number, z: number, inset = 0.5, strip = 0) {
@@ -184,43 +184,6 @@ export function solarRoof(r: R, pal: Palette, x0: number, y0: number, x1: number
     ctx.strokeStyle = pal.solarLine;
     ctx.lineWidth = 0.06;
     ctx.stroke();
-  });
-}
-
-/** The moving glint across a solar roof, clipped analytically to the panel area (cheap enough to run live). */
-export function solarGlint(r: R, x0: number, y0: number, x1: number, y1: number, z: number, inset = 0.5, phase = 0) {
-  const w = x1 - x0 - inset * 2, d = y1 - y0 - inset * 2;
-  const span = w + d;
-  const pos = (((r.t * 0.045 + phase) % 1.4) - 0.2) * span;
-  const half = 2.2;
-  // the band pos-half < p+q < pos+half, intersected with the panel rectangle
-  let poly = [[0, 0], [w, 0], [w, d], [0, d]];
-  const cut = (pts: number[][], k: number, sign: number) => {
-    const out: number[][] = [];
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i], b = pts[(i + 1) % pts.length];
-      const fa = sign * (a[0] + a[1] - k), fb = sign * (b[0] + b[1] - k);
-      if (fa >= 0) out.push(a);
-      if (fa * fb < 0) {
-        const t = fa / (fa - fb);
-        out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
-      }
-    }
-    return out;
-  };
-  poly = cut(cut(poly, pos - half, 1), pos + half, -1);
-  if (poly.length < 3) return;
-  onTop(r, x0 + inset, y0 + inset, z, (ctx) => {
-    const g = ctx.createLinearGradient((pos - half) / 2, (pos - half) / 2, (pos + half) / 2, (pos + half) / 2);
-    g.addColorStop(0, 'rgba(200, 215, 255, 0)');
-    g.addColorStop(0.5, r.night ? 'rgba(150, 170, 230, 0.10)' : 'rgba(210, 225, 255, 0.26)');
-    g.addColorStop(1, 'rgba(200, 215, 255, 0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.moveTo(poly[0][0], poly[0][1]);
-    for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
-    ctx.closePath();
-    ctx.fill();
   });
 }
 

@@ -9,7 +9,7 @@
 import { C, makeRng, pick, rr } from './core';
 import { arcPts, box, boxShadow, drawMesh, groundPoly, groundRect, lineW, onFaceX, onFaceY, rectShadow, type Ctx, type R } from './draw';
 import { megapacks, rackPlatform } from './blocks';
-import { atrium, solarGlint, solarRoof, windowGlow, windowSpill, windowsX, windowsY, type Band, type LitFace } from './details';
+import { atrium, solarRoof, windowGlow, windowSpill, windowsX, windowsY, type Band, type LitFace } from './details';
 import type { Palette } from './palette';
 import { Path } from './path';
 import type { Item } from './sort';
@@ -108,7 +108,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
       windowsX(r, pal, 26, 36, 72, 13, factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
-    }).live((r) => solarGlint(r, -40, 36, 26, 72, 13, 1.2, 0.1)),
+    }),
   );
   // entrance canopy and its posts
   S.push(new BoxItem(26, 53.6, 4.05, 30.6, 62.4, 4.35, pal.white, { edge }));
@@ -138,7 +138,6 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
       atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
       solarRoof(r, pal, -30, 0, 30, 36, 10, 1.0, 2.6);
     }).live((r) => {
-      solarGlint(r, -30, 0, 30, 36, 10, 1.0, 0.6);
       // a lamp beside each dock: green while a trailer is loading, amber while one is coming or going, off when free
       onFaceX(r, 30, 0, 36, 10, (ctx) => {
         for (const y of dockDoors) {
@@ -249,7 +248,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
       windowsY(r, pal, 20, 29.3, 84.6, 6.3, [{ top: 0.65, bot: 2.25, every: 1.25, spans: [[0.6, 5.8]] }]);
       windowsX(r, pal, 29.3, 75.2, 84.6, 6.3, [{ top: 0.65, bot: 2.25, every: 1.25, spans: [[0.8, 3.8], [5.6, 8.6]] }]);
       solarRoof(r, pal, 20, 75.2, 29.3, 84.6, 6.3, 0.45);
-    }).live((r) => solarGlint(r, 20, 75.2, 29.3, 84.6, 6.3, 0.45, 0.35)),
+    }),
   );
   // home batteries on the wall facing the bay
   for (const y of [81.6, 82.75]) {
@@ -266,7 +265,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     );
   }
   // carport with a solar roof, the car on its charger
-  S.push(new BoxItem(21, 85.4, 2.6, 28.6, 89.6, 2.85, pal.white, { edge }, (r) => solarRoof(r, pal, 21, 85.4, 28.6, 89.6, 2.85, 0.35)).live((r) => solarGlint(r, 21, 85.4, 28.6, 89.6, 2.85, 0.35, 0.8)));
+  S.push(new BoxItem(21, 85.4, 2.6, 28.6, 89.6, 2.85, pal.white, { edge }, (r) => solarRoof(r, pal, 21, 85.4, 28.6, 89.6, 2.85, 0.35)));
   for (const [x, y] of [[21.15, 85.55], [28.2, 85.55], [21.15, 89.2], [28.2, 89.2]]) S.push(new BoxItem(x, y, 0, x + 0.25, y + 0.25, 2.6, pal.white));
   S.push(
     new FnItem(21.35, 88.25, 0, 21.75, 88.65, 1.3, (r) => {
@@ -355,7 +354,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   }
   // people chatting; robots join in on the streets, but the parks are for staff on their break
-  const chat = (pts: number[][], robots = 0.25) => {
+  const chat = (pts: number[][], robots = 0.5) => {
     const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
     for (const [x, y] of pts) {
       const w = new Walker(rng() < robots ? 'robot' : 'person', pal, rng, x, y);
@@ -406,7 +405,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
 
   // ------------------------------------------------------------------------------------------------- walkways
   const g = graph;
-  const aw = [g.node(66.5, -22, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 112, true)];
+  const aw = [g.node(66.5, -50, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 112, true)];
   const awExit = g.node(66.5, 29.8);
   // either side of the yard gate
   const gate = [g.node(66.5, -18.6), g.node(66.5, -3.4)];
@@ -418,7 +417,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   g.chain(aw.slice(4));
   // east side of the avenue; round the robotaxi bay, clear of the taper the cars pull in through and of the van's
   // nose swinging out as it turns in
-  const ae = [g.node(77.5, -22, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 100, true)];
+  const ae = [g.node(77.5, -50, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 100, true)];
   // either side of the charging hub's driveway
   const hubSides = [g.node(77.8, 6.8, false, 0.5), g.node(77.8, 17.4, false, 0.5)];
   g.chain([ae[0], hubSides[0]]);
@@ -449,7 +448,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   g.link(sn[0], fw1);
   // down the factory road past the charging lot's way out
   const fd = g.node(53.5, 57.6, false, 0.5);
-  const fe = [ss0, g.node(53.5, 64.5, false, 0.5), g.node(53.5, 83.5), g.node(53.5, 110, true)];
+  const fe = [ss0, g.node(53.5, 64.5, false, 0.5), g.node(53.5, 83.5), g.node(53.5, 126, true)];
   g.link(ss0, fd);
   g.link(fd, fe[1], LD);
   g.chain(fe.slice(1));
@@ -476,30 +475,30 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
-  const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(97, 65.3, true)];
+  const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(112, 65.6, true)];
   g.link(sse[0], pk[0]);
   g.link(pk[0], pk[1]);
   g.link(pk[1], pk[2]);
   g.link(pk[1], ae[5]);
 
-  crowd.targetPeople = Math.round(30 * density);
-  crowd.targetRobots = Math.round(8 * density);
+  crowd.targetPeople = Math.round(18 * density);
+  crowd.targetRobots = Math.round(16 * density);
   for (let i = 0; i < crowd.targetPeople; i++) crowd.wanderer('person');
   for (let i = 0; i < crowd.targetRobots; i++) crowd.wanderer('robot');
 
   // ------------------------------------------------------------------------------------------------- traffic
   const routes: { pts: number[][]; r: number[]; w: number }[] = [
-    { pts: [[70, -18], [70, 112]], r: [], w: 3 },
-    { pts: [[74, 112], [74, -18]], r: [], w: 3 },
+    { pts: [[70, -52], [70, 112]], r: [], w: 3 },
+    { pts: [[74, 112], [74, -52]], r: [], w: 3 },
     { pts: [[50, 135], [50, 48], [135, 48]], r: [6], w: 1.3 },
     { pts: [[135, 44], [46, 44], [46, 135]], r: [10], w: 1.3 },
-    { pts: [[70, -18], [70, 48], [135, 48]], r: [6], w: 0.5 },
-    { pts: [[70, -18], [70, 44], [46, 44], [46, 135]], r: [2, 10], w: 0.8 },
+    { pts: [[70, -52], [70, 48], [135, 48]], r: [6], w: 0.5 },
+    { pts: [[70, -52], [70, 44], [46, 44], [46, 135]], r: [2, 10], w: 0.8 },
     { pts: [[74, 112], [74, 48], [135, 48]], r: [2], w: 1 },
     { pts: [[74, 112], [74, 44], [46, 44], [46, 135]], r: [6, 10], w: 0.5 },
-    { pts: [[50, 135], [50, 48], [74, 48], [74, -18]], r: [6, 6], w: 0.5 },
+    { pts: [[50, 135], [50, 48], [74, 48], [74, -52]], r: [6, 6], w: 0.5 },
     { pts: [[50, 135], [50, 48], [70, 48], [70, 112]], r: [6, 2], w: 0.8 },
-    { pts: [[135, 44], [74, 44], [74, -18]], r: [2], w: 1 },
+    { pts: [[135, 44], [74, 44], [74, -52]], r: [2], w: 1 },
     { pts: [[135, 44], [70, 44], [70, 112]], r: [6], w: 0.5 },
   ];
   const paths = routes.map((rt) => Path.poly(rt.pts, rt.r));

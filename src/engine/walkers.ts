@@ -85,11 +85,11 @@ export class Walker implements Item {
     this.hy = Math.sin(a);
     if (kind === 'robot') {
       this.speed = rr(rng, 1.0, 1.25);
-      this.body = pal.robot;
-      this.bodyShade = pal.robotHead;
-      this.legs = pal.robot;
-      this.head = pal.robotHead;
-      this.arm = pal.robot;
+      this.body = pal.bot.shell;
+      this.bodyShade = pal.bot.shade;
+      this.legs = pal.bot.shell;
+      this.head = pal.bot.dark;
+      this.arm = pal.bot.shell;
     } else {
       this.speed = rr(rng, 1.05, 1.5);
       let top: RGB = pick(rng, pal.people);
@@ -208,9 +208,10 @@ export class Walker implements Item {
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    // legs
+    // legs (a robot's far leg in the shade of its shell, its feet black)
+    const feet: number[][] = [];
     ctx.strokeStyle = tone(this.legs);
-    ctx.lineWidth = (robot ? 0.17 : 0.15) * k;
+    ctx.lineWidth = 0.15 * k;
     ctx.beginPath();
     if (sit) {
       for (const s of [1, -1]) {
@@ -218,15 +219,31 @@ export class Walker implements Item {
         ctx.moveTo(X + s * pX, hipY + s * pY);
         ctx.lineTo(kx, ky);
         ctx.lineTo(kx + dX * 0.05 * k, ky + 0.45 * k);
+        feet.push([kx + dX * 0.05 * k, ky + 0.45 * k]);
       }
     } else {
-      for (const s of [1, -1]) {
+      // far leg first
+      for (const s of pY > 0 ? [-1, 1] : [1, -1]) {
         const a = sw * stride * s;
-        ctx.moveTo(X + s * pX + sway, hipY + s * pY);
-        ctx.lineTo(X + s * pX + dX * a, Y + s * pY + dY * a * 0.6);
+        const hx = X + s * pX + sway, hy = hipY + s * pY;
+        const fx = X + s * pX + dX * a, fy = Y + s * pY + dY * a * 0.6;
+        if (robot) {
+          ctx.stroke();
+          ctx.strokeStyle = tone(s * pY > 0 ? this.legs : this.bodyShade);
+          ctx.beginPath();
+        }
+        ctx.moveTo(hx, hy);
+        if (robot) {
+          // the knee leads a little, more on the swinging leg
+          const bend = (0.03 + 0.04 * Math.max(0, sw * s)) * k;
+          ctx.lineTo((hx + fx) / 2 + dX * bend, (hy + fy) / 2 + dY * bend * 0.5);
+          feet.push([fx, fy]);
+        }
+        ctx.lineTo(fx, fy);
       }
     }
     ctx.stroke();
+    if (robot) this.drawFeet(ctx, feet, dX, dY, tone);
 
     const shY = Y - (sit ? 0.9 : 1.38) * k - bob;
     const tX = X + sway * 2;
@@ -234,9 +251,10 @@ export class Walker implements Item {
     if (this.carry && !carryFront) this.drawCarry(r);
     // arms
     ctx.strokeStyle = tone(this.arm);
-    ctx.lineWidth = (robot ? 0.12 : 0.11) * k;
+    ctx.lineWidth = (robot ? 0.1 : 0.11) * k;
     ctx.beginPath();
     const work = this.stance === 'work';
+    const hands: number[][] = [];
     for (const s of [1, -1]) {
       const sx0 = tX + s * 0.2 * k * Math.abs(dY) + s * 0.08 * k, sy0 = shY + 0.04 * k;
       let hx: number, hy: number;
@@ -258,40 +276,21 @@ export class Walker implements Item {
       }
       ctx.moveTo(sx0, sy0);
       ctx.lineTo(hx, hy);
+      hands.push([hx, hy]);
     }
     ctx.stroke();
+    if (robot) {
+      ctx.fillStyle = tone(this.pal.bot.dark);
+      for (const [hx, hy] of hands) {
+        ctx.beginPath();
+        ctx.arc(hx, hy, 0.055 * k, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
     // torso
     if (robot) {
-      const w0 = 0.25 * k, w1 = 0.17 * k;
-      const top = shY - 0.04 * k, bot = Y - hip - bob + 0.02 * k;
-      ctx.fillStyle = tone(this.body);
-      ctx.beginPath();
-      ctx.moveTo(tX - w0, top);
-      ctx.lineTo(tX + w0, top);
-      ctx.lineTo(tX + w1, bot);
-      ctx.lineTo(tX - w1, bot);
-      ctx.closePath();
-      ctx.fill();
-      // chest plate highlight
-      ctx.strokeStyle = this.pal.robotHi;
-      ctx.lineWidth = 0.05 * k;
-      ctx.beginPath();
-      ctx.moveTo(tX - w0 * 0.6, top + 0.08 * k);
-      ctx.lineTo(tX + w0 * 0.2, top + 0.08 * k);
-      ctx.stroke();
-      // head
-      const hy = shY - 0.28 * k;
-      ctx.fillStyle = tone(this.head);
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(tX - 0.12 * k, hy - 0.14 * k, 0.24 * k, 0.28 * k, 0.09 * k);
-      else ctx.rect(tX - 0.12 * k, hy - 0.14 * k, 0.24 * k, 0.28 * k);
-      ctx.fill();
-      ctx.strokeStyle = this.pal.robotHi;
-      ctx.lineWidth = 0.035 * k;
-      ctx.beginPath();
-      ctx.arc(tX - 0.02 * k, hy - 0.02 * k, 0.07 * k, Math.PI * 1.05, Math.PI * 1.6);
-      ctx.stroke();
+      this.drawShell(r, tX, shY - 0.04 * k, Y - hip - bob + 0.02 * k, dX, dY, tone);
     } else {
       ctx.strokeStyle = tone(this.body);
       ctx.lineWidth = 0.4 * k;
@@ -313,11 +312,74 @@ export class Walker implements Item {
     if (this.carry && carryFront) this.drawCarry(r);
   }
 
+  /** Black feet, pointing the way the robot faces. */
+  private drawFeet(ctx: Ctx, pts: number[][], dX: number, dY: number, tone: (c: string) => string) {
+    const k = this.size;
+    ctx.strokeStyle = tone(this.pal.bot.dark);
+    ctx.lineWidth = 0.1 * k;
+    ctx.beginPath();
+    for (const [x, y] of pts) {
+      ctx.moveTo(x - dX * 0.04 * k, y - dY * 0.02 * k);
+      ctx.lineTo(x + dX * 0.1 * k, y + dY * 0.05 * k);
+    }
+    ctx.stroke();
+  }
+
+  /**
+   * A humanoid robot's body: a white chest plate shaded on its far side, a black waist, white hips, and a head of
+   * black glass that catches the light on the side it looks towards.
+   */
+  private drawShell(r: R, tX: number, top: number, bot: number, dX: number, dY: number, tone: (c: string) => string) {
+    const ctx = r.ctx, k = this.size, bot2 = this.pal.bot;
+    const waist0 = top + (bot - top) * 0.55, waist1 = top + (bot - top) * 0.75;
+    const w0 = 0.24 * k, w1 = 0.15 * k, wp = 0.17 * k;
+    const quad = (x0: number, x1: number, y0: number, x2: number, x3: number, y1: number) => {
+      ctx.beginPath();
+      ctx.moveTo(tX + x0, y0);
+      ctx.lineTo(tX + x1, y0);
+      ctx.lineTo(tX + x2, y1);
+      ctx.lineTo(tX + x3, y1);
+      ctx.closePath();
+      ctx.fill();
+    };
+    // chest, then its shaded side
+    ctx.fillStyle = tone(bot2.shell);
+    quad(-w0, w0, top, w1, -w1, waist0);
+    ctx.fillStyle = tone(bot2.shade);
+    quad(w0 * 0.45, w0, top, w1, w1 * 0.4, waist0);
+    // black waist, white hips
+    ctx.fillStyle = tone(bot2.dark);
+    quad(-w1, w1, waist0 - 0.01 * k, w1 * 0.95, -w1 * 0.95, waist1);
+    ctx.fillStyle = tone(bot2.shell);
+    quad(-wp, wp, waist1, wp * 0.85, -wp * 0.85, bot);
+    // neck
+    ctx.fillStyle = tone(bot2.dark);
+    ctx.fillRect(tX - 0.05 * k, top - 0.09 * k, 0.1 * k, 0.1 * k);
+    // head, with a glint on the face (turned with the heading; none from behind)
+    const hy = top - 0.24 * k;
+    ctx.fillStyle = tone(bot2.dark);
+    pill(ctx, tX - 0.11 * k, hy - 0.14 * k, 0.22 * k, 0.27 * k, 0.1 * k);
+    if (dY > -0.3) {
+      ctx.strokeStyle = bot2.glint;
+      ctx.lineWidth = 0.03 * k;
+      ctx.beginPath();
+      ctx.arc(tX + dX * 0.05 * k, hy - 0.01 * k, 0.065 * k, Math.PI * 1.05, Math.PI * 1.55);
+      ctx.stroke();
+    }
+  }
+
   private drawCarry(r: R) {
     const s = 0.24 * this.size;
     const cx = this.x + this.hx * 0.34, cy = this.y + this.hy * 0.34, cz = this.z + 0.95 * this.size;
     box(r, cx - s, cy - s, cz, cx + s, cy + s, cz + s * 1.5, this.pal.crate);
   }
+}
+
+function pill(ctx: Ctx, x: number, y: number, w: number, h: number, rad: number) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, rad);
+  else ctx.rect(x, y, w, h);
+  ctx.fill();
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -410,6 +472,12 @@ export class Crowd {
     return this.add(w);
   }
 
+  /** A wanderer who walks in at one of the walkway's ends (off screen, or a door), so nobody appears in view. */
+  arrival(kind: WalkerKind) {
+    const portals = this.graph.nodes.map((n, i) => (n.portal ? i : -1)).filter((i) => i >= 0);
+    return this.wanderer(kind, portals.length ? pick(this.rng, portals) : undefined);
+  }
+
   /** Hand a scripted walker over to the graph once its script is done. */
   adopt(w: Walker) {
     w.node = this.graph.nearest(w.x, w.y);
@@ -466,11 +534,8 @@ export class Crowd {
       this.spawnT = rr(this.rng, 0.4, 1.4);
       let people = 0, robots = 0;
       for (const w of this.walkers) if (w.onIdle) w.kind === 'robot' ? robots++ : people++;
-      const portals = this.graph.nodes.map((n, i) => (n.portal ? i : -1)).filter((i) => i >= 0);
-      if (portals.length) {
-        if (people < this.targetPeople) this.wanderer('person', pick(this.rng, portals));
-        else if (robots < this.targetRobots) this.wanderer('robot', pick(this.rng, portals));
-      }
+      if (people < this.targetPeople) this.arrival('person');
+      else if (robots < this.targetRobots) this.arrival('robot');
     }
   }
 

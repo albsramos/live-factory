@@ -2,6 +2,9 @@
 
 ## Vehicles
 
+- Vehicles start and end their trips beyond the edges of every framing: at least 30 m past the last spot a wide
+  banner shows, so nobody pops into view. The banner (3.1 : 1, `cover`) shows screen X within about ±104 m and screen
+  Y from 15 to 81 m (X = (x − y) · cos 30°, Y = (x + y) / 2 − z); the avenue's north end is y = −52.
 - A vehicle follows a list of legs; each leg is a filleted polyline (`Path.poly(points, radii)`, where `radii[i]` is
   the fillet at `points[i + 1]`). A leg can wait (`until`), dwell, reverse (`rev`) or ignore the vehicle ahead
   (`ghost`, only inside lots that a mutex keeps to one car).
@@ -31,8 +34,14 @@
 - People walk the walkway graph (`WalkGraph` in `walkers.ts`). An edge linked with a zone is a crossing: a person
   takes the zone for the whole edge and waits at the node before it. Nodes either side of a crossing must sit outside
   every vehicle's swept area, offset included (`spread` scales the offset where space is tight).
-- Wanderers never start part-way along a crossing.
+- Wanderers never start part-way along a crossing. Newcomers walk in at a portal node (`g.node(x, y, true)`):
+  a walkway end off screen (same rule as the vehicles' spawn points) or a building door. Activities that need a
+  person mid-scene take one with `crowd.arrival(kind)`, never one placed in view.
+- Nobody walks through a building or a platform: a figure inside another item's box breaks the depth sort and the
+  item flickers. Scripted loops (`Looper`) run in a straight line from their last step back to their first, so close
+  the loop explicitly when that line would cut through something.
 - The parks are for staff on their break: people only (no robots), sitting or chatting; no kids, no ball games.
+- About half the wanderers are humanoid robots (`crowd.targetRobots`), and half the street chat groups' members.
 
 ## Checking a change
 

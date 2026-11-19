@@ -54,8 +54,9 @@ any other React setup.
   well clear of where its trailer swings, and the same goes for the charging lot's driveways.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
-- **Robots**: humanoid robots carry boxes between the docked trailers, help load the semi at the bay, patrol the
-  battery yard, work on the construction slab and walk the streets with everyone else.
+- **Robots**: humanoid robots, white-shelled with a black glass head, black waist, hands and feet, carry boxes
+  between the docked trailers, help load the semi at the bay, patrol the battery yard, work on the construction slab
+  and make up about half of the walkers on the streets.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
@@ -72,8 +73,8 @@ any other React setup.
 - **Day and night**: by day the glazing is a faded blue-grey glass; at night it glows warm and lights the ground in
   front of the buildings, headlights throw beams along the road ahead of each car, and tail lights glow red, brighter
   when a car brakes or waits.
-- **Ambient detail**: walkers on a walkway network, people chatting, a dog on a walk, trees swaying, glints sweeping
-  across solar roofs and pulsing battery status lights.
+- **Ambient detail**: walkers on a walkway network (they come and go beyond the edges of the view, or through a
+  door), people chatting, a dog on a walk, trees swaying and pulsing battery status lights.
 
 There is a light theme and a night theme, and by default the scene matches the page it sits on (see
 [Dark mode](#dark-mode)). Everything is drawn on one `<canvas>`, and the only dependency is React.

@@ -53,9 +53,11 @@ export interface Palette {
   // people & robots
   people: RGB[];
   accents: RGB[];
+  /** dark trim on vehicle meshes */
   robot: string;
-  robotHi: string;
   robotHead: string;
+  /** the humanoid robots: a white shell, with a black glass face, waist and joints */
+  bot: { shell: string; shade: string; dark: string; glint: string };
   // trees
   leafHi: RGB;
   leafLo: RGB;
@@ -118,8 +120,8 @@ export function lightPalette(): Palette {
     people: [hex('#e2e3e8'), hex('#d3d4da'), hex('#c4c5cc'), hex('#b3b4bc'), hex('#a0a1aa'), hex('#8a8b94')],
     accents: [hex('#e2b04a'), hex('#d9925a'), hex('#5c5f69'), hex('#8aa0c8')],
     robot: '#2b2c31',
-    robotHi: '#6b6e78',
     robotHead: '#17181b',
+    bot: { shell: '#f4f5f8', shade: '#c3c6cf', dark: '#1b1c21', glint: 'rgba(255, 255, 255, 0.75)' },
     leafHi: hex('#ffffff'),
     leafLo: hex('#d3d4dc'),
     trunk: '#a9aab3',
@@ -181,8 +183,8 @@ export function darkPalette(): Palette {
     people: [hex('#6a6c76'), hex('#61636c'), hex('#575962'), hex('#4c4e57'), hex('#7a7c86'), hex('#444650')],
     accents: [hex('#d9a440'), hex('#c98450'), hex('#2c2e35'), hex('#6f84ad')],
     robot: '#0f1013',
-    robotHi: '#3d4049',
     robotHead: '#08080a',
+    bot: { shell: '#9a9da8', shade: '#6c6f7a', dark: '#0a0a0d', glint: 'rgba(170, 180, 205, 0.55)' },
     leafHi: hex('#4a4d57'),
     leafLo: hex('#2a2c33'),
     trunk: '#3a3c44',

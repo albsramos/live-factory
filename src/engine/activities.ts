@@ -270,7 +270,7 @@ export class TruckYard implements Activity {
     this.trucks++;
     const legs: Leg[] = [
       // off the avenue and through the gate, then wait for the yard
-      { path: P([[70, -18], [70, -8], [L, -8], [L, TruckYard.GATE]], [3, 5]), vmax: 5, until: (v) => this.mutex.take(v) },
+      { path: P([[70, -52], [70, -8], [L, -8], [L, TruckYard.GATE]], [3, 5]), vmax: 5, until: (v) => this.mutex.take(v) },
       { path: P([[L, TruckYard.GATE], [L, stop]]), vmax: 3.5 },
       // back in along the pull-out curve, the trailer leading
       {
@@ -310,7 +310,7 @@ export class TruckYard implements Activity {
     this.timer -= dt;
     if (this.timer > 0) return;
     const free = this.docks.filter((d) => !d.taken);
-    if (free.length && this.env.traffic.clear(70, -18, 18)) this.spawn(pick(this.env.rng, free));
+    if (free.length && this.env.traffic.clear(70, -52, 18)) this.spawn(pick(this.env.rng, free));
     else this.timer = 2;
   }
 }
@@ -467,10 +467,11 @@ export class TaxiStop implements Activity {
     const spot = [0, 1, 2].find((i) => !used.has(i));
     if (spot === undefined) return;
     const [x, y] = this.spots[spot];
-    const w = new Walker('person', pal, rng, instant ? x : 80.5, instant ? y : 74);
+    // newcomers walk up the pavement from below the bottom edge, so nobody appears out of thin air
+    const w = new Walker('person', pal, rng, instant ? x : 77.6, instant ? y : 88);
     (w as Walker & { spot?: number }).spot = spot;
     if (instant) w.face(-1, 0.2);
-    else w.go([{ x: 80.6, y: 68 }, { x, y, face: [-1, 0.2] }]);
+    else w.go([{ x: 77.7, y: 80 }, { x: 80.0, y: 75.4 }, { x: 81.0, y: 68 }, { x, y, face: [-1, 0.2] }]);
     crowd.add(w);
     this.waiting.push(w);
   }
@@ -502,7 +503,7 @@ export class TaxiStop implements Activity {
             },
             until: () => this.phase === 'none',
           },
-          { path: P([[77.5, van ? 64.5 : 63.4], [77.5, 60], [74, 55.5], [74, -18]], [4, 4]), vmax: 6.5 },
+          { path: P([[77.5, van ? 64.5 : 63.4], [77.5, 60], [74, 55.5], [74, -52]], [4, 4]), vmax: 6.5 },
         ]);
       }
       if (this.waiting.length < 2 && rng() < dt * 0.15) this.addWaiting(false);
@@ -527,10 +528,12 @@ export class TaxiStop implements Activity {
             w.onIdle = (ww) => this.joinGraph(ww);
             this.env.crowd.add(w);
           }
-          // the waiting passengers walk over
-          const n = v.kind === 'van' ? this.waiting.length : Math.min(1, this.waiting.length);
+          // the waiting passengers walk over (only those already at the stop, not anyone still on their way)
+          const ready = this.waiting.filter((w) => !w.steps.length);
+          const n = v.kind === 'van' ? ready.length : Math.min(1, ready.length);
           for (let i = 0; i < n; i++) {
-            const w = this.waiting.shift()!;
+            const w = ready[i];
+            this.waiting.splice(this.waiting.indexOf(w), 1);
             w.waitT = 0.6 + i * 0.7;
             w.go([{ x: door[0] + 0.2, y: door[1] - 0.3, then: (ww) => (ww.dead = true) }]);
           }
@@ -862,7 +865,7 @@ export class DogWalk implements Activity {
       this.dogT -= dt;
       if (this.dogT <= 0) {
         this.dogT = 6;
-        const w = this.env.crowd.wanderer('person');
+        const w = this.env.crowd.arrival('person');
         this.owner = w;
         this.dog = { x: w.x - 1, y: w.y, hx: 1, hy: 0, ph: 0 };
       }

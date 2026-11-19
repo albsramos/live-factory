@@ -9,7 +9,7 @@
 import type { Env } from './activities';
 import { Looper } from './activities';
 import { megapacks, rackPlatform } from './blocks';
-import { solarGlint, solarRoof, windowsX, windowsY, type Band, type LitFace } from './details';
+import { solarRoof, windowsX, windowsY, type Band, type LitFace } from './details';
 import { groundPoly, groundRect, lineW, type Ctx } from './draw';
 import { BoxItem, TreeItem } from './statics';
 import type { Sprites } from './sprites';
@@ -35,9 +35,7 @@ const row = (xs: number[], y: number, dir: -1 | 1, live: number[]): Stall[] => x
 function canopy(env: Env, edge: string, x0: number, y0: number, x1: number, y1: number, postY: number, z = 2.7) {
   const { pal, statics: S } = env;
   S.push(
-    new BoxItem(x0, y0, z - 0.22, x1, y1, z, pal.white, { edge }, (r) => solarRoof(r, pal, x0, y0, x1, y1, z, 0.3)).live((r) =>
-      solarGlint(r, x0, y0, x1, y1, z, 0.3, x0 * 0.05 + y0 * 0.03),
-    ),
+    new BoxItem(x0, y0, z - 0.22, x1, y1, z, pal.white, { edge }, (r) => solarRoof(r, pal, x0, y0, x1, y1, z, 0.3)),
   );
   for (let x = x0 + 0.3; x <= x1 - 0.2; x += 6) S.push(new BoxItem(x, postY, 0, x + 0.25, postY + 0.25, z - 0.22, pal.white));
   S.push(new BoxItem(x1 - 0.3, postY, 0, x1 - 0.05, postY + 0.25, z - 0.22, pal.white));
@@ -61,7 +59,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
       windowsX(r, pal, -6, 72, 100, 9.5, wingBands);
       windowsY(r, pal, -40, -6, 100, 9.5, wingBands);
       solarRoof(r, pal, -40, 72, -6, 100, 9.5, 1.0, 2.6);
-    }).live((r) => solarGlint(r, -40, 72, -6, 100, 9.5, 1.0, 0.3)),
+    }),
   );
 
   // ----------------------------------------------------------------------------------------------- staff car park
@@ -117,7 +115,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     arrive: { pts: [[74, 112], [74, 14], [82.6, 14]], radii: [3.5] },
     depart: {
       clear: { pts: [[80.5, 11.2], [74, 11.2], [74, 4]], radii: [2.5] },
-      away: { pts: [[74, 4], [74, -18]], radii: [] },
+      away: { pts: [[74, 4], [74, -52]], radii: [] },
     },
     chargerGap: 0.35,
     role: 'hub',
@@ -131,13 +129,14 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // a second compute platform north of the hub, and a Megapack field behind it, with a robot doing its rounds
   rackPlatform(S, pal, edge, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4 }, 5, 5, 200);
   megapacks(S, pal, edge, [[79.6, 85.4], [87, 92.8], [94.4, 100.2]], [-19.4, -22.2, -25, -27.8, -30.6, -33.4], 300);
-  const rounds = new Looper(env, 'robot', () => [{ x: 80.6, y: -17.3, wait: 3 }, { x: 99.6, y: -17.3, wait: 4 }, { x: 101.4, y: -9, wait: 3 }], 80.6, -17.3);
-  trees.push([78.9, 1.0, 'tree2', 1], [77.9, -12, 'poplar', 1], [77.9, -24, 'poplar', 1]);
+  // back the way it came: a straight line home from the far end would cut between the racks
+  const rounds = new Looper(env, 'robot', () => [{ x: 80.6, y: -17.3, wait: 3 }, { x: 101.2, y: -17.3, wait: 2 }, { x: 101.4, y: -9, wait: 3 }, { x: 101.2, y: -17.3 }], 80.6, -17.3);
+  trees.push([78.9, 1.0, 'tree2', 1], [79.0, -12, 'poplar', 1], [79.0, -24, 'poplar', 1]);
 
   // ----------------------------------------------------------------------------------------------- staff park
   // east of the pavilion: grass with a path across it, trees, benches, and people on their break
   const lawn = [101.5, 16.5, 131, 16.5, 136.5, 21, 136.5, 38.2, 101.5, 38.2];
-  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5]];
+  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [152, 14.5]];
   for (const [x0, y0, x1, y1] of [[109.5, 24.2, 111.3, 24.7], [125.6, 31.2, 127.4, 31.7], [113.4, 35, 113.9, 36.8]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   staff(env, 110, 25.05, 'sit', 0, 1);
   staff(env, 110.9, 25.05, 'sit', 0, 1);
@@ -196,7 +195,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
 
   const walks = (g: WalkGraph, houseNode: number, streetNode: number) => {
     // from the south end of the car park up its east side to the home's side path, clear of the reversing cars
-    g.chain([g.node(19.5, 130, true), g.node(19.5, 96, false, 0.4), g.node(19.2, 74.6, false, 0.4), g.node(27.2, 74.0), houseNode]);
+    g.chain([g.node(19.5, 152, true), g.node(19.5, 96, false, 0.4), g.node(19.2, 74.6, false, 0.4), g.node(27.2, 74.0), houseNode]);
     // across the staff park from the street walk to its far corner
     const ids = path.slice(1).map(([x, y], i) => g.node(x, y, i === path.length - 2));
     g.chain([streetNode, ...ids]);
