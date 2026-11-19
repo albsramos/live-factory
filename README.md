@@ -73,7 +73,7 @@ any other React setup.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where
   the car is on its charger.
 - **The outskirts**, for wide views: a new factory wing and a long staff car park under solar canopies to the west
-  (a few cars come and go on its service road), and to the east a second compute platform, a Megapack field with a
+  (a few cars come and go on its service road, with grass beside it), and to the east a second compute platform, a Megapack field with a
   robot doing its rounds, and a charging hub that cars turn into off the avenue.
 - **Day and night**: by day the glazing is a faded blue-grey glass; at night it glows warm and lights the ground in
   front of the buildings, headlights throw beams along the road ahead of each car, and tail lights glow red, brighter
