@@ -67,8 +67,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
 
   // the order matters: everything below draws from one seeded random stream
   const zones = roadZones(traffic);
-  // the two middle docks are worked by live trucks; the end docks hold parked trailers
-  const yard = new TruckYard(env, [10.5, 16.5]);
+  // two docks are worked by live trucks; the third slot is the charging bay they back into after loading
+  const yard = new TruckYard(env, [4.5, 10.5], 16.5);
   factory(env, edge, yard);
   // AI compute: a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
@@ -83,7 +83,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   chat(env, [[54.0, 56.4], [54.2, 57.6]]);
 
   // the scripted scenes
-  yard.seed(1, 9);
+  yard.seedCharging(58);
   acts.push(yard);
   acts.push(new TruckBay(env));
   const lot = new ChargingLot(env);
@@ -98,7 +98,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   staffBreak(env);
   // dock and yard robots
   acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 13.6, wait: 0.8, then: (w) => (w.carry = true) }, { x: 32.4, y: 13.4, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 13.6));
-  acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 19.4, wait: 0.9, then: (w) => (w.carry = true) }, { x: 36.4, y: 19.5, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 19.4));
+  acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 7.5, wait: 0.9, then: (w) => (w.carry = true) }, { x: 35.6, y: 7.5, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 7.5));
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
   walkways(graph, zones, outskirts);

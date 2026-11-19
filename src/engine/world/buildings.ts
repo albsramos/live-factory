@@ -9,15 +9,18 @@ import { megapacks } from '../blocks';
 import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details';
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
+import { chargerRow } from './chargers';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
 
-/** The factory, its dock wing (a lamp by each dock shows the yard's state), the trailers parked at the end docks and pallets. */
+/**
+ * The factory and its dock wing: two loading docks and the charging bay (a lamp by each shows the yard's state), the
+ * bay's chargers and battery bank on a kerbed island the semis can't drive over, and pallets by the wall.
+ */
 export function factory(env: Env, edge: string, yard: TruckYard) {
   const { pal, statics: S } = env;
-  const parkedDocks = [4.5, 22.5];
   const factoryBandsX: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5 },
     { top: 5.2, bot: 7.8, every: 1.5 },
@@ -42,7 +45,7 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
   S.push(new BoxItem(30.1, 61.85, 0, 30.35, 62.1, 4.05, pal.white));
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
-  const dockDoors = [4.5, 10.5, 16.5, 22.5];
+  const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];
   S.push(
     new BoxItem(-30, 0, 0, 30, 36, 10, pal.factory, { edge }, (r) => {
       onFaceX(r, 30, 0, 36, 10, (ctx) => {
@@ -64,10 +67,11 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
       solarRoof(r, pal, -30, 0, 30, 36, 10, 1.0, 2.6);
     }).live((r) => {
-      // a lamp beside each dock: green while a trailer is loading, amber while one is coming or going, off when free
+      // a lamp beside each dock: green while a trailer is loading (or charging, at the bay), amber while one is coming
+      // or going, off when free
       onFaceX(r, 30, 0, 36, 10, (ctx) => {
         for (const y of dockDoors) {
-          const d = yard.docks.find((k) => k.y === y);
+          const d = [...yard.docks, yard.bay].find((k) => k.y === y);
           const loading = d ? d.loading : true;
           const busy = d ? d.taken : true;
           const pulse = loading && d ? 0.65 + 0.35 * Math.sin(r.t * 3 + y) : 1;
@@ -79,17 +83,12 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       });
     }),
   );
-  // trailers parked at the far docks
-  const trailerMats = [pal.white, pal.carGlass, pal.tyre, pal.headlight, pal.taillight, pal.white];
-  for (const y of parkedDocks) {
-    S.push(
-      new FnItem(30.2, y - 1.3, 0, 43.6, y + 1.3, 4.1, (r) => drawMesh(r, MESH.trailer, 43.0, y, 0, 1, 0, trailerMats), (ctx) =>
-        rectShadow(ctx, 36.9, y, 1, 0, 6.7, 1.27, 3.6),
-      ).still(),
-    );
-  }
+  // the charging bay's island, beside the bay and out of every semi's sweep: a row of chargers facing the bay, and the
+  // battery bank that feeds them where the fourth dock used to be. The kerb itself is drawn with the ground.
+  megapacks(S, pal, edge, [[31.4, 37.2], [38.0, 43.8]], [21.0, 23.4], 7);
+  S.push(chargerRow(pal, [44.2, 45.8, 47.4], 19.5, [47.3, 17.8, 1.1], yard.bay));
   // pallets in the gaps between docks, by the wall
-  for (const [x, y, n] of [[33.4, 13.5, 2], [35.0, 19.5, 1], [32.0, 19.5, 2], [32.2, 1.0, 1]] as const) {
+  for (const [x, y, n] of [[33.4, 13.5, 2], [36.6, 7.5, 1], [32.2, 1.0, 1]] as const) {
     S.push(
       new FnItem(x - 0.6, y - 0.6, 0, x + 0.6, y + 0.6, n * 0.95, (r) => {
         for (let i = 0; i < n; i++) drawMesh(r, MESH.crate, x, y, i * 0.95, 1, 0, [pal.crate, pal.carGlass, pal.concrete.right]);

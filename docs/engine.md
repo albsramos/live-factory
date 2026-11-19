@@ -25,7 +25,8 @@ Every file stays under 300 lines; split by responsibility when one grows past th
 - `world/` the layout. `world.ts` builds it all in a fixed order (everything draws from one seeded random stream,
   so moving a call changes the scene): `roads.ts` zones and through traffic, `buildings.ts` the factory, dock wing,
   pavilion, home and construction site, `streetLife.ts` trees, lamps, benches, the pocket park and people standing
-  about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer, `outskirts.ts` what lies beyond
+  about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer, `chargers.ts` the charging bay's posts and
+  their glowing cable, `outskirts.ts` what lies beyond
   the classic frame for wide views (factory wing, staff car park, second compute platform, Megapack field, charging
   hub, staff park).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`;

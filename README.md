@@ -48,9 +48,11 @@ any other React setup.
 - **Traffic**: cars, SUVs, an angular pickup, two-seat robotaxis and a robovan drive a small road network. They stop
   at an invisible signal at the junction, give way to people already on the zebra crossings, and hold back while a
   truck pulls out. Semis only come for the yard and the loading bay, so there are never more than two at once.
-- **Truck yard**: one semi at a time turns in off the avenue. It drives down the yard lane past its dock, then backs
-  in with the trailer swinging round. It loads under a green dock lamp, then pulls out across the yard and turns
-  onto the avenue once there's a gap. People on the pavement wait at the yard's gate and exit while a semi crosses,
+- **Truck yard**: a semi turns in off the avenue, drives down the yard lane past one of the two docks, then backs in
+  with the trailer swinging round. It loads under a green dock lamp, pulls out, and backs into the charging bay
+  beside the docks. There it plugs into a row of slim white chargers (fed by a battery bank on a kerbed island the
+  trucks can't drive over), pulses of light run along the cable into the cab, then it pulls out across the yard and
+  turns onto the avenue once there's a gap. The next semi can load while one charges. People on the pavement wait at the yard's gate and exit while a semi crosses,
   well clear of where its trailer swings, and the same goes for the charging lot's driveways.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.

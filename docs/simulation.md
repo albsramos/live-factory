@@ -29,6 +29,12 @@
   find its swept area: run the simulation and record the semi's bodies (`v.bodies`) along the route, or replay the
   trailer (it trails the kingpin 9.6 m behind, see `updateTrailer`) along the path points.
 
+- The truck yard: two docks and a charging bay (`activities/truckYard.ts`). A semi loads at a dock, then backs into
+  the bay to charge, then leaves. One semi moves in the yard at a time (a mutex); a second may come in and load while
+  one charges, because neither one's sweep touches the other parked, and it waits at its dock until the bay is free.
+  The chargers and their battery bank stand on a kerbed island outside every sweep. After changing the yard, record
+  the semis' bodies over 30 minutes and check that nothing fixed lies in them (the island, the platform, the batteries).
+
 ## People
 
 - People walk the walkway graph (`WalkGraph` in `people/crowd.ts`). An edge linked with a zone is a crossing: a person
