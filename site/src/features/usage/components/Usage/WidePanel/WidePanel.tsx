@@ -11,7 +11,8 @@ export function WidePanel() {
       <p className={styles.text}>
         Past the classic frame the town keeps going: a new factory wing and the staff car park to the west, a second
         compute platform, Megapacks, a charging hub and a staff park to the east. With <Code>fit="contain"</Code>{' '}
-        a banner shows the whole height and they fill its sides. Try the Banner shape above (1630 × 520).
+        a banner shows the whole height and they fill its sides, like the 1630 × 520 one above. Switch Shape to Classic for
+        the scene's own 1.86 : 1.
       </p>
       <CodeBlock label="A 520 px banner" code={BANNER} />
     </Panel>

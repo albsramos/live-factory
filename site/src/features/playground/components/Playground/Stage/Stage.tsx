@@ -5,7 +5,7 @@ import styles from './Stage.module.css';
 const LABEL =
   'An animated isometric factory town: traffic and semis, robotaxis, charging cars, a crane, a compute platform and humanoid robots among people';
 
-/** The scene itself, as a card in its own shape or as a wide banner showing the whole height. */
+/** The scene itself: a 1630 × 520 banner showing the whole height, or the scene in its own 1.86 : 1 shape. */
 export function Stage() {
   const s = useSettings();
   const isBanner = s.shape === 'banner';

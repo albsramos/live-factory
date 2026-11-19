@@ -3,8 +3,8 @@
 import type { ThemeChoice } from 'live-factory';
 import { patchSearch, useSearch } from '../../../shared/lib/searchParams';
 
-/** `card` is the scene's own 1.86 : 1 shape; `banner` is a 1630 × 520 strip showing the whole height. */
-export type Shape = 'card' | 'banner';
+/** `banner` (the default) is a 1630 × 520 strip showing the whole height; `classic` is the scene's own 1.86 : 1. */
+export type Shape = 'banner' | 'classic';
 
 export interface Settings {
   theme: ThemeChoice;
@@ -32,7 +32,7 @@ export function readSettings(search: string): Settings {
     theme: pick(p.get('theme'), ['auto', 'light', 'dark'], 'auto'),
     speed: number(p.get('speed'), 1, SPEED),
     crowd: number(p.get('crowd'), 1, CROWD),
-    shape: pick(p.get('shape'), ['card', 'banner'], 'card'),
+    shape: pick(p.get('shape'), ['banner', 'classic'], 'banner'),
     isPaused: p.get('paused') === '1',
     isMotionForced: p.get('motion') === '1',
   };
@@ -47,7 +47,7 @@ export function useSettings() {
 export const setTheme = (theme: ThemeChoice) => patchSearch({ theme: theme === 'auto' ? null : theme });
 export const setSpeed = (speed: number) => patchSearch({ speed: speed === 1 ? null : String(speed) });
 export const setCrowd = (crowd: number) => patchSearch({ crowd: crowd === 1 ? null : crowd.toFixed(1) });
-export const setShape = (shape: Shape) => patchSearch({ shape: shape === 'card' ? null : shape });
+export const setShape = (shape: Shape) => patchSearch({ shape: shape === 'banner' ? null : shape });
 export const pause = () => patchSearch({ paused: '1' });
 /** Run the scene; `isOverridingMotion` when the visitor's reduced-motion setting is what holds it still. */
 export const play = (isOverridingMotion: boolean) => patchSearch({ paused: null, motion: isOverridingMotion ? '1' : null });

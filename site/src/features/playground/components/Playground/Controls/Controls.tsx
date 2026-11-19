@@ -14,8 +14,8 @@ const THEMES = [
 ] as const satisfies readonly { value: ThemeChoice; label: string }[];
 
 const SHAPES = [
-  { value: 'card', label: 'Card' },
   { value: 'banner', label: 'Banner' },
+  { value: 'classic', label: 'Classic' },
 ] as const satisfies readonly { value: Shape; label: string }[];
 
 const formatSpeed = (v: number) => `${Number.isInteger(v) ? v : v.toFixed(2).replace(/0$/, '')}×`;

@@ -13,3 +13,14 @@
 .root[data-shape="banner"] > .scene {
   height: 100%;
 }
+
+/* on a phone a 1630 × 520 strip would be a sliver: the banner falls back to the scene's own shape */
+@container (max-width: 640px) {
+  .root[data-shape="banner"] {
+    aspect-ratio: auto;
+  }
+
+  .root[data-shape="banner"] > .scene {
+    height: auto;
+  }
+}
