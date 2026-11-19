@@ -7,7 +7,7 @@ const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 export default defineConfig({
   resolve: { alias: { 'react/jsx-runtime': here('./artifact/jsx-shim.ts') } },
   build: {
-    lib: { entry: here('./src/index.ts'), formats: ['iife'], name: 'LivingCityLib', fileName: () => 'living-city.iife.js' },
+    lib: { entry: here('./src/index.ts'), formats: ['iife'], name: 'LivingCityLib', fileName: () => 'live-factory.iife.js' },
     rollupOptions: { external: ['react'], output: { globals: { react: 'React' } } },
     outDir: here('./artifact-dist'),
     emptyOutDir: true,

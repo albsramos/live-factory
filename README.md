@@ -1,4 +1,4 @@
-# living-city
+# live-factory
 
 A self-running isometric city for React, in a soft white-clay style. Nothing to configure and no text: drop it in and
 it plays.
@@ -32,7 +32,7 @@ There is a light theme and a night theme, and by default the scene matches the p
 ## Use it
 
 ```tsx
-import { LivingCity } from 'living-city';
+import { LivingCity } from 'live-factory';
 
 export function Hero() {
   return <LivingCity style={{ borderRadius: 24 }} />;
@@ -96,7 +96,7 @@ yourself.
 The engine is framework-free:
 
 ```ts
-import { Scene } from 'living-city';
+import { Scene } from 'live-factory';
 
 const scene = new Scene(canvas, { theme: 'dark', density: 0.8 });
 scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again when the size changes
@@ -105,14 +105,14 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 
 ## Install
 
-This package lives in `packages/living-city` and isn't on npm yet. Any of these work:
+It isn't on npm yet. Any of these work:
 
-- **From this repository:** `npm install <path-to>/packages/living-city`. This runs nothing on install; build it first
-  with `npm install && npm run build` inside the folder.
-- **As a tarball:** `npm run build && npm pack`, then `npm install living-city-0.1.0.tgz` in your app.
+- **Straight from GitHub:** `npm install github:albsramos/live-factory`. npm clones it and builds `dist/` on install
+  (the `prepare` script). If the repository is private, the machine installing it needs git access to it.
+- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.1.0.tgz` in your app.
 - **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports.
-- **Publish it:** rename it in `package.json` if you like (for example `@your-scope/living-city`), then run
-  `npm publish`. The build produces ESM, CommonJS and type declarations in `dist/`.
+- **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
+  ESM, CommonJS and type declarations in `dist/`.
 
 React 17 or newer is a peer dependency.
 
@@ -123,7 +123,7 @@ npm install
 npm run dev        # demo page with theme, speed and density controls
 npm run build      # library build into dist/
 npm run typecheck
-npm run build:artifact   # artifact-dist/living-city.html: a self-contained demo page (React from cdnjs)
+npm run build:artifact   # artifact-dist/live-factory.html: a self-contained demo page (React from cdnjs)
 ```
 
 The demo has two extra views: `?gallery` shows every vehicle at eight headings, and `?debug` exposes the scene as

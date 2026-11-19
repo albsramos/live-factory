@@ -94,7 +94,7 @@ export class Scene {
   constructor(private canvas: HTMLCanvasElement, opts: Partial<SceneOptions> = {}) {
     this.opts = { ...DEFAULTS, ...opts };
     const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) throw new Error('living-city: 2D canvas is not available');
+    if (!ctx) throw new Error('live-factory: 2D canvas is not available');
     this.ctx = ctx;
     this.pal = this.opts.theme === 'dark' ? darkPalette() : lightPalette();
     this.sprites = new Sprites(this.pal, 1);

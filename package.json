@@ -1,5 +1,5 @@
 {
-  "name": "living-city",
+  "name": "live-factory",
   "version": "0.1.0",
   "description": "A self-running isometric city scene for React: cars drive, trucks get loaded, humanoid robots walk around. One component, no text, no dependencies besides React.",
   "type": "module",
@@ -18,12 +18,17 @@
     "README.md"
   ],
   "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/albsramos/live-factory.git"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "vite build && tsc -p tsconfig.build.json",
     "build:demo": "vite build --mode demo",
     "typecheck": "tsc -p . --noEmit",
-    "build:artifact": "node scripts/build-artifact.mjs"
+    "build:artifact": "node scripts/build-artifact.mjs",
+    "prepare": "npm run build"
   },
   "peerDependencies": {
     "react": ">=17"
