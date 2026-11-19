@@ -1,7 +1,7 @@
 // The charging bay's chargers: a row of slim white posts with rounded tops on black bases, each with its black cable
 // looped on its side (no lettering: the scene shows no brand marks). While a semi charges in the bay, the nearest
-// post's cable runs to the cab's charge port, pulses of light travel along it into the truck, the port glows and the
-// post's light breathes green.
+// post's cable runs to the cab's charge port and glows green along its whole length, the port glows and the post's
+// light breathes green.
 
 import { C } from '../core';
 import { box, onFaceY, type R } from '../draw';
@@ -47,39 +47,38 @@ function post(r: R, pal: Palette, px: number, py: number, isLive: boolean) {
 }
 
 /**
- * The cable from the post's side to the cab's charge port, sagging towards the ground, with pulses of light running
- * along it into the truck and a glow at the port.
+ * The cable from the post's side to the cab's charge port, sagging towards the ground. While charging, the whole
+ * cable glows green, breathing gently, with a glow at the port.
  */
 function cable(r: R, pal: Palette, from: [number, number, number], to: [number, number, number]) {
   const ctx = r.ctx;
   const S = (p: [number, number, number]) => [(p[0] - p[1]) * C, (p[0] + p[1]) * 0.5 - p[2]] as const;
   const [ax, ay] = S(from), [bx, by] = S(to);
   const [cx, cy] = S([(from[0] + to[0]) / 2, (from[1] + to[1]) / 2, 0.15]);
-  ctx.strokeStyle = '#141519';
-  ctx.lineWidth = 0.07;
+  const trace = () => {
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.quadraticCurveTo(cx, cy, bx, by);
+  };
+  const glow = (r.night ? 1 : 0.75) * (0.75 + 0.25 * Math.sin(r.t * 2.2));
   ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(ax, ay);
-  ctx.quadraticCurveTo(cx, cy, bx, by);
+  trace();
+  // a soft halo, then the cable itself lit green along its whole length
+  ctx.strokeStyle = pal.led;
+  ctx.globalAlpha = 0.3 * glow;
+  ctx.lineWidth = 0.32;
   ctx.stroke();
-  const at = (t: number) => [(1 - t) * (1 - t) * ax + 2 * (1 - t) * t * cx + t * t * bx, (1 - t) * (1 - t) * ay + 2 * (1 - t) * t * cy + t * t * by];
-  const glow = r.night ? 1 : 0.7;
-  ctx.fillStyle = pal.led;
-  for (let k = 0; k < 4; k++) {
-    const t = (k / 4 + r.t * 0.55) % 1;
-    const [x, y] = at(t);
-    ctx.globalAlpha = 0.35 * glow;
-    ctx.beginPath();
-    ctx.arc(x, y, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = glow;
-    ctx.beginPath();
-    ctx.arc(x, y, 0.085, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#141519';
+  ctx.lineWidth = 0.1;
+  ctx.stroke();
+  ctx.strokeStyle = pal.led;
+  ctx.globalAlpha = glow;
+  ctx.lineWidth = 0.06;
+  ctx.stroke();
   // the port
-  const p = 0.6 + 0.4 * Math.sin(r.t * 3.1);
-  ctx.globalAlpha = 0.3 * p * glow;
+  ctx.fillStyle = pal.led;
+  ctx.globalAlpha = 0.3 * glow;
   ctx.beginPath();
   ctx.arc(bx, by, 0.4, 0, Math.PI * 2);
   ctx.fill();
