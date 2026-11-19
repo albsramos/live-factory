@@ -55,15 +55,18 @@ any other React setup.
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots carry boxes between the docked trailers, help load the semi at the bay, patrol the
   battery yard, work on the construction slab and walk the streets with everyone else.
-- **AI compute**: a platform of 24 server-rack blocks in front of the factory, with blinking status lights and a
-  pulsing cyan glow along its base.
+- **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
+  far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
+  it, a tall glass atrium in the dock wing glows warm at night.
+- **Pocket park**: a patch of grass on the corner by the plaza, where two kids pass a ball, people sit on the
+  benches and walkers take the path across to the street.
 - **Charging**: cars nose into the chargers, charge (with a pulsing light and cable), back out and leave.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.
 - **Construction**: a tower crane swings between the material pile and the slab while workers move around.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where
   the car is on its charger.
-- **Ambient detail**: walkers on a walkway network, people chatting, sitting on a bench or playing ball in the park,
-  a dog on a walk, trees swaying, glints sweeping across solar roofs and pulsing battery status lights.
+- **Ambient detail**: walkers on a walkway network, people chatting, sitting on a bench or playing ball in the
+  parks, a dog on a walk, trees swaying, glints sweeping across solar roofs and pulsing battery status lights.
 
 There is a light theme and a night theme, and by default the scene matches the page it sits on (see
 [Dark mode](#dark-mode)). Everything is drawn on one `<canvas>`, and the only dependency is React.

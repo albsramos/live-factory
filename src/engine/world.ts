@@ -1,14 +1,14 @@
 // The city: ground plan, buildings, props, traffic routes, walkways and the activities that bring it to life.
 //
 // Layout (world units ≈ metres). Roads: an avenue along y at x 68–76, a street along x at y 42–50 that bends into
-// the factory road along y at x 44–52. Factory top-left with a large AI-compute platform in front of it; the dock
-// wing and an open truck yard (gate off the avenue, exit onto the street) top-centre, battery yard top-right;
-// a home with carport and the loading bay left; charging lot and construction bottom-centre; pavilion, robotaxi
-// stop and park bottom-right.
+// the factory road along y at x 44–52. Factory top-left; the dock wing with its tall atrium window, a wide AI-compute
+// platform in front of it reaching out into the yard, and a pocket park on its corner by the plaza; an open truck
+// yard (gate off the avenue, exit onto the street) top-centre, battery yard top-right; a home with carport and the
+// loading bay left; charging lot and construction bottom-centre; pavilion, robotaxi stop and park bottom-right.
 
 import { C, makeRng, pick, rr } from './core';
 import { arcPts, box, boxShadow, drawMesh, groundPoly, groundRect, lineW, onFaceX, onFaceY, rectShadow, type Ctx, type R } from './draw';
-import { batteryFront, batteryLed, rackFront, rackLeds, solarGlint, solarRoof, windowsX, windowsY, type Band } from './details';
+import { atrium, batteryFront, batteryLed, rackFront, rackLeds, solarGlint, solarRoof, windowsX, windowsY, type Band } from './details';
 import type { Palette } from './palette';
 import { Path } from './path';
 import type { Item } from './sort';
@@ -39,70 +39,6 @@ export interface WorldOptions {
 }
 
 const EDGE = 'rgba(255,255,255,0.55)';
-
-/** A head-and-shoulders portrait of a humanoid robot, in face-local units (u 0.6…9.4, v 0.7…9). */
-function robotPoster(ctx: Ctx, pal: Palette) {
-  const night = pal.night;
-  ctx.fillStyle = night ? '#0d0e12' : '#3f4149';
-  ctx.fillRect(0.6, 0.7, 8.8, 8.3);
-  const g = ctx.createRadialGradient(5.3, 3.6, 0.3, 5, 4.8, 6.4);
-  g.addColorStop(0, night ? 'rgba(120,130,160,0.32)' : 'rgba(255,255,255,0.30)');
-  g.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0.6, 0.7, 8.8, 8.3);
-  const shell = night ? '#5a5d68' : '#e4e5ea', shellLo = night ? '#3c3e47' : '#b7b8c1', visor = night ? '#08080a' : '#202127';
-  // torso and shoulders
-  ctx.fillStyle = shellLo;
-  ctx.beginPath();
-  ctx.moveTo(1.3, 9.0);
-  ctx.bezierCurveTo(1.4, 7.2, 2.0, 6.0, 3.3, 5.7);
-  ctx.lineTo(6.7, 5.7);
-  ctx.bezierCurveTo(8.0, 6.0, 8.6, 7.2, 8.7, 9.0);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = shell;
-  ctx.beginPath();
-  ctx.moveTo(3.5, 5.8);
-  ctx.lineTo(6.5, 5.8);
-  ctx.lineTo(6.1, 9.0);
-  ctx.lineTo(3.9, 9.0);
-  ctx.closePath();
-  ctx.fill();
-  for (const x of [2.55, 7.45]) {
-    ctx.beginPath();
-    ctx.ellipse(x, 6.75, 0.85, 0.8, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  // neck
-  ctx.fillStyle = visor;
-  ctx.fillRect(4.45, 4.7, 1.1, 1.2);
-  // head shell and visor
-  ctx.fillStyle = shell;
-  ctx.beginPath();
-  ctx.ellipse(5, 3.35, 1.2, 1.5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = visor;
-  ctx.beginPath();
-  ctx.moveTo(3.95, 3.0);
-  ctx.quadraticCurveTo(5, 2.35, 6.05, 3.0);
-  ctx.quadraticCurveTo(6.15, 4.4, 5, 4.75);
-  ctx.quadraticCurveTo(3.85, 4.4, 3.95, 3.0);
-  ctx.fill();
-  ctx.strokeStyle = night ? 'rgba(140,160,210,0.25)' : 'rgba(255,255,255,0.28)';
-  ctx.lineWidth = 0.08;
-  ctx.beginPath();
-  ctx.arc(4.6, 3.4, 0.5, Math.PI * 1.1, Math.PI * 1.45);
-  ctx.stroke();
-  // seams
-  ctx.strokeStyle = night ? 'rgba(0,0,0,0.5)' : 'rgba(60,62,72,0.35)';
-  ctx.lineWidth = 0.05;
-  ctx.beginPath();
-  ctx.moveTo(5, 6.0);
-  ctx.lineTo(5, 9.0);
-  ctx.moveTo(3.8, 7.3);
-  ctx.quadraticCurveTo(5, 7.7, 6.2, 7.3);
-  ctx.stroke();
-}
 
 export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): World {
   const rng = makeRng(opts.seed);
@@ -172,7 +108,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   S.push(new BoxItem(30.1, 53.9, 0, 30.35, 54.15, 4.05, pal.white));
   S.push(new BoxItem(30.1, 61.85, 0, 30.35, 62.1, 4.05, pal.white));
 
-  // dock wing with roll-up doors and the big screen
+  // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [4.5, 10.5, 16.5, 22.5];
   S.push(
     new BoxItem(-30, 0, 0, 30, 36, 10, pal.factory, { edge }, (r) => {
@@ -190,10 +126,9 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
           }
           ctx.stroke();
         }
-        // the big screen: a humanoid robot portrait, softly lit
-        robotPoster(ctx, pal);
       });
       windowsX(r, pal, 30, 0, 36, 10, [{ top: 1.4, bot: 3.0, every: 1.2, spans: [[10.4, 35.6]] }]);
+      atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
       solarRoof(r, pal, -30, 0, 30, 36, 10, 1.0, 2.6);
     }).live((r) => {
       solarGlint(r, -30, 0, 30, 36, 10, 1.0, 0.6);
@@ -231,10 +166,12 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   }
 
   // ------------------------------------------------------------------------------------------------- AI compute
-  // one platform of server racks from the dock wing down to the plaza walk, eight rows of three
+  // a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
+  // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
+  const DC = { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 };
   S.push(
-    new FnItem(30.6, 26.6, 0, 42.8, 47.2, 0.35, (r) => {
-      box(r, 30.6, 26.6, 0, 42.8, 47.2, 0.35, pal.concrete, { edge });
+    new FnItem(DC.x0, DC.y0, 0, DC.x1, DC.y1, 0.35, (r) => {
+      box(r, DC.x0, DC.y0, 0, DC.x1, DC.y1, 0.35, pal.concrete, { edge });
       const ctx = r.ctx;
       const pulse = 0.5 + 0.5 * Math.sin(r.t * 1.2);
       ctx.save();
@@ -246,27 +183,34 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
       ctx.lineWidth = 0.12;
       ctx.lineJoin = 'round';
       ctx.beginPath();
-      lineW(ctx, 30.6, 47.3, 0.04, 42.9, 47.3, 0.04);
-      lineW(ctx, 42.9, 47.3, 0.04, 42.9, 26.6, 0.04);
+      lineW(ctx, DC.x0, DC.y1 + 0.1, 0.04, DC.x1 + 0.1, DC.y1 + 0.1, 0.04);
+      lineW(ctx, DC.x1 + 0.1, DC.y1 + 0.1, 0.04, DC.x1 + 0.1, DC.y0, 0.04);
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.globalAlpha = 0.35 + 0.3 * pulse;
       ctx.lineWidth = 0.06;
       ctx.beginPath();
-      lineW(ctx, 30.8, 47.0, 0.36, 42.6, 47.0, 0.36);
-      lineW(ctx, 42.6, 47.0, 0.36, 42.6, 26.8, 0.36);
+      lineW(ctx, DC.x0 + 0.2, DC.y1 - 0.2, 0.36, DC.x1 - 0.2, DC.y1 - 0.2, 0.36);
+      lineW(ctx, DC.x1 - 0.2, DC.y1 - 0.2, 0.36, DC.x1 - 0.2, DC.y0 + 0.2, 0.36);
       ctx.stroke();
       ctx.restore();
     }),
   );
   let rackSeed = 0;
-  for (let row = 0; row < 8; row++) {
+  for (let row = 0; row < 4; row++) {
     const y0 = 27.4 + row * 2.45;
-    for (const [x0, x1] of [[31.4, 34.73], [35.13, 38.47], [38.87, 42.2]]) {
+    for (let col = 0; col < 6; col++) {
+      const x0 = 31.4 + col * 3.73, x1 = x0 + 3.33;
       const seed = rackSeed++;
       S.push(new BoxItem(x0, y0, 0.35, x1, y0 + 1.1, 2.65, pal.rack, { edge }, (r) => rackFront(r, pal, x0, x1, y0 + 1.1, 0.35, 2.65)).live((r) => rackLeds(r, pal, x0, x1, y0 + 1.1, 2.65, seed)));
     }
   }
+
+  // ------------------------------------------------------------------------------------------------- pocket park
+  // on the corner between the compute platform, the plaza walk and the street: grass, a path, benches, trees
+  const lawn = [31.0, 38.2, 44.6, 38.2, 44.6, 44.2, 41.4, 47.8, 31.0, 47.8];
+  const parkPath = [[36.2, 49.0], [37.4, 45.2], [40.6, 41.6], [45.2, 41.9]];
+  for (const [x0, y0, x1, y1] of [[37.2, 39.0, 39.2, 39.5], [31.5, 42.4, 32.0, 44.4]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
 
   // ------------------------------------------------------------------------------------------------- battery yard
   // north of the docks with a clear apron in front of every one of them, and clear of the yard lane
@@ -421,16 +365,18 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
 
   // ------------------------------------------------------------------------------------------------- greenery and street furniture
   const trees: [number, number, 'tree' | 'tree2' | 'poplar' | 'small', number][] = [
-    [29.6, 66.4, 'tree', 1], [34.6, 69.0, 'tree2', 0.9], [47.4, 39.2, 'tree', 0.95], [27.6, 44.5, 'poplar', 0.9],
+    [29.6, 66.4, 'tree', 1], [34.6, 69.0, 'tree2', 0.9], [27.6, 44.5, 'poplar', 0.9],
     [65.7, 28.2, 'poplar', 1], [65.7, 33.0, 'poplar', 1], [65.8, -9, 'poplar', 1], [78.7, 16.5, 'tree', 1],
     [84.3, 56.6, 'tree', 1], [89.8, 63.4, 'tree2', 1], [99.5, 57.5, 'small', 1], [105.5, 52.6, 'tree', 1], [54.0, 82.6, 'small', 0.9],
     [53.2, 92.5, 'poplar', 0.9], [53.4, 103, 'tree2', 0.9], [31.0, 103.5, 'tree', 1], [31.2, 85.2, 'tree2', 0.95],
     [18.6, 74.4, 'small', 0.9], [98.8, 40.0, 'tree2', 0.9], [110, 39.6, 'tree', 1], [78.8, 88.5, 'tree', 1],
-    [66.3, 88.4, 'small', 0.9], [78.7, 9, 'tree2', 1], [48.6, 32.2, 'small', 0.85],
+    [66.3, 88.4, 'small', 0.9], [78.7, 9, 'tree2', 1],
+    // pocket park
+    [31.9, 46.4, 'tree2', 0.85], [42.4, 45.4, 'small', 0.8], [31.8, 39.6, 'small', 0.75],
   ];
   trees.forEach(([x, y, k, s], i) => S.push(new TreeItem(sprites, x, y, k, s, i * 1.7)));
   const hedges: number[][] = [
-    [30.4, 69.6, 34.6, 70.6], [47.0, 37.2, 56.4, 38.2], [54.7, 67.0, 55.3, 79.8], [80.6, 76.0, 81.2, 86.0],
+    [30.4, 69.6, 34.6, 70.6], [54.7, 67.0, 55.3, 79.8], [80.6, 76.0, 81.2, 86.0],
     [80.8, 38.85, 85.6, 39.35], [91, 38.85, 96.6, 39.35],
   ];
   hedges.forEach((h, i) => S.push(new HedgeItem(sprites, h[0], h[1], h[2], h[3], pal.planter, i)));
@@ -466,6 +412,13 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(lot);
   acts.push(new TaxiStop(env, (w) => crowd.adopt(w)));
   acts.push(new Park(env, [[91, 56], [96, 53.6]]));
+  acts.push(new Park(env, [[33.8, 40.9], [36.2, 43.6]], false));
+  for (const [x, y, fx, fy] of [[37.7, 39.85, 0, 1], [38.7, 39.85, 0, 1], [32.35, 43.6, 1, 0]]) {
+    const w = new Walker(rng() < 0.3 ? 'robot' : 'person', pal, rng, x, y);
+    w.stance = 'sit';
+    w.face(fx, fy);
+    crowd.add(w);
+  }
   // two people on a park bench
   for (const x of [87.0, 87.95]) {
     const w = new Walker('person', pal, rng, x, 61.75);
@@ -515,7 +468,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   g.link(p[1], p[2], TP);
   g.link(p[2], fw1, TP);
   g.link(p[0], p[3]);
-  g.link(p[3], p[4]);
+  // the path through the pocket park, from the plaza walk to the street corner
+  const pp = parkPath.map(([x, y], i) => (i === 0 ? g.node(36.2, 50.1) : g.node(x, y)));
+  g.chain([p[3], pp[0], p[4]]);
+  g.chain(pp);
+  g.link(pp[3], sn[2]);
   g.link(p[4], sn[1]);
   // the front door of the house on the corner
   // round the plaza hedge to the front door of the house beside the bay
@@ -618,6 +575,22 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     groundPoly(ctx, [26, 36, 41.6, 36, 41.6, 61.8, 37.4, 66.0, 37.4, 69.4, 26, 69.4]);
     groundPoly(ctx, [81, 53, 86, 53, 86, 64.2, 130, 64.2, 130, 100, 81, 100]);
     ctx.fill();
+    // the pocket park: grass with a path across it
+    ctx.fillStyle = pal.lawn;
+    ctx.strokeStyle = pal.lawn;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    groundPoly(ctx, lawn);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = pal.plaza;
+    ctx.lineWidth = 1.1;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    for (let i = 1; i < parkPath.length; i++) lineW(ctx, parkPath[i - 1][0], parkPath[i - 1][1], 0, parkPath[i][0], parkPath[i][1], 0);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
     // apron joints
     ctx.strokeStyle = pal.night ? 'rgba(255,255,255,0.03)' : 'rgba(120,122,136,0.10)';
     ctx.lineWidth = 0.06;

@@ -791,7 +791,7 @@ export class Looper implements Activity {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Park: two kids passing a ball, a dog on a walk.
+// Park: two kids passing a ball, and (unless told otherwise) a dog on a walk.
 
 export class Park implements Activity {
   private kids: Walker[] = [];
@@ -802,7 +802,7 @@ export class Park implements Activity {
   private owner: Walker | null = null;
   private parts: Item[] = [];
 
-  constructor(private env: Env, spots: number[][]) {
+  constructor(private env: Env, spots: number[][], private withDog = true) {
     const { pal, rng, crowd } = env;
     for (const [x, y] of spots) {
       const w = new Walker('person', pal, rng, x, y);
@@ -897,7 +897,7 @@ export class Park implements Activity {
       it.z1 = this.ball.z + 0.32;
     }
     // dog walker
-    if (!this.owner || this.owner.dead) {
+    if (this.withDog && (!this.owner || this.owner.dead)) {
       this.dog = null;
       this.dogT -= dt;
       if (this.dogT <= 0) {

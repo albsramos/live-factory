@@ -8,6 +8,8 @@ export interface Palette {
   ground: string;
   pad: string;
   plaza: string;
+  /** the small park's grass, a breath greener than the plaza */
+  lawn: string;
   road: string;
   roadLine: string;
   curbHi: string;
@@ -67,6 +69,7 @@ export function lightPalette(): Palette {
     ground: '#ebebef',
     pad: '#e4e4e9',
     plaza: '#efeff2',
+    lawn: '#dfe6dc',
     road: '#dcdce2',
     roadLine: '#f6f6f8',
     curbHi: '#f9f9fb',
@@ -129,6 +132,7 @@ export function darkPalette(): Palette {
     ground: '#1b1c21',
     pad: '#1f2026',
     plaza: '#1d1e23',
+    lawn: '#1a221d',
     road: '#141519',
     roadLine: '#3a3c44',
     curbHi: '#2c2e35',
