@@ -26,7 +26,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   so moving a call changes the scene): `roads.ts` zones and through traffic, `buildings.ts` the factory, dock wing,
   pavilion, home and construction site, `streetLife.ts` trees, lamps, benches, the pocket park and people standing
   about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer, `chargers.ts` the yard's chargers (posts and
-  glowing cable in `../charging.ts`), `entrance.ts` the factory's glazed main entrance, `outskirts.ts` what lies beyond
+  glowing cable in `../charging.ts`), `entrance.ts` the factory's recessed main entrance (painted into the face), `outskirts.ts` what lies beyond
   the classic frame for wide views (factory wing, staff car park, second compute platform, Megapack field, charging
   hub, staff park).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`;
