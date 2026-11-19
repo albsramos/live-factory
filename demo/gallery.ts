@@ -1,6 +1,7 @@
 // Debug view: every vehicle mesh at eight headings.
-import { MESH } from '../src/engine/vehicles';
-import { drawMesh, type R } from '../src/engine/draw';
+import { MESH } from '../src/engine/traffic/meshes';
+import type { R } from '../src/engine/draw';
+import { drawMesh } from '../src/engine/mesh';
 import { lightPalette } from '../src/engine/palette';
 
 export function gallery(root: HTMLElement) {

@@ -1,6 +1,6 @@
 // Colour themes. "light" follows the reference render: white clay, warm windows, dark solar glass, gold accents.
 
-import { Mat, hex, mat, type RGB } from './core';
+import { type Mat, hex, mat, type RGB } from './core';
 
 export interface Palette {
   night: boolean;

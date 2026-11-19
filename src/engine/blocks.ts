@@ -2,7 +2,8 @@
 // glow along its front edges) and rows of Megapack grid batteries. The campus core and the outskirts both use them.
 
 import { batteryFront, batteryLed, rackFront, rackLeds } from './details';
-import { box, lineW } from './draw';
+import { box } from './draw';
+import { lineW } from './ground';
 import type { Palette } from './palette';
 import { BoxItem, FnItem, type Static } from './statics';
 

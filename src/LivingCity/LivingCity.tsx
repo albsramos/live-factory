@@ -1,7 +1,8 @@
 import { useCallback, useState, type CSSProperties } from 'react';
-import { ASPECT, DEFAULTS, type Fit } from '../engine/scene';
+import { DEFAULTS, type Fit } from '../engine/frame';
 import type { ThemeChoice } from '../theme';
-import { CityController, GROUND } from './cityController';
+import { CityController } from './cityController';
+import styles from './LivingCity.module.css';
 
 export interface LivingCityProps {
   /**
@@ -33,6 +34,7 @@ export interface LivingCityProps {
   isReducedMotionIgnored?: boolean;
   /** Accessible description; the scene is decorative when omitted. */
   label?: string;
+  /** Added to the wrapper `div`; its rules win over the component's own defaults. */
   className?: string;
   style?: CSSProperties;
 }
@@ -41,7 +43,8 @@ export interface LivingCityProps {
  * A self-running isometric city: cars and robotaxis drive, semis get loaded, a crane swings, and humanoid robots
  * walk and work among the people. Fills its container's width at the scene's own shape, or a box you size.
  *
- * Styles are inline on purpose: the package must work without the host importing a stylesheet.
+ * The scene lives in a CityController, driven by the wrapper's ref callback (no effects): React calls it with the
+ * element on mount and whenever an option changes, and with null on unmount.
  */
 export function LivingCity({
   theme = 'auto',
@@ -70,20 +73,14 @@ export function LivingCity({
   return (
     <div
       ref={attach}
-      className={className}
+      className={className ? `${styles.root} ${className}` : styles.root}
+      style={style}
+      data-ground={theme === 'dark' ? 'dark' : 'light'}
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: `${ASPECT}`,
-        overflow: 'hidden',
-        backgroundColor: theme === 'dark' ? GROUND.dark : GROUND.light,
-        ...style,
-      }}
     >
-      <canvas style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />
+      <canvas className={styles.canvas} />
     </div>
   );
 }

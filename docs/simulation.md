@@ -31,7 +31,7 @@
 
 ## People
 
-- People walk the walkway graph (`WalkGraph` in `walkers.ts`). An edge linked with a zone is a crossing: a person
+- People walk the walkway graph (`WalkGraph` in `people/crowd.ts`). An edge linked with a zone is a crossing: a person
   takes the zone for the whole edge and waits at the node before it. Nodes either side of a crossing must sit outside
   every vehicle's swept area, offset included (`spread` scales the offset where space is tight).
 - Wanderers never start part-way along a crossing. Newcomers walk in at a portal node (`g.node(x, y, true)`):

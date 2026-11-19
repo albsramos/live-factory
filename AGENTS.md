@@ -4,20 +4,26 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 
 ## Stack
 
-- TypeScript (strict) and React (peer, 17 or newer). Vite 8 builds the library (ESM + CJS, marked `'use client'`),
-  the demo website and the dev lab; `tsc` emits the type declarations.
+- TypeScript (strict) and React (peer, 17 or newer). Vite 8 builds the library (ESM + CJS, marked `'use client'`,
+  the component's CSS module injected by the bundle), the demo website and the dev lab; `tsc` emits the type
+  declarations. Vitest (jsdom) runs the unit tests.
 - The scene engine is plain TypeScript drawing on a 2D canvas, with no runtime dependencies.
 
 ## Layout
 
-- `src/` the package: `LivingCity/` (the React component), `engine/` (scene, world, traffic, people), `theme.ts`
+- `src/` the package: `LivingCity/` (the React component: `LivingCity.tsx`, `LivingCity.module.css`,
+  `LivingCity.test.tsx` and its controller), `engine/` (see `docs/engine.md`), `theme.ts`
 - `site/` the demo website GitHub Pages serves; it imports the package as `live-factory`
 - `demo/` the dev lab (`npm run dev:lab`): `?gallery` shows every vehicle, `?debug` exposes `window.scene`
 - `scripts/` builds and checks; `docs/` README images and the guides below
 
 ## Always
 
-- Before committing: `npm run typecheck` and `npm run check:components`; `npm run build` too if `src/` changed.
+- Before committing: `npm run typecheck`, `npm test` and `npm run check:components`; `npm run build` too if `src/`
+  changed.
+- Keep every source file under 300 lines (components: main 250, subcomponents 120); split by responsibility.
+- A component's styles, tests and code share its folder: `Name/Name.tsx`, `Name/Name.module.css`,
+  `Name/Name.test.tsx`.
 - No `useEffect` / `useLayoutEffect` anywhere (`check:components` fails on them). Use a callback ref, an event
   handler or `useSyncExternalStore`.
 - The scene shows no text, logos or brand marks.

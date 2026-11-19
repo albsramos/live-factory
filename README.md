@@ -163,7 +163,9 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
   `dist/` on install (the `prepare` script). pnpm and Yarn take the same `github:` spec; pnpm may ask you to approve
   that build step. Add `#<tag or commit>` to pin a version.
 - **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.2.0.tgz` in your app.
-- **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports.
+- **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports;
+  the component's styles are a CSS module beside it (`src/LivingCity/LivingCity.module.css`), which Vite, Next.js
+  and most React toolchains handle out of the box. Its test (`LivingCity.test.tsx`) sits in the same folder.
 - **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
   ESM, CommonJS and type declarations in `dist/`.
 
@@ -175,7 +177,8 @@ npm run dev                # the demo website (site/), with theme, shape, speed 
 npm run dev:lab            # the dev lab: ?gallery shows every vehicle, ?debug exposes window.scene
 npm run build              # library build into dist/
 npm run typecheck
-npm run check:components   # the demo site's components against the react-component rules
+npm test                   # unit tests (Vitest, jsdom), next to what they test
+npm run check:components   # the components (site and LivingCity) against the react-component rules
 npm run check:sim          # 20 simulated minutes: nobody run over, no collisions, traffic flowing
 npm run record:gifs        # re-record the README previews (needs Playwright and ffmpeg)
 npm run build:site         # site-dist/: the demo website
@@ -191,18 +194,21 @@ Every push to `main` rebuilds the demo website and publishes it to GitHub Pages 
   shade each face from one key light.
 - `engine/sort.ts`: painter's order. Every drawable has a world bounding box. Pairs that overlap on screen are
   ordered by the axis that separates them, and a depth-first walk gives the draw order.
-- `engine/vehicles.ts`: small convex meshes, and a traffic model. Lanes are filleted paths. A semi's trailer
+- `engine/traffic/`: small convex meshes, and a traffic model. Lanes are filleted paths. A semi's trailer
   follows its tractor with a hitch model going forward. When reversing, it replays a recorded forward pull-out
   backwards, which keeps the swing physically right. Each vehicle brakes for anything on the stretch of road it
   is about to drive. Junctions and crosswalks are zones it reserves in advance: first come, first served, with an
   actuated signal at the junction. Only the front vehicle of a queue reserves, and a semi reserves everything within
   a truck length at once, so it never waits with its trailer across a lane.
-- `engine/walkers.ts`: people and robots, with a walk cycle and a walkway graph to wander.
-- `engine/activities.ts`: the scripted scenes (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
-  walk); `engine/stalls.ts`: car parks whose cars come and go.
-- `engine/world.ts`: the layout: ground plan, buildings, props, routes and walkways; `engine/outskirts.ts`: what lies
-  beyond the classic frame, for wide views.
+- `engine/people/`: people and robots, with a walk cycle and a walkway graph to wander.
+- `engine/activities/`: the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop,
+  crane, dog walk), and car parks whose cars come and go.
+- `engine/world/`: the layout: ground plan, buildings, props, routes and walkways, and the outskirts beyond the
+  classic frame, for wide views.
 - `engine/lights.ts`: headlight beams, tail lights and lamp glints at night.
-- `engine/scene.ts`: camera fit, the cached ground layer with baked soft shadows, bitmap caching and the frame loop.
+- `engine/scene.ts`: the cached ground layer with baked soft shadows, bitmap caching and the frame loop;
+  `engine/frame.ts`: the options and the camera fit.
+- `LivingCity/`: the React component, its CSS module and its test; `cityController.ts` runs the scene from the
+  component's ref callback (no effects).
 
 The scene uses no logos, wordmarks or text.

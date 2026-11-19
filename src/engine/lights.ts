@@ -6,7 +6,8 @@
 
 import { C } from './core';
 import type { Ctx, R } from './draw';
-import type { Vehicle, VehicleKind } from './vehicles';
+import type { Vehicle } from './traffic/vehicle';
+import type { VehicleKind } from './traffic/meshes';
 
 /** Light bar position per kind, from the meshes in vehicles.ts: [distance along the body, half width, height]. */
 type Bar = readonly [number, number, number];

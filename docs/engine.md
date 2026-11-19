@@ -9,27 +9,39 @@
 - `Mat` (in `core.ts`) is a matte material shaded from one key light. Colours come from the palettes in
   `palette.ts` (light and night); add a palette entry rather than writing a colour into a drawing function.
 - Static scenery is baked once per size into device-pixel-aligned bitmaps (`BoxItem`, `FnItem.still()` in
-  `statics.ts`); only `.live()` overlays (LEDs, glints) draw every frame. The ground, roads and static shadows are
-  one cached layer (`Scene.renderGround`, `World.ground`).
+  `statics.ts`); only `.live()` overlays (LEDs, status lights) draw every frame. The ground, roads and static shadows
+  are one cached layer (`Scene.renderGround`, `world/groundPlan.ts`).
 - Night lighting: window bloom (`details.ts` `windowGlow`), light spilling onto the ground in front of lit facades
-  (`windowSpill`, faces listed in `world.ts` `litFaces` and `outskirts.ts`), and headlights / tail lights
+  (`windowSpill`, faces listed in `world/groundPlan.ts` `litFaces` and `world/outskirts.ts`), and headlights / tail lights
   (`lights.ts`). The road pass runs after the moving shadows and before anything standing, so a vehicle's own body
   covers its beams.
-- Tall `BoxItem`s become shadow casters automatically (`world.ts` end, `shade.ts`): objects in their shadow are
-  tinted.
+- Tall `BoxItem`s become shadow casters automatically (`world/world.ts` end, `shade.ts`): objects in their shadow
+  are tinted.
 
 ## Where things are
 
-- `world.ts` the campus core: roads, buildings, the docks and yard, the compute platform, parks, walkways, routes.
-- `outskirts.ts` what lies beyond the classic frame, for wide views: the factory wing, staff car park, second compute
-  platform, Megapack field, charging hub, staff park.
-- `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`.
-- `activities.ts` the scripted scenes (truck yard, loading bay, charging lot, robotaxi stop, crane, dog walk);
-  `stalls.ts` car parks whose cars come and go (`StallLot`).
-- `vehicles.ts` meshes, paths, zones and the traffic model; `walkers.ts` people, robots and the walkway graph.
-- `scene.ts` camera fit, frame loop, baking. `FRAME` is the classic 121.2 × 65 view; `WIDE` lets a box wider than
-  that show up to 210 m across in `cover` mode. `contain` shows the whole height, so anything placed within about
-  ±105 m (screen X) of the centre is seen in a 3.2 : 1 banner.
+Every file stays under 300 lines; split by responsibility when one grows past that.
+
+- `world/` the layout. `world.ts` builds it all in a fixed order (everything draws from one seeded random stream,
+  so moving a call changes the scene): `roads.ts` zones and through traffic, `buildings.ts` the factory, dock wing,
+  pavilion, home and construction site, `streetLife.ts` trees, lamps, benches, the pocket park and people standing
+  about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer, `outskirts.ts` what lies beyond
+  the classic frame for wide views (factory wing, staff car park, second compute platform, Megapack field, charging
+  hub, staff park).
+- `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`;
+  `details.ts` windows, glass, solar roofs.
+- `activities/` the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
+  walk, loopers) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
+- `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
+  `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look,
+  `traffic.ts` all of it together.
+- `people/` `walker.ts` a person or robot following steps, `figure.ts` how they are drawn, `crowd.ts` the walkway
+  graph and the crowd that wanders it.
+- `draw.ts` boxes and faces, `mesh.ts` convex meshes, `ground.ts` shadows and ground shapes, `lights.ts` night road
+  lighting.
+- `scene.ts` frame loop and baking; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`
+  lets a box wider than that show up to 210 m across in `cover` mode. `contain` shows the whole height, so anything
+  placed within about ±105 m (screen X) of the centre is seen in a 3.2 : 1 banner.
 
 ## Adding something to the world
 

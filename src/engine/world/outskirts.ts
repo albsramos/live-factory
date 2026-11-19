@@ -6,16 +6,18 @@
 //   east   a second compute platform and a Megapack field north-east of the avenue, a charging hub that cars turn
 //          into off the northbound lane, and a park for staff on their break east of the pavilion
 
-import type { Env } from './activities';
-import { Looper } from './activities';
-import { megapacks, rackPlatform } from './blocks';
-import { solarRoof, windowsX, windowsY, type Band, type LitFace } from './details';
-import { groundPoly, groundRect, lineW, type Ctx } from './draw';
-import { BoxItem, TreeItem } from './statics';
-import type { Sprites } from './sprites';
-import { StallLot, type Stall } from './stalls';
-import { sameKind, type Zone } from './vehicles';
-import { Walker, type WalkGraph } from './walkers';
+import type { Env } from '../activities/activity';
+import { Looper } from '../activities/looper';
+import { megapacks, rackPlatform } from '../blocks';
+import { solarRoof, windowsX, windowsY, type Band, type LitFace } from '../details';
+import { groundPoly, groundRect, lineW } from '../ground';
+import type { Ctx } from '../draw';
+import { BoxItem, TreeItem } from '../statics';
+import type { Sprites } from '../sprites';
+import { StallLot, type Stall } from '../activities/stallLot';
+import { sameKind, type Zone } from '../traffic/zone';
+import { Walker } from '../people/walker';
+import type { WalkGraph } from '../people/crowd';
 
 export interface Outskirts {
   acts: (StallLot | Looper)[];

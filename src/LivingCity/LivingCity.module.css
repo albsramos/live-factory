@@ -1,0 +1,24 @@
+/*
+ * The scene's box: as wide as its container, at the scene's own shape (FRAME in engine/frame.ts), unless the host
+ * sizes it. Until the first frame it shows the theme's ground colour, so it never flashes the wrong one.
+ * :where() keeps these defaults at zero specificity: any class the host passes wins.
+ */
+:where(.root) {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 121.2 / 65;
+  overflow: hidden;
+  background-color: #ebebef;
+}
+
+:where(.root[data-ground='dark']) {
+  background-color: #1b1c21;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}

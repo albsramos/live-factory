@@ -1,7 +1,8 @@
 // Static drawables: boxes with details, foliage, street furniture.
 
 import { C, type Mat } from './core';
-import { box, boxShadow, blobShadow, type BoxStyle, type Ctx, type R } from './draw';
+import { box, type BoxStyle, type Ctx, type R } from './draw';
+import { boxShadow, blobShadow } from './ground';
 import type { Item } from './sort';
 import type { Sprites, SpriteName } from './sprites';
 

@@ -6,7 +6,8 @@
 // detaches the old callback and attaches the new one in the same commit, so a detach is only acted on if the same
 // element doesn't come straight back.
 
-import { DEFAULTS, Scene, type Fit } from '../engine/scene';
+import { DEFAULTS, type Fit } from '../engine/frame';
+import { Scene } from '../engine/scene';
 import { resolveTheme, watchTheme, type ThemeChoice } from '../theme';
 
 export interface CityOptions {
@@ -22,9 +23,6 @@ export interface CityOptions {
   isPaused: boolean;
   isReducedMotionIgnored: boolean;
 }
-
-/** Ground colour of each theme, shown before the first frame so the box never flashes the wrong colour. */
-export const GROUND = { light: '#ebebef', dark: '#1b1c21' };
 
 const reducedQuery = () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null);
 
@@ -124,6 +122,7 @@ export class CityController {
     if (!el || !this.scene) return;
     const o = this.sceneOptions(el);
     this.scene.set(o);
-    el.style.backgroundColor = GROUND[o.theme];
+    // the box's ground colour (LivingCity.module.css) follows the theme in use, `auto` resolved
+    el.dataset.ground = o.theme;
   }
 }

@@ -6,12 +6,16 @@
 // The way in is tagged 'in' and the way out 'out', so a zone at a shared driveway can keep them apart.
 // Used for the charging hub east of the avenue and the staff car park south-west of the factory.
 
-import { C, pick, rr } from './core';
-import { box, drawMesh, rectShadow } from './draw';
-import { Path } from './path';
-import { FnItem } from './statics';
-import { MESH, Vehicle, type Leg } from './vehicles';
-import { Mutex, type Activity, type Env } from './activities';
+import { C, pick, rr } from '../core';
+import { box } from '../draw';
+import { drawMesh } from '../mesh';
+import { rectShadow } from '../ground';
+import { Path } from '../path';
+import { FnItem } from '../statics';
+import { MESH } from '../traffic/meshes';
+import type { Vehicle } from '../traffic/vehicle';
+import type { Leg } from '../traffic/legs';
+import { Mutex, type Activity, type Env } from './activity';
 
 const P = Path.poly;
 

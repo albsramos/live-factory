@@ -23,5 +23,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   layout.
 - `npm run check:components` checks the folders, line counts, effects, boolean names and `!important`.
 
-The library's `<LivingCity>` is the exception to CSS modules: its two elements are styled inline so the package
+The library's `<LivingCity>` (`src/LivingCity/`) follows the same rules: `LivingCity.module.css` beside the
+component and its test, `LivingCity.test.tsx`. Its defaults sit inside `:where()`, so any class the host passes
+wins. The library build injects that CSS from the JS bundle (`injectCss` in `vite.config.ts`), so the package still
 works without the host importing a stylesheet.
