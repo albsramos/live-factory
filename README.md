@@ -59,15 +59,21 @@ any other React setup.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
-- **Pocket park**: a patch of grass on the corner by the plaza, where two kids pass a ball, people sit on the
-  benches and walkers take the path across to the street.
+- **Parks for the staff**: a pocket park on the corner by the plaza and a bigger one east of the pavilion, with grass,
+  paths, trees and benches where employees sit or stand together on their break.
 - **Charging**: cars nose into the chargers, charge (with a pulsing light and cable), back out and leave.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.
 - **Construction**: a tower crane swings between the material pile and the slab while workers move around.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where
   the car is on its charger.
-- **Ambient detail**: walkers on a walkway network, people chatting, sitting on a bench or playing ball in the
-  parks, a dog on a walk, trees swaying, glints sweeping across solar roofs and pulsing battery status lights.
+- **The outskirts**, for wide views: a new factory wing and a long staff car park under solar canopies to the west
+  (a few cars come and go on its service road), and to the east a second compute platform, a Megapack field with a
+  robot doing its rounds, and a charging hub that cars turn into off the avenue.
+- **Day and night**: by day the glazing is a faded blue-grey glass; at night it glows warm and lights the ground in
+  front of the buildings, headlights throw beams along the road ahead of each car, and tail lights glow red, brighter
+  when a car brakes or waits.
+- **Ambient detail**: walkers on a walkway network, people chatting, a dog on a walk, trees swaying, glints sweeping
+  across solar roofs and pulsing battery status lights.
 
 There is a light theme and a night theme, and by default the scene matches the page it sits on (see
 [Dark mode](#dark-mode)). Everything is drawn on one `<canvas>`, and the only dependency is React.
@@ -75,13 +81,22 @@ There is a light theme and a night theme, and by default the scene matches the p
 ## Sizing
 
 By default the component is as wide as its container and keeps the scene's own aspect ratio (about 1.86 : 1). Give
-it a height, or put it in a sized box, and it fills that instead, cropping the edges (`fit="cover"`) or letterboxing
-(`fit="contain"`):
+it a height, or put it in a sized box, and it fills that instead:
 
 ```tsx
 <div style={{ height: '70vh' }}>
   <LivingCity style={{ height: '100%' }} density={0.8} />
 </div>
+```
+
+- `fit="cover"` (the default) fills the box. In a box taller than the scene it crops the sides; in a wider one it
+  shows more of the outskirts instead of cropping the middle away, down to 70 % of the scene's height.
+- `fit="contain"` always shows the whole height. Beyond the classic frame the town keeps going (a factory wing, a
+  staff car park, a second compute platform, Megapacks, a charging hub, a staff park), so a wide banner is filled
+  edge to edge rather than letterboxed:
+
+```tsx
+<LivingCity fit="contain" style={{ height: 520 }} /> {/* a 1630 × 520 hero, say */}
 ```
 
 ## Props
@@ -92,14 +107,17 @@ it a height, or put it in a sized box, and it fills that instead, cropping the e
 | `speed` | `1` | Simulation speed. `0.5` is calm, `2` is busy |
 | `density` | `1` | How many people and cars, from `0.3` to `1.5` |
 | `seed` | `7` | Changes who walks where and which cars appear |
-| `fit` | `'cover'` | `'cover'` fills the box and crops the edges. `'contain'` shows the whole scene |
+| `fit` | `'cover'` | `'cover'` fills the box (see *Sizing*). `'contain'` shows the whole height, outskirts filling the sides |
 | `focus` | `[0.5, 0.5]` | When `cover` crops, which part stays in view (`[0, 0]` is top left) |
 | `zoom` | `1` | Extra zoom on top of the fit |
-| `paused` | `false` | Freeze on the current frame |
+| `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
-| `respectReducedMotion` | `true` | Hold still when the visitor has asked for reduced motion |
+| `isReducedMotionIgnored` | `false` | Keep moving even when the visitor has asked for reduced motion (by default the scene then holds still) |
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
 | `className`, `style` | none | Applied to the wrapper `div` |
+
+In 0.2.0 `paused` became `isPaused` and `respectReducedMotion` became `isReducedMotionIgnored` (inverted: leave it
+out to keep respecting the setting).
 
 ## Dark mode
 
@@ -143,7 +161,7 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 - **From GitHub** (the quick start): `npm install github:albsramos/live-factory`. npm clones the repository and builds
   `dist/` on install (the `prepare` script). pnpm and Yarn take the same `github:` spec; pnpm may ask you to approve
   that build step. Add `#<tag or commit>` to pin a version.
-- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.1.0.tgz` in your app.
+- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.2.0.tgz` in your app.
 - **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports.
 - **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
   ESM, CommonJS and type declarations in `dist/`.
@@ -152,18 +170,19 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 
 ```sh
 npm install
-npm run dev              # dev page with theme, speed and density controls
-npm run build            # library build into dist/
+npm run dev                # the demo website (site/), with theme, shape, speed and crowd controls
+npm run dev:lab            # the dev lab: ?gallery shows every vehicle, ?debug exposes window.scene
+npm run build              # library build into dist/
 npm run typecheck
-npm run build:site       # site-dist/: the demo website, with React bundled in
-npm run build:artifact   # artifact-dist/live-factory.html: the same page as one file, React from cdnjs
+npm run check:components   # the demo site's components against the react-component rules
+npm run check:sim          # 20 simulated minutes: nobody run over, no collisions, traffic flowing
+npm run record:gifs        # re-record the README previews (needs Playwright and ffmpeg)
+npm run build:site         # site-dist/: the demo website
+npm run build:artifact     # artifact-dist/live-factory.html: the same page as one file
 ```
 
-The dev page has two extra views: `?gallery` shows every vehicle at eight headings, and `?debug` exposes the scene as
-`window.scene` for poking at the simulation.
-
-Every push to `main` rebuilds the demo website and publishes it to GitHub Pages (`.github/workflows/pages.yml`). Its
-page lives in `artifact/page.html`.
+Every push to `main` rebuilds the demo website and publishes it to GitHub Pages (`.github/workflows/pages.yml`).
+`AGENTS.md` and `docs/` explain the codebase for people and coding agents alike.
 
 ### How it works
 
@@ -178,9 +197,11 @@ page lives in `artifact/page.html`.
   actuated signal at the junction. Only the front vehicle of a queue reserves, and a semi reserves everything within
   a truck length at once, so it never waits with its trailer across a lane.
 - `engine/walkers.ts`: people and robots, with a walk cycle and a walkway graph to wander.
-- `engine/activities.ts`: the scripted scenes (truck yard, loading bay, charging lot, robotaxi stop, crane,
-  workbench, park).
-- `engine/world.ts`: the layout: ground plan, buildings, props, routes and walkways.
+- `engine/activities.ts`: the scripted scenes (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
+  walk); `engine/stalls.ts`: car parks whose cars come and go.
+- `engine/world.ts`: the layout: ground plan, buildings, props, routes and walkways; `engine/outskirts.ts`: what lies
+  beyond the classic frame, for wide views.
+- `engine/lights.ts`: headlight beams, tail lights and lamp glints at night.
 - `engine/scene.ts`: camera fit, the cached ground layer with baked soft shadows, bitmap caching and the frame loop.
 
 The scene uses no logos, wordmarks or text.
