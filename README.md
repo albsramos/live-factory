@@ -64,7 +64,8 @@ any other React setup.
   it, a tall glass atrium in the dock wing glows warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza and a bigger one east of the pavilion, with grass,
   paths, trees and benches where employees sit or stand together on their break.
-- **Charging**: cars nose into the chargers, charge (with a pulsing light and cable), back out and leave.
+- **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
+  charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and full.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.
 - **Construction**: a tower crane swings between the material pile and the slab while workers move around.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where
