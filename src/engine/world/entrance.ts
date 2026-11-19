@@ -15,8 +15,11 @@ import type { Palette } from '../palette';
 /** where people go in and out, just in front of the face */
 export const ENTRANCE_DOOR = { x: 26.7, y: 58.0 };
 
-/** the opening along the face (y), its height, and how far the glass is set back */
-const Y0 = 52.4, Y1 = 63.6, H = 4.0, D = 1.8;
+/**
+ * The opening along the face (y), its height and how far the glass is set back. The fascia spans a little more:
+ * past the opening's end at Y0, the last bay (from FY0) is glazed flush with the facade (the factory's own band).
+ */
+const Y0 = 55.4, Y1 = 63.6, H = 4.0, D = 1.8, FY0 = 52.4;
 
 /**
  * Draw the recessed entrance on the factory's +x face, inside that face's transform (u along the face from
@@ -60,9 +63,9 @@ export function drawEntrance(r: R, pal: Palette, ctx: Ctx, faceY1: number, faceT
   ctx.fillRect(u0, v0, u1 - u0, v1 - v0);
   // columns on the face line, clear of the doorway
   ctx.fillStyle = pal.white.right;
-  for (const y of [Y0 + 0.35, 55.4, 60.6, Y1 - 0.35]) ctx.fillRect(faceY1 - y - 0.13, v0, 0.26, H);
+  for (const y of [Y0 + 0.13, 60.6, Y1 - 0.35]) ctx.fillRect(faceY1 - y - 0.13, v0, 0.26, H);
   ctx.restore();
-  // the fascia over the opening
+  // the fascia over the opening and the flush bay beside it
   ctx.fillStyle = pal.factoryDark.right;
-  ctx.fillRect(u0 - 0.3, v0 - 1.15, u1 - u0 + 0.6, 1.05);
+  ctx.fillRect(u0 - 0.3, v0 - 1.15, faceY1 - FY0 - u0 + 0.6, 1.05);
 }

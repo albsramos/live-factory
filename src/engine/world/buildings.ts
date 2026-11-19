@@ -25,8 +25,8 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
   const factoryBandsX: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5 },
     { top: 5.2, bot: 7.8, every: 1.5 },
-    // the ground floor, either side of the recessed entrance (entrance.ts)
-    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 8.0], [20.0, 35.5]] },
+    // the ground floor, either side of the recessed entrance (entrance.ts), flush up to the column at its end
+    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 8.0], [16.6, 35.5]] },
   ];
   const factoryBandsY: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5, spans: [[0.5, 65.5]] },
