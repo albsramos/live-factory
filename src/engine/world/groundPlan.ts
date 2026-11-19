@@ -9,6 +9,7 @@ import type { Palette } from '../palette';
 import type { ChargingLot } from '../activities/chargingLot';
 import type { Outskirts } from './outskirts';
 import { POCKET_LAWN, POCKET_PATH } from './streetLife';
+import { ENTRANCE_FACES } from './entrance';
 
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
 export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts) {
@@ -35,6 +36,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
   const litFaces: LitFace[] = [
     [26, 36, 26, 72, 1, 0], [-40, 72, 26, 72, 0, 1], [30, 26.6, 30, 35.4, 1, 0], [30, 0.4, 30, 25.6, 1, 0],
     [80, 38, 97, 38, 0, 1], [97, 26, 97, 38, 1, 0], [20.4, 84.2, 28.8, 84.2, 0, 1], [28.8, 75.6, 28.8, 84.2, 1, 0],
+    ...ENTRANCE_FACES,
     ...outskirts.litFaces,
   ];
   const ground = (ctx: Ctx) => {

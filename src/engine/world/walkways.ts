@@ -4,6 +4,7 @@ import type { WalkGraph } from '../people/crowd';
 import type { Outskirts } from './outskirts';
 import type { RoadZones } from './roads';
 import { POCKET_PATH } from './streetLife';
+import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
 export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
@@ -56,7 +57,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(fd, fe[1], LD);
   g.chain(fe.slice(1));
   g.link(fw1, fe[1], CW1);
-  const door = g.node(26.8, 58.0, true);
+  const door = g.node(ENTRANCE_DOOR.x, ENTRANCE_DOOR.y, true);
   const p = [g.node(29.2, 58.6), g.node(36, 61.2), g.node(41.2, 61.6), g.node(29.0, 50.0), g.node(41, 50.2)];
 
   g.chain([door, p[0], p[1]]);

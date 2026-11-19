@@ -78,7 +78,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   constructionSite(env, edge, acts);
   streetFurniture(env, sprites, edge);
   // people chatting; robots join in on the streets, but the parks are for staff on their break
-  chat(env, [[30.2, 56.0], [31.2, 57.2], [29.7, 57.6]]);
+  chat(env, [[31.4, 55.6], [32.4, 56.8], [30.9, 57.2]]);
   chat(env, [[90.2, 40.2], [91.2, 41.0]]);
   chat(env, [[54.0, 56.4], [54.2, 57.6]]);
 

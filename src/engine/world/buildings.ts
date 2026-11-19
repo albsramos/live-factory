@@ -10,6 +10,7 @@ import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '..
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
+import { entrance } from './entrance';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -39,10 +40,8 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
     }),
   );
-  // entrance canopy and its posts
-  S.push(new BoxItem(26, 53.6, 4.05, 30.6, 62.4, 4.35, pal.white, { edge }));
-  S.push(new BoxItem(30.1, 53.9, 0, 30.35, 54.15, 4.05, pal.white));
-  S.push(new BoxItem(30.1, 61.85, 0, 30.35, 62.1, 4.05, pal.white));
+  // the main entrance on the plaza
+  entrance(env, edge);
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];
