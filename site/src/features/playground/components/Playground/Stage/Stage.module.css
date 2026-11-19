@@ -1,0 +1,15 @@
+.root {
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.root[data-shape="banner"] {
+  aspect-ratio: 1630 / 520;
+}
+
+/* the scene keeps its own shape unless the banner gives it a height to fill */
+.root[data-shape="banner"] > .scene {
+  height: 100%;
+}

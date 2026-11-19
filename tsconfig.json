@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
@@ -9,7 +13,19 @@
     "noEmit": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "paths": {
+      "live-factory": [
+        "./src/index.ts"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ]
   },
-  "include": ["src", "demo", "artifact"]
+  "include": [
+    "src",
+    "demo",
+    "site"
+  ]
 }

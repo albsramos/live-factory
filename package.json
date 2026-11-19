@@ -24,12 +24,13 @@
   },
   "scripts": {
     "dev": "vite --host",
+    "dev:lab": "vite --host --mode lab",
     "build": "vite build && tsc -p tsconfig.build.json",
-    "build:demo": "vite build --mode demo",
-    "typecheck": "tsc -p . --noEmit",
+    "build:site": "node scripts/build-site.mjs",
     "build:artifact": "node scripts/build-artifact.mjs",
-    "prepare": "npm run build",
-    "build:site": "node scripts/build-site.mjs"
+    "typecheck": "tsc -p . --noEmit",
+    "check:components": "bash scripts/check-components.sh",
+    "prepare": "npm run build"
   },
   "peerDependencies": {
     "react": ">=17"

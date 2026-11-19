@@ -1,0 +1,11 @@
+.root {
+  padding-inline: max(var(--space-4), env(safe-area-inset-left, 0px)) max(var(--space-4), env(safe-area-inset-right, 0px));
+  padding-block: var(--space-6) var(--space-7);
+}
+
+.page {
+  max-inline-size: var(--width-page);
+  margin-inline: auto;
+  display: grid;
+  gap: var(--space-5);
+}

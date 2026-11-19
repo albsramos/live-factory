@@ -1,0 +1,10 @@
+.text {
+  margin: 0;
+}
+
+.list {
+  margin: 0;
+  padding-inline-start: 1.2em;
+  display: grid;
+  gap: var(--space-2);
+}

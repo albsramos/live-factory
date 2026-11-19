@@ -1,6 +1,6 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { LivingCity } from '../src';
+import { LivingCity } from 'live-factory';
 
 const params = new URLSearchParams(location.search);
 

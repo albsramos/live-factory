@@ -4,14 +4,24 @@ import { fileURLToPath } from 'node:url';
 
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
-// `vite` / `vite build --mode demo` serve and build the demo page; `vite build` builds the library.
+// Three builds from one config:
+//   `vite`                 the demo website (site/), what GitHub Pages serves; `vite build --mode site` builds it
+//   `vite --mode lab`      the development lab (demo/): every vehicle at eight headings (?gallery), and the bare
+//                          engine exposed as window.scene (?debug) for the simulation checks in scripts/
+//   `vite build`           the library itself, into dist/
+// The site and the lab import the library as `live-factory`, exactly as an app would.
 export default defineConfig(({ command, mode }) => {
-  if (command === 'serve' || mode === 'demo') {
+  const alias = { 'live-factory': here('./src/index.ts') };
+  if (mode === 'lab') {
+    return { root: here('./demo'), base: './', plugins: [react()], resolve: { alias } };
+  }
+  if (command === 'serve' || mode === 'site') {
     return {
-      root: here('./demo'),
+      root: here('./site'),
       base: './',
       plugins: [react()],
-      build: { outDir: here('./demo-dist'), emptyOutDir: true },
+      resolve: { alias },
+      build: { outDir: here('./site-dist'), emptyOutDir: true },
     };
   }
   return {
