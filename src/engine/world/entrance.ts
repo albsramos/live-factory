@@ -1,6 +1,6 @@
 // The factory's main entrance on the plaza: the ground floor steps back in a V under the flush facade above, its
-// glass walls angling in like an arrowhead to a dark door at the tip. A dark fascia runs over the opening (left blank:
-// the scene shows no lettering), and two pillars stand in its mouth, in line with the door's jambs.
+// glass walls angling in like an arrowhead to a dark door at the tip, and two pillars stand in its mouth, in line with
+// the door's jambs.
 //
 // The recess is drawn as part of the factory's +x face, clipped to the opening, so it needs no sort item of its own.
 // People come and go at the walkway's door node just in front of the door, which is inside the factory's box: the
@@ -17,7 +17,7 @@ import { FnItem } from '../statics';
  * The opening in the factory's face at x, from y0 to y1 (lined up with the mullions of the floors above), its height
  * (the underside of the floor above), how far back the door stands and the door's width, centred.
  */
-export const ENTRANCE = { x: 26, y0: 52, y1: 64, h: 4.0, depth: 2.4, door: 3.6 };
+export const ENTRANCE = { x: 26, y0: 52, y1: 64, h: 3.8, depth: 2.4, door: 3.6 };
 const MID = (ENTRANCE.y0 + ENTRANCE.y1) / 2;
 
 /** where people go in and out: just in front of the door, shallow enough that a figure stays below the floor above */
@@ -108,17 +108,13 @@ export function drawEntrance(r: R, pal: Palette, edge: string) {
     c.fillRect(0, 0, w, 1.6);
   });
   ctx.restore();
-  // the edge of the slab over the opening, and the blank fascia above it
+  // the edge of the slab over the opening
   ctx.beginPath();
   ctx.moveTo(sx(x, y1), sy(x, y1, h));
   ctx.lineTo(sx(x, y0), sy(x, y0, h));
   ctx.strokeStyle = edge;
   ctx.lineWidth = 0.09;
   ctx.stroke();
-  onFaceX(r, x, y0 - 0.3, y1 + 0.3, h + 1.15, (c, w) => {
-    c.fillStyle = pal.factoryDark.right;
-    c.fillRect(0, 0, w, 1.05);
-  });
 }
 
 /** The two square pillars in the entrance's mouth, carrying the floor above, in line with the door's jambs. */

@@ -62,9 +62,8 @@ any other React setup.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
-- **The factory's front entrance**: the ground floor steps back in a V under the storeys above and a blank fascia,
-  its glass walls angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go
-  through it.
+- **The factory's front entrance**: the ground floor steps back in a V under the storeys above, its glass walls
+  angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it.
 - **Parks for the staff**: a pocket park on the corner by the plaza and a bigger one east of the pavilion, with grass,
   paths, trees and benches where employees sit or stand together on their break.
 - **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
