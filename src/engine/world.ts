@@ -58,8 +58,6 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const CW3 = traffic.zone(68, 33, 76, 36, sameKind);
   const CW4 = traffic.zone(68, 80, 76, 83, sameKind);
   const CW5 = traffic.zone(86, 42, 89, 50, sameKind);
-  // where the loaded truck cuts across the corner of the plaza
-  const TP = traffic.zone(37.5, 60.5, 44, 72, sameKind);
   // Stretches a semi needs to itself: where yard trucks turn out onto the avenue, and where the bay truck crosses
   // the factory road. The truck waits until nothing is in them (so it never strands a trailer across a lane),
   // then cars wait for it; cars never queue behind a truck that is still waiting.
@@ -72,14 +70,19 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     return z;
   };
   truckZone(68, 4, 72.2, 31);
-  truckZone(44, 52, 52, 72);
+  // reaching back over the plaza corner, so the bay truck waits in the bay rather than with its cab at the kerb
+  truckZone(40, 52, 52, 72);
   // where cars leaving the charging lot join the factory road: they wait for a moment with nobody in it
   const merge = traffic.zone(44, 52, 52, 63, (a, b) => a === b && a !== 'merge');
   merge.keyOf = (v) => (v.role === 'lot' ? 'merge' : 'car');
   merge.yieldKey = 'merge';
   merge.yieldToQueue = false;
-  // the pavement the yard trucks cross on their way out
-  const YE = traffic.zone(65, 6, 68, 27, sameKind);
+  // pavement the semis cross: the yard exit and the yard gate (as wide as their trailers sweep), and the charging
+  // lot's way out and way in
+  const YE = traffic.zone(64, 6, 68.4, 28.2, sameKind);
+  const YG = traffic.zone(64, -17.4, 68.4, -5, sameKind);
+  const LD = traffic.zone(51.9, 58.7, 55.0, 63.4, sameKind);
+  const LE = traffic.zone(58.2, 50.1, 62.6, 52.9, sameKind);
   // the two middle docks are worked by live trucks; the end docks hold parked trailers
   const yard = new TruckYard(env, [10.5, 16.5]);
   const parkedDocks = [4.5, 22.5];
@@ -366,7 +369,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // ------------------------------------------------------------------------------------------------- greenery and street furniture
   const trees: [number, number, 'tree' | 'tree2' | 'poplar' | 'small', number][] = [
     [29.6, 66.4, 'tree', 1], [34.6, 69.0, 'tree2', 0.9], [27.6, 44.5, 'poplar', 0.9],
-    [65.7, 28.2, 'poplar', 1], [65.7, 33.0, 'poplar', 1], [65.8, -9, 'poplar', 1], [78.7, 16.5, 'tree', 1],
+    [65.7, 33.0, 'poplar', 1], [65.7, -20.2, 'poplar', 1], [78.7, 16.5, 'tree', 1],
     [84.3, 56.6, 'tree', 1], [89.8, 63.4, 'tree2', 1], [99.5, 57.5, 'small', 1], [105.5, 52.6, 'tree', 1], [54.0, 82.6, 'small', 0.9],
     [53.2, 92.5, 'poplar', 0.9], [53.4, 103, 'tree2', 0.9], [31.0, 103.5, 'tree', 1], [31.2, 85.2, 'tree2', 0.95],
     [18.6, 74.4, 'small', 0.9], [98.8, 40.0, 'tree2', 0.9], [110, 39.6, 'tree', 1], [78.8, 88.5, 'tree', 1],
@@ -434,39 +437,55 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // ------------------------------------------------------------------------------------------------- walkways
   const g = graph;
   const aw = [g.node(66.5, -22, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 112, true)];
-  const awExit = g.node(66.5, 28.5);
-  g.link(aw[0], aw[1]);
+  const awExit = g.node(66.5, 29.8);
+  // either side of the yard gate
+  const gate = [g.node(66.5, -18.6), g.node(66.5, -3.4)];
+  g.link(aw[0], gate[0]);
+  g.link(gate[0], gate[1], YG);
+  g.link(gate[1], aw[1]);
   g.link(aw[1], awExit, YE);
   g.chain([awExit, aw[2], aw[3]]);
   g.chain(aw.slice(4));
-  const ae = [g.node(77.5, -22, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(80.6, 68), g.node(77.8, 76), g.node(77.5, 81.5), g.node(77.5, 100, true)];
+  // east side of the avenue; round the robotaxi bay, clear of the taper the cars pull in through and of the van's
+  // nose swinging out as it turns in
+  const ae = [g.node(77.5, -22, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 100, true)];
   g.chain(ae.slice(0, 3));
   g.chain(ae.slice(3));
   g.link(aw[2], ae[1], CW3);
-  g.link(aw[6], ae[7], CW4);
+  g.link(aw[6], ae[8], CW4);
   const sn = [g.node(42.5, 54), g.node(44.31, 47.25), g.node(49.25, 42.31), g.node(52.5, 41.1), g.node(56, 40.5), g.node(61, 40.5)];
   g.chain(sn);
   g.link(sn[5], aw[3]);
   const sne = [g.node(86.5, 40.5), g.node(104, 40.5), g.node(130, 40.5, true)];
   g.link(ae[2], sne[0]);
   g.chain(sne);
-  const ss0 = g.node(53.6, 51.6);
-  g.link(ss0, aw[4]);
+  // round the inside corner of the bend a step back from the kerb, clear of where the bay truck's trailer cuts
+  // across it, then single file over the charging lot's entrance, between the trailer's sweep and a car waiting
+  // inside the entrance
+  const ss0 = g.node(55.2, 54.3);
+  const le = [g.node(57.9, 52.3, false, 0.25), g.node(63.4, 52.2, false, 0.25)];
+  g.link(ss0, le[0]);
+  g.link(le[0], le[1], LE);
+  g.link(le[1], aw[4]);
   const sse = [g.node(86.5, 51.5), g.node(90.5, 51.5), g.node(104, 51.5), g.node(125, 51.5, true)];
   g.link(ae[3], sse[0]);
   g.chain(sse);
   g.link(sne[0], sse[0], CW5);
   const fw1 = g.node(42.5, 64.5);
   g.link(sn[0], fw1);
-  const fe = [ss0, g.node(53.5, 64.5), g.node(53.5, 83.5), g.node(53.5, 110, true)];
-  g.chain(fe);
+  // down the factory road past the charging lot's way out
+  const fd = g.node(53.5, 57.6, false, 0.5);
+  const fe = [ss0, g.node(53.5, 64.5, false, 0.5), g.node(53.5, 83.5), g.node(53.5, 110, true)];
+  g.link(ss0, fd);
+  g.link(fd, fe[1], LD);
+  g.chain(fe.slice(1));
   g.link(fw1, fe[1], CW1);
   const door = g.node(26.8, 58.0, true);
   const p = [g.node(29.2, 58.6), g.node(36, 61.2), g.node(41.2, 61.6), g.node(29.0, 50.0), g.node(41, 50.2)];
 
   g.chain([door, p[0], p[1]]);
-  g.link(p[1], p[2], TP);
-  g.link(p[2], fw1, TP);
+  g.link(p[1], p[2]);
+  g.link(p[2], fw1);
   g.link(p[0], p[3]);
   // the path through the pocket park, from the plaza walk to the street corner
   const pp = parkPath.map(([x, y], i) => (i === 0 ? g.node(36.2, 50.1) : g.node(x, y)));
@@ -551,8 +570,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     ctx.beginPath();
     // the truck yard, its gate off the avenue and its way out to the street
     groundRect(ctx, 30, -40, 66.4, 38.8);
-    groundRect(ctx, 64, 6.4, 68.4, 26.6);
-    groundRect(ctx, 64, -9.6, 68.4, -6.4);
+    groundRect(ctx, 64, 6.4, 68.4, 28);
+    groundRect(ctx, 64, -17.4, 68.4, -5);
     groundRect(ctx, 30, 72, 44, 140);
     groundRect(ctx, 54.5, 53, 66, 80.6);
     groundRect(ctx, 58.4, 50, 62.4, 53.2);
@@ -565,8 +584,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     ctx.lineWidth = 4.2;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    lineW(ctx, 37, 73, 0, 37, 71, 0);
-    lineW(ctx, 37, 71, 0, 48.5, 59.5, 0);
+    lineW(ctx, 37, 75, 0, 45, 67, 0);
     ctx.stroke();
     ctx.lineCap = 'butt';
     // a slightly lighter plaza in front of the factory and a lawn-ish park

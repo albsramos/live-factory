@@ -103,7 +103,10 @@ export class TruckBay implements Activity {
         },
         until: () => this.state === 'leaving',
       },
-      { path: P([[L, Y], [L, 71], [50, 58], [50, 48], [135, 48]], [6, 6, 6]), vmax: 5.5 },
+      // out across the plaza corner south of the zebra crossing, then round the bend a little outside the lane
+      // centre, so the trailer cuts less of the inside corner, yet not so far out that cars coming the other way
+      // round the bend see the cab in their path (the walkway rounds the corner clear of the trailer's sweep)
+      { path: P([[L, Y], [L, 75], [49.1, 62.9], [49.1, 47.1], [62, 47.1], [66, 48], [135, 48]], [4, 6, 6.9, 3, 3]), vmax: 5.5 },
     ]);
     this.truck.mats[5] = pal.white;
     this.truck.cargo = 0;
@@ -179,8 +182,9 @@ export class TruckBay implements Activity {
         }
         break;
     }
-    // robots: carry boxes into the open side near the tail, otherwise wait by their pile
-    const open = this.state === 'loading';
+    // robots: carry boxes into the open side near the tail while the forklift fills the front half (the rear slots
+    // are where they set their boxes down), otherwise wait by their pile
+    const open = this.state === 'loading' && this.slot < 2;
     this.loaders.forEach((w, i) => {
       if (w.steps.length || w.waitT > 0) return;
       const hx = 39.4 + i * 0.6, hy = 95.2 + i * 0.5;
@@ -244,13 +248,16 @@ export class TruckYard implements Activity {
         d.loading = false;
         return true;
       } },
-      // pull straight out across the yard and turn right onto the avenue's near lane, never crossing traffic
-      { path: P([[44.6, y], [64, y]]), vmax: 2.4, ghost: true },
-      { path: P([[64, y], [70, y], [70, y + 14]], [6]), vmax: 4, done: (v) => {
+      // pull out across the yard to the lower row and stop short of the pavement, so the exit can be reserved
+      // before the cab is on it; turning out from the lower row keeps the trailer on the paved exit
+      { path: P(y > 10.5 ? [[44.6, y], [50, y], [56, 10.5], [58, 10.5]] : [[44.6, y], [58, y]], y > 10.5 ? [3, 3] : []), vmax: 2.4, ghost: true },
+      // turn right onto the avenue's near lane, never crossing traffic
+      { path: P([[58, 10.5], [70, 10.5], [70, 22]], [6]), vmax: 4, done: (v) => {
         this.mutex.free(v);
         d.taken = false;
       } },
-      { path: P([[70, y + 14], [70, 112]]), vmax: 5.5, done: () => this.trucks-- },
+      // straight before it waits for the crossing and the junction
+      { path: P([[70, 22], [70, 112]]), vmax: 5.5, done: () => this.trucks-- },
     ];
   }
 
@@ -370,11 +377,14 @@ export class ChargingLot implements Activity {
 
   /** Back straight out of stall i, swing round to face the exit, cross the lot and join the factory road. */
   private leave(i: number, sx: number): Leg[] {
+    // a wide swing keeps the nose on the lot rather than over the factory-road pavement; the end stall swings back
+    // less, so its tail stays off the avenue pavement
+    const ex = Math.min(sx + 3, 63.2);
     return [
-      { path: P([[sx, 64.2], [sx, 60.3], [sx + 1.8, 60.3]], [1.8]), rev: true, vmax: 1.5, ghost: true },
-      { path: P([[sx + 1.8, 60.3], [54.6, 60.3]]), vmax: 2.6 },
-      // the lot stays ours until we are out on the road, so the next car can't drive into us while we wait to merge
-      { path: P([[54.6, 60.3], [50.5, 60.3]]), vmax: 3, done: (vv) => {
+      { path: P([[sx, 64.2], [sx, 60.3], [ex, 60.3]], [ex - sx]), rev: true, vmax: 1.5, ghost: true },
+      // waits for the pavement and a gap on the road before crossing; the lot stays ours until we are out on the
+      // road, so the next car can't drive into us while we wait to merge
+      { path: P([[ex, 60.3], [50.5, 60.3]]), vmax: 2.8, done: (vv) => {
         this.lot.free(vv);
         this.busy[i] = false;
         this.cars[i] = null;

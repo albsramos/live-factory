@@ -328,12 +328,14 @@ interface GNode {
   y: number;
   adj: { to: number; zone?: Zone }[];
   portal: boolean;
+  /** how far walkers spread around this node (1 = their usual offset); smaller keeps them to a tight line */
+  spread: number;
 }
 
 export class WalkGraph {
   readonly nodes: GNode[] = [];
-  node(x: number, y: number, portal = false) {
-    this.nodes.push({ x, y, adj: [], portal });
+  node(x: number, y: number, portal = false, spread = 1) {
+    this.nodes.push({ x, y, adj: [], portal, spread });
     return this.nodes.length - 1;
   }
   link(a: number, b: number, zone?: Zone) {
@@ -386,22 +388,24 @@ export class Crowd {
     const a = rng() * Math.PI * 2;
     w.ox = Math.cos(a) * rad;
     w.oy = Math.sin(a) * rad;
-    w.x += w.ox;
-    w.y += w.oy;
+    w.x += w.ox * node.spread;
+    w.y += w.oy * node.spread;
     w.node = start;
     w.hops = n === undefined ? Math.floor(rng() * 6) : 0;
     w.onIdle = (ww) => this.next(ww);
-    if (n === undefined && node.adj.length) {
-      // begin part-way along an edge so the opening frame isn't clumped on nodes
-      const e = pick(rng, node.adj);
+    // begin part-way along an edge so the opening frame isn't clumped on nodes, but never on a crossing: someone
+    // placed in the middle of one would stand in the road waiting for their turn to enter it
+    const open = node.adj.filter((e) => !e.zone);
+    if (n === undefined && open.length) {
+      const e = pick(rng, open);
       const to = g.nodes[e.to];
       const f = rng();
-      w.x = node.x + (to.x - node.x) * f + w.ox;
-      w.y = node.y + (to.y - node.y) * f + w.oy;
+      w.x = node.x + w.ox * node.spread + (to.x + w.ox * to.spread - node.x - w.ox * node.spread) * f;
+      w.y = node.y + w.oy * node.spread + (to.y + w.oy * to.spread - node.y - w.oy * node.spread) * f;
       w.prev = start;
       w.node = e.to;
       start = e.to;
-      w.go([{ x: to.x + w.ox, y: to.y + w.oy, zone: e.zone }]);
+      w.go([{ x: to.x + w.ox * to.spread, y: to.y + w.oy * to.spread, zone: e.zone }]);
     }
     return this.add(w);
   }
@@ -439,7 +443,7 @@ export class Crowd {
     w.prev = w.node;
     w.node = e.to;
     w.hops++;
-    const step: Step = { x: to.x + w.ox, y: to.y + w.oy, zone: e.zone };
+    const step: Step = { x: to.x + w.ox * to.spread, y: to.y + w.oy * to.spread, zone: e.zone };
     if (rng() < 0.1 && !e.zone) {
       step.wait = rr(rng, 1.5, 5);
       const a = rng() * Math.PI * 2;
