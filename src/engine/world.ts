@@ -8,7 +8,8 @@
 
 import { C, makeRng, pick, rr } from './core';
 import { arcPts, box, boxShadow, drawMesh, groundPoly, groundRect, lineW, onFaceX, onFaceY, rectShadow, type Ctx, type R } from './draw';
-import { atrium, batteryFront, batteryLed, rackFront, rackLeds, solarGlint, solarRoof, windowsX, windowsY, type Band } from './details';
+import { megapacks, rackPlatform } from './blocks';
+import { atrium, solarGlint, solarRoof, windowGlow, windowSpill, windowsX, windowsY, type Band, type LitFace } from './details';
 import type { Palette } from './palette';
 import { Path } from './path';
 import type { Item } from './sort';
@@ -17,7 +18,8 @@ import { caster, type Caster } from './shade';
 import { BoxItem, FnItem, HedgeItem, LampItem, TreeItem, type Static } from './statics';
 import { MESH, Traffic, junction, sameKind, type VehicleKind } from './vehicles';
 import { Crowd, WalkGraph, Walker } from './walkers';
-import { ChargingLot, Crane, Looper, Park, TaxiStop, TruckBay, TruckYard, type Activity, type Env } from './activities';
+import { ChargingLot, Crane, DogWalk, Looper, TaxiStop, TruckBay, TruckYard, type Activity, type Env } from './activities';
+import { buildOutskirts } from './outskirts';
 
 export interface World {
   statics: Static[];
@@ -30,6 +32,8 @@ export interface World {
   update(dt: number): void;
   items(out: Item[]): void;
   shadows(ctx: Ctx): void;
+  /** night lighting on the road (headlights, tail lights), drawn after the shadows and before the items */
+  lights(ctx: Ctx): void;
 }
 
 export interface WorldOptions {
@@ -82,7 +86,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const YE = traffic.zone(64, 6, 68.4, 28.2, sameKind);
   const YG = traffic.zone(64, -17.4, 68.4, -5, sameKind);
   const LD = traffic.zone(51.9, 58.7, 55.0, 63.4, sameKind);
-  const LE = traffic.zone(58.2, 50.1, 62.6, 52.9, sameKind);
+  const LE = traffic.zone(58.2, 50.1, 62.6, 52.6, sameKind);
   // the two middle docks are worked by live trucks; the end docks hold parked trailers
   const yard = new TruckYard(env, [10.5, 16.5]);
   const parkedDocks = [4.5, 22.5];
@@ -171,43 +175,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // ------------------------------------------------------------------------------------------------- AI compute
   // a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
-  const DC = { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 };
-  S.push(
-    new FnItem(DC.x0, DC.y0, 0, DC.x1, DC.y1, 0.35, (r) => {
-      box(r, DC.x0, DC.y0, 0, DC.x1, DC.y1, 0.35, pal.concrete, { edge });
-      const ctx = r.ctx;
-      const pulse = 0.5 + 0.5 * Math.sin(r.t * 1.2);
-      ctx.save();
-      if (r.night) ctx.globalCompositeOperation = 'lighter';
-      ctx.strokeStyle = pal.glow;
-      ctx.shadowColor = pal.glow;
-      ctx.shadowBlur = (1.2 + pulse * 0.8) * r.scale;
-      ctx.globalAlpha = 0.55 + 0.4 * pulse;
-      ctx.lineWidth = 0.12;
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      lineW(ctx, DC.x0, DC.y1 + 0.1, 0.04, DC.x1 + 0.1, DC.y1 + 0.1, 0.04);
-      lineW(ctx, DC.x1 + 0.1, DC.y1 + 0.1, 0.04, DC.x1 + 0.1, DC.y0, 0.04);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = 0.35 + 0.3 * pulse;
-      ctx.lineWidth = 0.06;
-      ctx.beginPath();
-      lineW(ctx, DC.x0 + 0.2, DC.y1 - 0.2, 0.36, DC.x1 - 0.2, DC.y1 - 0.2, 0.36);
-      lineW(ctx, DC.x1 - 0.2, DC.y1 - 0.2, 0.36, DC.x1 - 0.2, DC.y0 + 0.2, 0.36);
-      ctx.stroke();
-      ctx.restore();
-    }),
-  );
-  let rackSeed = 0;
-  for (let row = 0; row < 4; row++) {
-    const y0 = 27.4 + row * 2.45;
-    for (let col = 0; col < 6; col++) {
-      const x0 = 31.4 + col * 3.73, x1 = x0 + 3.33;
-      const seed = rackSeed++;
-      S.push(new BoxItem(x0, y0, 0.35, x1, y0 + 1.1, 2.65, pal.rack, { edge }, (r) => rackFront(r, pal, x0, x1, y0 + 1.1, 0.35, 2.65)).live((r) => rackLeds(r, pal, x0, x1, y0 + 1.1, 2.65, seed)));
-    }
-  }
+  rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 6);
 
   // ------------------------------------------------------------------------------------------------- pocket park
   // on the corner between the compute platform, the plaza walk and the street: grass, a path, benches, trees
@@ -217,13 +185,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
 
   // ------------------------------------------------------------------------------------------------- battery yard
   // north of the docks with a clear apron in front of every one of them, and clear of the yard lane
-  let bseed = 0;
-  for (let y0 = -6.4; y0 > -26; y0 -= 2.8) {
-    for (const [x0, x1] of [[44.4, 50.2], [51.8, 57.6]]) {
-      const s = bseed++;
-      S.push(new BoxItem(x0, y0, 0, x1, y0 + 1.7, 2.7, pal.bright, { edge }, (r) => batteryFront(r, pal, x0, x1, y0 + 1.7, 2.7)).live((r) => batteryLed(r, pal, x0, x1, y0 + 1.7, 2.7, s)));
-    }
-  }
+  megapacks(S, pal, edge, [[44.4, 50.2], [51.8, 57.6]], [-6.4, -9.2, -12, -14.8, -17.6, -20.4, -23.2]);
   S.push(
     new BoxItem(62.2, 0.4, 0, 64.8, 2.8, 2.1, pal.factory, { edge }, (r) => {
       onFaceY(r, 62.2, 64.8, 2.8, 2.1, (ctx, w) => {
@@ -255,6 +217,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
         g.addColorStop(1, c1);
         ctx.fillStyle = g;
         ctx.fillRect(0.4, 0.4, w - 0.8, 3.2);
+        windowGlow(r, ctx, w, [{ top: 0.4, bot: 3.6, spans: [[0.4, w - 0.4]] }]);
         // vertical fins
         for (let u = 0.6; u < w - 0.4; u += 0.42) {
           ctx.fillStyle = pal.white.left;
@@ -369,11 +332,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // ------------------------------------------------------------------------------------------------- greenery and street furniture
   const trees: [number, number, 'tree' | 'tree2' | 'poplar' | 'small', number][] = [
     [29.6, 66.4, 'tree', 1], [34.6, 69.0, 'tree2', 0.9], [27.6, 44.5, 'poplar', 0.9],
-    [65.7, 33.0, 'poplar', 1], [65.7, -20.2, 'poplar', 1], [78.7, 16.5, 'tree', 1],
+    [65.7, 33.0, 'poplar', 1], [65.7, -20.2, 'poplar', 1],
     [84.3, 56.6, 'tree', 1], [89.8, 63.4, 'tree2', 1], [99.5, 57.5, 'small', 1], [105.5, 52.6, 'tree', 1], [54.0, 82.6, 'small', 0.9],
     [53.2, 92.5, 'poplar', 0.9], [53.4, 103, 'tree2', 0.9], [31.0, 103.5, 'tree', 1], [31.2, 85.2, 'tree2', 0.95],
-    [18.6, 74.4, 'small', 0.9], [98.8, 40.0, 'tree2', 0.9], [110, 39.6, 'tree', 1], [78.8, 88.5, 'tree', 1],
-    [66.3, 88.4, 'small', 0.9], [78.7, 9, 'tree2', 1],
+    [98.8, 40.0, 'tree2', 0.9], [110, 39.6, 'tree', 1], [78.8, 88.5, 'tree', 1],
+    [66.3, 88.4, 'small', 0.9],
     // pocket park
     [31.9, 46.4, 'tree2', 0.85], [42.4, 45.4, 'small', 0.8], [31.8, 39.6, 'small', 0.75],
   ];
@@ -388,14 +351,14 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     [94, 39.4, 0, 1.2], [112, 39.4, 0, 1.2], [95.3, 52.6, 0, -1.2], [54.6, 88, -1.2, 0], [41.6, 58, 1.2, 0], [55.0, 39.4, 0, 1.2],
   ];
   for (const [x, y, ax, ay] of lamps) S.push(new LampItem(x, y, ax, ay, pal.steel, pal.factoryDark.right));
-  for (const [x0, y0, x1, y1] of [[31.0, 62.6, 32.8, 63.1], [81.9, 69.2, 82.4, 71.0], [86.6, 60.9, 88.4, 61.4], [92.2, 57.4, 92.7, 59.2]]) {
+  for (const [x0, y0, x1, y1] of [[31.0, 62.6, 32.8, 63.1], [81.9, 69.2, 82.4, 71.0], [86.6, 60.9, 88.4, 61.4], [92.2, 57.4, 92.7, 59.2], [95.4, 57.0, 97.2, 57.5]]) {
     S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   }
-  // people chatting
-  const chat = (pts: number[][]) => {
+  // people chatting; robots join in on the streets, but the parks are for staff on their break
+  const chat = (pts: number[][], robots = 0.25) => {
     const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
     for (const [x, y] of pts) {
-      const w = new Walker(rng() < 0.25 ? 'robot' : 'person', pal, rng, x, y);
+      const w = new Walker(rng() < robots ? 'robot' : 'person', pal, rng, x, y);
       w.face(cx - x, cy - y);
       w.stance = 'chat';
       crowd.add(w);
@@ -414,21 +377,28 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   lot.seed(2);
   acts.push(lot);
   acts.push(new TaxiStop(env, (w) => crowd.adopt(w)));
-  acts.push(new Park(env, [[91, 56], [96, 53.6]]));
-  acts.push(new Park(env, [[33.8, 40.9], [36.2, 43.6]], false));
-  for (const [x, y, fx, fy] of [[37.7, 39.85, 0, 1], [38.7, 39.85, 0, 1], [32.35, 43.6, 1, 0]]) {
-    const w = new Walker(rng() < 0.3 ? 'robot' : 'person', pal, rng, x, y);
+  acts.push(new DogWalk(env));
+  // the factory wing, car park, compute, Megapacks, charging hub and staff park out on the sides
+  const outskirts = buildOutskirts(env, sprites, edge);
+  acts.push(...outskirts.acts);
+  // the parks are where staff take their break: on the benches, or standing together with a coffee
+  const sit = (x: number, y: number, fx: number, fy: number) => {
+    const w = new Walker('person', pal, rng, x, y);
     w.stance = 'sit';
     w.face(fx, fy);
     crowd.add(w);
-  }
-  // two people on a park bench
-  for (const x of [87.0, 87.95]) {
-    const w = new Walker('person', pal, rng, x, 61.75);
-    w.stance = 'sit';
-    w.face(0, 1);
-    crowd.add(w);
-  }
+  };
+  // pocket park by the compute platform
+  sit(37.7, 39.85, 0, 1);
+  sit(38.7, 39.85, 0, 1);
+  sit(32.35, 43.6, 1, 0);
+  chat([[33.9, 41.5], [34.9, 42.4]], 0);
+  // the park by the robotaxi stop
+  sit(87.0, 61.75, 0, 1);
+  sit(87.95, 61.75, 0, 1);
+  sit(95.9, 57.85, 0, 1);
+  sit(93.05, 58.3, 1, 0);
+  chat([[93.4, 55.2], [94.5, 55.6], [93.8, 56.2]], 0);
   // dock and yard robots
   acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 13.6, wait: 0.8, then: (w) => (w.carry = true) }, { x: 32.4, y: 13.4, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 13.6));
   acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 19.4, wait: 0.9, then: (w) => (w.carry = true) }, { x: 36.4, y: 19.5, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 19.4));
@@ -449,7 +419,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // east side of the avenue; round the robotaxi bay, clear of the taper the cars pull in through and of the van's
   // nose swinging out as it turns in
   const ae = [g.node(77.5, -22, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 100, true)];
-  g.chain(ae.slice(0, 3));
+  // either side of the charging hub's driveway
+  const hubSides = [g.node(77.8, 6.8, false, 0.5), g.node(77.8, 17.4, false, 0.5)];
+  g.chain([ae[0], hubSides[0]]);
+  g.link(hubSides[0], hubSides[1], outskirts.hubCrossing);
+  g.chain([hubSides[1], ae[1], ae[2]]);
   g.chain(ae.slice(3));
   g.link(aw[2], ae[1], CW3);
   g.link(aw[6], ae[8], CW4);
@@ -495,7 +469,10 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   g.link(p[4], sn[1]);
   // the front door of the house on the corner
   // round the plaza hedge to the front door of the house beside the bay
-  g.chain([p[0], g.node(28.1, 66.2), g.node(29.9, 73.6), g.node(29.9, 80.4, true)]);
+  const houseWalk = [p[0], g.node(28.1, 66.2), g.node(29.9, 73.6), g.node(29.9, 80.4, true)];
+  g.chain(houseWalk);
+  // the car park's and the staff park's walks
+  outskirts.walks(g, houseWalk[2], sne[1]);
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
@@ -564,6 +541,12 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     groundPoly(ctx, [76, 53.5, 79.2, 57.5, 79.2, 70.5, 76, 74.5]);
   };
 
+  // the glazed facades facing the camera: factory, dock wing (atrium and top band), pavilion, the home
+  const litFaces: LitFace[] = [
+    [26, 36, 26, 72, 1, 0], [-40, 72, 26, 72, 0, 1], [30, 26.6, 30, 35.4, 1, 0], [30, 0.4, 30, 25.6, 1, 0],
+    [80, 38, 97, 38, 0, 1], [97, 26, 97, 38, 1, 0], [20.4, 84.2, 28.8, 84.2, 0, 1], [28.8, 75.6, 28.8, 84.2, 1, 0],
+    ...outskirts.litFaces,
+  ];
   const ground = (ctx: Ctx) => {
     // paved pads
     ctx.fillStyle = pal.pad;
@@ -579,6 +562,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     groundRect(ctx, 28.6, 85.2, 30, 89.8);
     groundRect(ctx, 54.5, 84.2, 66.4, 120);
     ctx.fill();
+    outskirts.ground(ctx);
     // the truck's way out across the plaza corner
     ctx.strokeStyle = pal.pad;
     ctx.lineWidth = 4.2;
@@ -592,6 +576,14 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     ctx.beginPath();
     groundPoly(ctx, [26, 36, 41.6, 36, 41.6, 61.8, 37.4, 66.0, 37.4, 69.4, 26, 69.4]);
     groundPoly(ctx, [81, 53, 86, 53, 86, 64.2, 130, 64.2, 130, 100, 81, 100]);
+    ctx.fill();
+    // a grass verge between the truck yard and the avenue's pavement, broken where the semis turn in at the gate and
+    // pull out across the exit (their trailers sweep those stretches)
+    ctx.fillStyle = pal.lawn;
+    ctx.beginPath();
+    groundRect(ctx, 64.8, -40, 66.2, -17.8);
+    groundRect(ctx, 64.8, -4.6, 66.2, 6.0);
+    groundRect(ctx, 64.8, 28.4, 66.2, 38.6);
     ctx.fill();
     // the pocket park: grass with a path across it
     ctx.fillStyle = pal.lawn;
@@ -691,6 +683,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     lineW(ctx, 35.4, 73, 0, 35.4, 92.2, 0);
     lineW(ctx, 38.6, 73, 0, 38.6, 92.2, 0);
     ctx.stroke();
+    // at night, light from the windows falls on the ground in front of the lit facades
+    if (pal.night) windowSpill(ctx, litFaces);
   };
 
   // ------------------------------------------------------------------------------------------------- tick
@@ -726,5 +720,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
     (b) => caster(b.x0, b.y0, b.x1, b.y1, b.z1, b),
   );
 
-  return { statics: S, casters, traffic, crowd, acts, ground, update, items, shadows };
+  const lights = (ctx: Ctx) => traffic.lights(ctx);
+
+  return { statics: S, casters, traffic, crowd, acts, ground, update, items, shadows, lights };
 }

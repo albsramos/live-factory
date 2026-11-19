@@ -43,6 +43,11 @@ export const DEFAULTS: SceneOptions = {
 /** The composed view in design units; the scene was laid out to fill it. */
 export const FRAME = { cx: 0, cy: 47.5, w: 121.2, h: 65 };
 export const ASPECT = FRAME.w / FRAME.h;
+/**
+ * How far a wide view may reach. A box wider than ASPECT shows more of the outskirts on both sides rather than
+ * cropping the middle of the scene away: it keeps at least `minH` of the frame's height, up to `w` across.
+ */
+export const WIDE = { w: 210, minH: FRAME.h * 0.7 };
 
 /** seconds a theme change takes to dissolve */
 const FADE = 0.6;
@@ -154,7 +159,14 @@ export class Scene {
       this.canvas.width = pw;
       this.canvas.height = ph;
     }
-    const zoom = (o.fit === 'cover' ? Math.max(W / FRAME.w, H / FRAME.h) : Math.min(W / FRAME.w, H / FRAME.h)) * o.zoom;
+    // the frame to fill: the classic one, or for a wide box in cover mode a wider, shorter one into the outskirts
+    let fw = FRAME.w, fh = FRAME.h;
+    if (o.fit === 'cover' && W / H > ASPECT) {
+      fh = Math.max(WIDE.minH, FRAME.w / (W / H));
+      fw = Math.min(WIDE.w, fh * (W / H));
+      fh = fw / (W / H);
+    }
+    const zoom = (o.fit === 'cover' ? Math.max(W / fw, H / fh) : Math.min(W / FRAME.w, H / FRAME.h)) * o.zoom;
     const hw = W / (2 * zoom), hh = H / (2 * zoom);
     // when cropping, slide the view towards the focal point without leaving the frame
     const slackX = Math.max(0, FRAME.w / 2 - hw), slackY = Math.max(0, FRAME.h / 2 - hh);
@@ -302,6 +314,8 @@ export class Scene {
     this.world.shadows(ctx);
     ctx.fillStyle = this.pal.shadow;
     ctx.fill();
+    // headlights and tail lights on the road, under the vehicles that cast them
+    if (this.pal.night) this.world.lights(ctx);
     // everything standing up, back to front
     this.dyn.length = 0;
     this.world.items(this.dyn);

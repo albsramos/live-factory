@@ -3,6 +3,7 @@
 
 import { C, type Mat } from './core';
 import { MeshBuilder, drawMesh, fillQuad, rectShadow, type MatSlot, type R, type Ctx } from './draw';
+import { drawLampGlints, drawRoadLight } from './lights';
 import type { Palette } from './palette';
 import { Path, type Pose } from './path';
 import type { Item } from './sort';
@@ -31,7 +32,7 @@ export class Zone {
    */
   phases: string[] | null = null;
   /** Optional per-vehicle key (e.g. to keep semis apart from everything else); defaults to 'car'. */
-  keyOf: ((v: Vehicle) => string) | null = null;
+  keyOf: ((v: Vehicle, leg: Leg) => string) | null = null;
   phase = 0;
   private phaseT = 0;
   private clearing = 0;
@@ -124,6 +125,11 @@ export class Zone {
   }
   contains(x: number, y: number, m = 0) {
     return x >= this.x0 - m && x <= this.x1 + m && y >= this.y0 - m && y <= this.y1 + m;
+  }
+  /** Whether a body's footprint (the box around its turned outline), grown by `m`, overlaps the zone. */
+  touches(b: { x: number; y: number; hx: number; hy: number; hl: number; hw: number }, m = 0) {
+    const ex = Math.abs(b.hx) * b.hl + Math.abs(b.hy) * b.hw + m, ey = Math.abs(b.hy) * b.hl + Math.abs(b.hx) * b.hw + m;
+    return b.x + ex >= this.x0 && b.x - ex <= this.x1 && b.y + ey >= this.y0 && b.y - ey <= this.y1;
   }
 }
 
@@ -301,6 +307,8 @@ type Group = Req[];
 
 export interface Leg {
   path: Path;
+  /** A label zones can read through `keyOf`, e.g. to tell a car park's arrivals from its departures. */
+  tag?: string;
   /** Drive backwards along the path. */
   rev?: boolean;
   vmax: number;
@@ -372,6 +380,8 @@ export class Vehicle {
   charging = false;
   /** stay put when the plan runs out instead of leaving the scene (yard vehicles) */
   keep = false;
+  /** slowing down or standing: the tail lights burn brighter */
+  braking = false;
   private dwellT = 0;
   private arrived = false;
   private stuckT = 0;
@@ -428,7 +438,7 @@ export class Vehicle {
       for (const [a, b] of l.path.spans(z.x0, z.y0, z.x1, z.y1)) {
         const p0 = l.path.at(Math.min(l.path.len, a + 0.5), { x: 0, y: 0, hx: 1, hy: 0 });
         const p1 = l.path.at(Math.max(0, b - 0.5), { x: 0, y: 0, hx: 1, hy: 0 });
-        let key = z.keyOf ? z.keyOf(this) : 'car';
+        let key = z.keyOf ? z.keyOf(this, l) : 'car';
         if (z.compat === junction) {
           const cr = p0.hx * p1.hy - p0.hy * p1.hx;
           const dot = p0.hx * p1.hx + p0.hy * p1.hy;
@@ -456,6 +466,12 @@ export class Vehicle {
 
   get leg(): LegState | undefined {
     return this.legs[this.li];
+  }
+
+  /** Lights are off while parked: charging, docked or loading (a dwell at the end of a leg), or doors open. */
+  get isLit(): boolean {
+    if (this.charging || this.door > 0.01) return false;
+    return !(this.arrived && this.leg?.dwell !== undefined);
   }
 
   private placeAt(s: number) {
@@ -548,7 +564,8 @@ export class Vehicle {
     // release zones we have fully left
     for (const z of this.held) {
       let inside = false;
-      for (const b of this.bodies) if (z.contains(b.x, b.y, b.hl + 0.3)) inside = true;
+      // held until nothing of us is in it any more (a trailer's whole length, not just its centre)
+      for (const b of this.bodies) if (z.touches(b, 0.3)) inside = true;
       const pending = leg.reqs.some((q) => q.zone === z && !q.done && q.sOut > this.s - this.tail);
       if (!inside && !pending) {
         z.leave(this);
@@ -573,8 +590,10 @@ export class Vehicle {
       vt = Math.min(vt, d <= 0 ? lim.v : Math.sqrt(lim.v * lim.v + 2 * DEC * 0.6 * d));
     }
     if (dStop < Infinity) vt = Math.min(vt, Math.sqrt(Math.max(0, 2 * DEC * Math.max(0, dStop))));
+    const v0 = this.v;
     if (vt > this.v) this.v = Math.min(vt, this.v + ACC * dt);
     else this.v = Math.max(vt, this.v - DEC * 2.2 * dt);
+    this.braking = this.v < 0.1 || this.v < v0 - 1e-3;
     if (dStop <= 0.02 && dStop < len - this.s - 0.05) this.v = 0;
     // deadlock breaker: when the vehicles in front block each other in a loop that comes back to us, or as a last
     // resort after a very long stall. A plain queue (say, behind a truck at a red light) just waits.
@@ -785,6 +804,7 @@ class VehicleItem implements Item {
       case 'semi':
         if (this.part === 0) drawMesh(r, MESH.tractor, v.x, v.y, 0, v.hx, v.hy, v.mats);
         else drawTrailer(r, v);
+        if (r.night && v.isLit) drawLampGlints(r, v, this.part === 0 ? 'front' : 'rear');
         break;
       case 'forklift':
         drawForklift(r, v);
@@ -793,7 +813,7 @@ class VehicleItem implements Item {
         const mesh = MESH[v.kind];
         drawMesh(r, mesh, v.x, v.y, 0, v.hx, v.hy, v.mats);
         if ((v.kind === 'pod' || v.kind === 'van') && v.door > 0.01) drawDoors(r, v);
-        if (r.night) drawLights(r, v);
+        if (r.night && v.isLit) drawLampGlints(r, v, 'both');
       }
     }
     if (v.charging) {
@@ -810,22 +830,6 @@ class VehicleItem implements Item {
       ctx.globalAlpha = 1;
     }
   }
-}
-
-function drawLights(r: R, v: Vehicle) {
-  const ctx = r.ctx;
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  const fx = v.x + v.hx * (v.hl + 1.6), fy = v.y + v.hy * (v.hl + 1.6);
-  const X = (fx - fy) * C, Y = (fx + fy) * 0.5;
-  const g = ctx.createRadialGradient(X, Y, 0, X, Y, 2.4);
-  g.addColorStop(0, 'rgba(255, 236, 190, 0.22)');
-  g.addColorStop(1, 'rgba(255, 236, 190, 0)');
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.ellipse(X, Y, 2.6, 1.4, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
 }
 
 function drawDoors(r: R, v: Vehicle) {
@@ -1052,5 +1056,10 @@ export class Traffic {
 
   shadows(ctx: Ctx) {
     for (const v of this.vehicles) v.shadow(ctx);
+  }
+
+  /** Headlight beams and tail glow on the road (night only), drawn before the vehicles themselves. */
+  lights(ctx: Ctx) {
+    drawRoadLight(ctx, this.vehicles.filter((v) => v.isLit));
   }
 }

@@ -28,7 +28,8 @@ export interface Env {
 const P = Path.poly;
 
 /** A one-at-a-time lock. */
-class Mutex {
+/** Something only one vehicle may use at a time (a lot's aisle, the yard). */
+export class Mutex {
   owner: object | null = null;
   take(who: object) {
     if (this.owner && this.owner !== who) return false;
@@ -801,46 +802,18 @@ export class Looper implements Activity {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Park: two kids passing a ball, and (unless told otherwise) a dog on a walk.
+// Dog walk: someone out with a dog, wandering the walkways; when they leave the scene, another one comes along.
 
-export class Park implements Activity {
-  private kids: Walker[] = [];
-  private t = 0;
-  private ball = { x: 0, y: 0, z: 0 };
+export class DogWalk implements Activity {
   private dogT = 0;
   private dog: { x: number; y: number; hx: number; hy: number; ph: number } | null = null;
   private owner: Walker | null = null;
-  private parts: Item[] = [];
+  private part: Item;
 
-  constructor(private env: Env, spots: number[][], private withDog = true) {
-    const { pal, rng, crowd } = env;
-    for (const [x, y] of spots) {
-      const w = new Walker('person', pal, rng, x, y);
-      w.size = 0.68;
-      crowd.add(w);
-      this.kids.push(w);
-    }
+  constructor(private env: Env) {
+    const { pal } = env;
     const self = this;
-    this.parts.push({
-      x0: 0, x1: 0, y0: 0, y1: 0, z0: 0, z1: 0,
-      draw(r: R) {
-        const b = self.ball;
-        const ctx = r.ctx;
-        const X = (b.x - b.y) * C, Y = (b.x + b.y) * 0.5;
-        ctx.fillStyle = pal.night ? 'rgba(0,0,0,0.3)' : 'rgba(84,86,104,0.16)';
-        ctx.beginPath();
-        ctx.ellipse(X + 0.1, Y, 0.2, 0.1, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = pal.white.top;
-        ctx.strokeStyle = pal.white.right;
-        ctx.lineWidth = 0.04;
-        ctx.beginPath();
-        ctx.arc(X, Y - b.z - 0.16, 0.16, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-      },
-    } as Item);
-    this.parts.push({
+    this.part = {
       x0: 0, x1: 0, y0: 0, y1: 0, z0: 0, z1: 0.7,
       draw(r: R) {
         const d = self.dog;
@@ -879,35 +852,12 @@ export class Park implements Activity {
         ctx.lineTo(X - dX * 0.42, Y - 0.62 + Math.sin(r.t * 9) * 0.05);
         ctx.stroke();
       },
-    } as Item);
+    } as Item;
   }
 
   update(dt: number) {
-    this.t += dt;
-    // ball goes back and forth between the kids every 1.8 s
-    const T = 1.8;
-    const u = this.t / T;
-    const i = Math.floor(u) % 2;
-    const f = u - Math.floor(u);
-    const a = this.kids[i], b = this.kids[1 - i];
-    if (a && b) {
-      this.ball.x = lerp(a.x + a.hx * 0.3, b.x + b.hx * 0.3, f);
-      this.ball.y = lerp(a.y + a.hy * 0.3, b.y + b.hy * 0.3, f);
-      this.ball.z = Math.sin(f * Math.PI) * 1.4;
-      a.face(b.x - a.x, b.y - a.y);
-      b.face(a.x - b.x, a.y - b.y);
-      // a little hop when kicking
-      a.z = f < 0.12 ? Math.sin((f / 0.12) * Math.PI) * 0.08 : 0;
-      const it = this.parts[0];
-      it.x0 = this.ball.x - 0.2;
-      it.x1 = this.ball.x + 0.2;
-      it.y0 = this.ball.y - 0.2;
-      it.y1 = this.ball.y + 0.2;
-      it.z0 = this.ball.z;
-      it.z1 = this.ball.z + 0.32;
-    }
     // dog walker
-    if (this.withDog && (!this.owner || this.owner.dead)) {
+    if (!this.owner || this.owner.dead) {
       this.dog = null;
       this.dogT -= dt;
       if (this.dogT <= 0) {
@@ -935,7 +885,7 @@ export class Park implements Activity {
           d.ph += sp * 9;
         }
       }
-      const it = this.parts[1];
+      const it = this.part;
       it.x0 = d.x - 0.4;
       it.x1 = d.x + 0.4;
       it.y0 = d.y - 0.4;
@@ -944,8 +894,7 @@ export class Park implements Activity {
   }
 
   items(out: Item[]) {
-    out.push(this.parts[0]);
-    if (this.dog) out.push(this.parts[1]);
+    if (this.dog) out.push(this.part);
   }
 
   shadows(ctx: Ctx) {

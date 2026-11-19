@@ -54,15 +54,18 @@ export function ribbons(r: R, pal: Palette, ctx: Ctx, w: number, bands: Band[]) 
   }
 }
 
-/** Night glow spilling from the windows. */
+/** Night glow spilling from the windows: a soft bloom around each lit band. */
 export function windowGlow(r: R, ctx: Ctx, w: number, bands: Band[]) {
   if (!r.night) return;
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
-  ctx.fillStyle = 'rgba(255, 190, 110, 0.10)';
+  // shadowBlur is in canvas pixels, whatever the face transform does
+  ctx.shadowColor = 'rgba(255, 170, 84, 0.8)';
+  ctx.shadowBlur = 0.7 * r.scale;
+  ctx.fillStyle = 'rgba(255, 196, 120, 0.16)';
   for (const b of bands) {
     if (b.dark) continue;
-    for (const [a, z] of b.spans ?? [[0.5, w - 0.5]]) ctx.fillRect(a - 0.3, b.top - 0.3, z - a + 0.6, b.bot - b.top + 0.6);
+    for (const [a, z] of b.spans ?? [[0.5, w - 0.5]]) ctx.fillRect(a - 0.12, b.top - 0.12, z - a + 0.24, b.bot - b.top + 0.24);
   }
   ctx.restore();
 }
@@ -296,4 +299,36 @@ export function batteryLed(r: R, pal: Palette, x0: number, x1: number, y1: numbe
     ctx.fillRect(w - 0.62, 0.62, 0.32, 0.07);
     ctx.globalAlpha = 1;
   });
+}
+
+/** A lit facade at night: the foot of a face from (x0, y0) to (x1, y1), and the way it faces (nx, ny). */
+export type LitFace = readonly [x0: number, y0: number, x1: number, y1: number, nx: number, ny: number];
+
+/**
+ * Warm light from the windows falling on the ground in front of each lit facade (night only). Drawn into the cached
+ * ground layer, so it costs nothing per frame.
+ */
+export function windowSpill(ctx: Ctx, faces: readonly LitFace[], reach = 4.5) {
+  const C = 0.8660254037844386;
+  ctx.save();
+  // draw in ground metres
+  ctx.transform(C, 0.5, -C, 0.5, 0, 0);
+  for (const [x0, y0, x1, y1, nx, ny] of faces) {
+    const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+    const g = ctx.createLinearGradient(mx, my, mx + nx * reach, my + ny * reach);
+    g.addColorStop(0, 'rgba(255, 186, 104, 0.2)');
+    g.addColorStop(0.45, 'rgba(255, 186, 104, 0.07)');
+    g.addColorStop(1, 'rgba(255, 186, 104, 0)');
+    ctx.fillStyle = g;
+    // a little wider than the face, so the pool fades out round the corners
+    const tx = x1 - x0, ty = y1 - y0, tl = Math.hypot(tx, ty) || 1, ux = tx / tl, uy = ty / tl;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.lineTo(x1 + nx * reach + ux * 1.5, y1 + ny * reach + uy * 1.5);
+    ctx.lineTo(x0 + nx * reach - ux * 1.5, y0 + ny * reach - uy * 1.5);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
 }
