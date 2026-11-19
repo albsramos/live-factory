@@ -56,7 +56,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(fd, fe[1], LD);
   g.chain(fe.slice(1));
   g.link(fw1, fe[1], CW1);
-  const door = g.node(26.8, 58.0, true);
+  // the factory's door, set back in its entrance recess (`ENTRANCE` in buildings.ts)
+  const door = g.node(24.9, 58.0, true, 0.5);
   const p = [g.node(29.2, 58.6), g.node(36, 61.2), g.node(41.2, 61.6), g.node(29.0, 50.0), g.node(41, 50.2)];
 
   g.chain([door, p[0], p[1]]);

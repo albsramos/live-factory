@@ -29,7 +29,8 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   the classic frame for wide views (factory wing, staff car park, second compute platform, Megapack field, charging
   hub, staff park).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`;
-  `details.ts` windows, glass, solar roofs.
+  `details.ts` windows, glass, solar roofs; `recess.ts` the factory's entrance, a V-shaped recess drawn as part of
+  the face it is cut into (clipped to the opening, so it needs no sort item), and the pillars in its mouth.
 - `activities/` the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
   walk, loopers) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
@@ -37,7 +38,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   `traffic.ts` all of it together.
 - `people/` `walker.ts` a person or robot following steps, `figure.ts` how they are drawn, `crowd.ts` the walkway
   graph and the crowd that wanders it.
-- `draw.ts` boxes and faces, `mesh.ts` convex meshes, `ground.ts` shadows and ground shapes, `lights.ts` night road
+- `draw.ts` boxes and faces (`onWall` for an upright face at any angle), `mesh.ts` convex meshes, `ground.ts` shadows and ground shapes, `lights.ts` night road
   lighting.
 - `scene.ts` frame loop and baking; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`
   lets a box wider than that show up to 210 m across in `cover` mode. `contain` shows the whole height, so anything

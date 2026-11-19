@@ -7,12 +7,19 @@ import { box, onFaceX, onFaceY } from '../draw';
 import { drawMesh } from '../mesh';
 import { megapacks } from '../blocks';
 import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details';
+import { recessPillars, recessX, type Recess } from '../recess';
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
+
+/**
+ * The factory's front entrance: the ground floor steps back in a V to the door, under the storeys above. People come
+ * and go at a walkway node just in front of the door (`walkways.ts`), shallow enough to stay in full view.
+ */
+export const ENTRANCE: Recess = { x: 26, y0: 52, y1: 64, h: 3.8, depth: 2.4, door: 3.6 };
 
 /** The factory, its dock wing (a lamp by each dock shows the yard's state), the trailers parked at the end docks and pallets. */
 export function factory(env: Env, edge: string, yard: TruckYard) {
@@ -21,8 +28,7 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
   const factoryBandsX: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5 },
     { top: 5.2, bot: 7.8, every: 1.5 },
-    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 11.2], [16.8, 35.5]] },
-    { top: 9.6, bot: 12.95, every: 1.1, spans: [[11.6, 16.4]], dark: true },
+    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 7.6], [20.4, 35.5]] },
   ];
   const factoryBandsY: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5, spans: [[0.5, 65.5]] },
@@ -34,12 +40,12 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       windowsX(r, pal, 26, 36, 72, 13, factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
+      recessX(r, pal, ENTRANCE, edge);
     }),
   );
-  // entrance canopy and its posts
-  S.push(new BoxItem(26, 53.6, 4.05, 30.6, 62.4, 4.35, pal.white, { edge }));
-  S.push(new BoxItem(30.1, 53.9, 0, 30.35, 54.15, 4.05, pal.white));
-  S.push(new BoxItem(30.1, 61.85, 0, 30.35, 62.1, 4.05, pal.white));
+  // pillars in the entrance's mouth, in line with the door's jambs
+  const mid = (ENTRANCE.y0 + ENTRANCE.y1) / 2;
+  S.push(...recessPillars(pal, ENTRANCE, edge, [mid - ENTRANCE.door / 2, mid + ENTRANCE.door / 2]));
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [4.5, 10.5, 16.5, 22.5];
