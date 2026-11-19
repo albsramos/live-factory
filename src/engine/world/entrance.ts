@@ -1,6 +1,7 @@
 // The factory's main entrance on the plaza: the ground floor is dented into the building under the flush facade
 // above, like a covered porch. Above it runs a dark fascia (left blank: the scene shows no lettering); slim columns
-// stand on the face line holding the floor above; behind them, set back, the glass front with a dark doorway.
+// stand on the face line holding the floor above; behind them, set back, the glass front with a dark doorway, the glass
+// wrapping round into the recess's side.
 //
 // The recess is painted onto the factory's +x face, which is exact for this camera: a point d metres inside the face
 // lands where the face point (y + d, z + d) would, so the inner glass, the floor and the visible side wall are the
@@ -41,15 +42,16 @@ export function drawEntrance(r: R, pal: Palette, ctx: Ctx, faceY1: number, faceT
   ribbons(r, pal, ctx, u1, glass);
   windowGlow(r, ctx, u1, glass);
   ctx.restore();
-  // the side wall at y = Y0, facing the camera
+  // the side wall at y = Y0, facing the camera: glass too, wrapping round from the front. Mapped so its local
+  // t runs inwards from the face (u = u1 - t, v = v - t), so ribbons draws it with upright mullions.
+  ctx.save();
+  ctx.transform(-1, -1, 0, 1, u1, 0);
+  const side: Band[] = [{ top: v0 + 0.15, bot: v1, every: 0.9, spans: [[0, D]] }];
   ctx.fillStyle = pal.factory.left;
-  ctx.beginPath();
-  ctx.moveTo(u1, v0);
-  ctx.lineTo(u1, v1);
-  ctx.lineTo(u1 - D, v1 - D);
-  ctx.lineTo(u1 - D, v0 - D);
-  ctx.closePath();
-  ctx.fill();
+  ctx.fillRect(0, v0, D, H);
+  ribbons(r, pal, ctx, D, side);
+  windowGlow(r, ctx, D, side);
+  ctx.restore();
   // the shade under the floor above, deepest at the back
   const g = ctx.createLinearGradient(0, v0, 0, v1);
   g.addColorStop(0, r.night ? 'rgba(0, 0, 0, 0.25)' : 'rgba(40, 42, 56, 0.22)');
