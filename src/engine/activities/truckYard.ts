@@ -1,9 +1,13 @@
 // Truck yard at the factory docks. A semi turns in off the avenue, waits at the gate until the yard is clear,
-// drives down the yard lane past its dock, backs in, loads, then pulls straight out and turns onto the avenue.
+// drives down the yard lane past its dock, backs in and loads. Then it pulls out, drives down the lane again and
+// backs into the charging bay beside the docks, charges, and pulls out across the yard onto the avenue.
+// One semi moves in the yard at a time (the mutex). A second may come in and load while the first charges: neither
+// one's sweep touches the other parked (docs/simulation.md); it waits at its dock until the bay is free.
 
 import { pick, rr } from '../core';
 import { Path } from '../path';
 import { backingTrack, type Leg } from '../traffic/legs';
+import type { Vehicle } from '../traffic/vehicle';
 import { type Activity, type Env, Mutex } from './activity';
 
 const P = Path.poly;
@@ -20,12 +24,16 @@ export class TruckYard implements Activity {
   static readonly LANE = 60;
   static readonly GATE = -3;
   readonly docks: Dock[];
+  /** the charging bay: `loading` while a semi is plugged in and charging */
+  readonly bay: Dock;
   private mutex = new Mutex();
   private timer = 4;
-  private trucks = 0;
+  /** semis on their way to a dock or loading there, not yet given the bay */
+  private inbound = 0;
 
-  constructor(private env: Env, dockYs: number[]) {
+  constructor(private env: Env, dockYs: number[], bayY: number) {
     this.docks = dockYs.map((y) => ({ y, loading: false, taken: false }));
+    this.bay = { y: bayY, loading: false, taken: false };
   }
 
   /** The tractor's pose when backed in, the pull-out curve, and where it ends on the lane. */
@@ -40,12 +48,44 @@ export class TruckYard implements Activity {
     };
   }
 
+  /** Back in along the pull-out curve from the lane, the trailer leading. */
+  private backIn(d: Dock, done: (v: Vehicle) => void): Leg {
+    const { out, back } = this.geometry(d);
+    return { path: back, rev: true, vmax: 1.3, ghost: true, trailerAngle: backingTrack(out, Math.PI / 2), done };
+  }
+
+  /** Load at a dock, then pull out down the lane and back into the charging bay. */
   private afterDocked(d: Dock, dwell: number): Leg[] {
-    const y = d.y;
+    const L = TruckYard.LANE, y = d.y;
+    const bay = this.bay;
     return [
-      { path: P([[44.5, d.y], [44.6, d.y]]), vmax: 1, ghost: true, dwell, until: (v) => {
-        if (!this.mutex.take(v)) return false;
+      { path: P([[44.5, y], [44.6, y]]), vmax: 1, ghost: true, dwell, until: (v) => {
+        // the bay must be free, and the yard ours to move in
+        if (bay.taken || !this.mutex.take(v)) return false;
+        bay.taken = true;
         d.loading = false;
+        this.inbound--;
+        return true;
+      } },
+      // out of the dock, round onto the lane and down it, far enough for the trailer to straighten
+      { path: P([[44.6, y], [L, y], [L, this.geometry(bay).stop]], [9]), vmax: 2.4, ghost: true, done: () => (d.taken = false) },
+      this.backIn(bay, (v) => {
+        this.mutex.free(v);
+        bay.loading = true;
+        v.charging = true;
+      }),
+      ...this.afterCharged(rr(this.env.rng, 30, 45)),
+    ];
+  }
+
+  /** Charge in the bay, then pull out across the yard and turn onto the avenue. */
+  private afterCharged(dwell: number): Leg[] {
+    const bay = this.bay, y = bay.y;
+    return [
+      { path: P([[44.5, y], [44.6, y]]), vmax: 1, ghost: true, dwell, until: (v) => {
+        if (!this.mutex.take(v)) return false;
+        bay.loading = false;
+        v.charging = false;
         return true;
       } },
       // pull out across the yard to the lower row and stop short of the pavement, so the exit can be reserved
@@ -54,55 +94,46 @@ export class TruckYard implements Activity {
       // turn right onto the avenue's near lane, never crossing traffic
       { path: P([[58, 10.5], [70, 10.5], [70, 22]], [6]), vmax: 4, done: (v) => {
         this.mutex.free(v);
-        d.taken = false;
+        bay.taken = false;
       } },
       // straight before it waits for the crossing and the junction
-      { path: P([[70, 22], [70, 112]]), vmax: 5.5, done: () => this.trucks-- },
+      { path: P([[70, 22], [70, 112]]), vmax: 5.5 },
     ];
   }
 
   private spawn(d: Dock) {
     const { traffic, pal, rng } = this.env;
     const L = TruckYard.LANE;
-    const { stop, out, back } = this.geometry(d);
+    const { stop } = this.geometry(d);
     d.taken = true;
-    this.trucks++;
+    this.inbound++;
     const legs: Leg[] = [
       // off the avenue and through the gate, then wait for the yard
       { path: P([[70, -52], [70, -8], [L, -8], [L, TruckYard.GATE]], [3, 5]), vmax: 5, until: (v) => this.mutex.take(v) },
       { path: P([[L, TruckYard.GATE], [L, stop]]), vmax: 3.5 },
-      // back in along the pull-out curve, the trailer leading
-      {
-        path: back,
-        rev: true,
-        vmax: 1.3,
-        ghost: true,
-        trailerAngle: backingTrack(out, Math.PI / 2),
-        done: (v) => {
-          this.mutex.free(v);
-          d.loading = true;
-        },
-      },
+      this.backIn(d, (v) => {
+        this.mutex.free(v);
+        d.loading = true;
+      }),
       ...this.afterDocked(d, rr(rng, 14, 24)),
     ];
     const v = traffic.add('semi', rng() < 0.8 ? pal.white : pal.paints[2], legs);
     v.mats[5] = pal.white;
   }
 
-  /** A truck already backed in and loading, for the opening frame. */
-  seed(i: number, dwell: number) {
+  /** A truck already backed into the charging bay and charging, for the opening frame. */
+  seedCharging(dwell: number) {
     const { traffic, pal } = this.env;
-    const d = this.docks[i];
-    d.taken = true;
-    d.loading = true;
-    this.trucks++;
-    const v = traffic.add('semi', pal.white, this.afterDocked(d, dwell));
+    this.bay.taken = true;
+    this.bay.loading = true;
+    const v = traffic.add('semi', pal.white, this.afterCharged(dwell));
     v.mats[5] = pal.white;
+    v.charging = true;
   }
 
   update(dt: number) {
-    // one truck in the yard at a time, with a pause after it leaves
-    if (this.trucks > 0) {
+    // one truck coming in to load at a time, with a pause after it has gone on to the bay
+    if (this.inbound > 0) {
       this.timer = Math.max(this.timer, rr(this.env.rng, 10, 20));
       return;
     }

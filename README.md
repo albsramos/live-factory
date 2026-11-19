@@ -48,9 +48,11 @@ any other React setup.
 - **Traffic**: cars, SUVs, an angular pickup, two-seat robotaxis and a robovan drive a small road network. They stop
   at an invisible signal at the junction, give way to people already on the zebra crossings, and hold back while a
   truck pulls out. Semis only come for the yard and the loading bay, so there are never more than two at once.
-- **Truck yard**: one semi at a time turns in off the avenue. It drives down the yard lane past its dock, then backs
-  in with the trailer swinging round. It loads under a green dock lamp, then pulls out across the yard and turns
-  onto the avenue once there's a gap. People on the pavement wait at the yard's gate and exit while a semi crosses,
+- **Truck yard**: a semi turns in off the avenue, drives down the yard lane past one of the two docks, then backs in
+  with the trailer swinging round. It loads under a green dock lamp, pulls out, and backs into the charging bay
+  beside the docks, charges, then pulls out across the yard and turns onto the avenue once there's a gap. Every spot
+  a semi parks has its own slim white charger on a kerbed island the trucks can't drive over (with a battery bank
+  beside the bay); while a semi is parked there, the cable to its cab glows green. The next semi can load while one charges. People on the pavement wait at the yard's gate and exit while a semi crosses,
   well clear of where its trailer swings, and the same goes for the charging lot's driveways.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
@@ -60,11 +62,13 @@ any other React setup.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
-- **The factory's front entrance**: the ground floor steps back in a V under the storeys above, its glass walls
-  angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it.
+- **The factory's front entrance**: the ground floor steps back in a V under the storeys above and a blank fascia,
+  its glass walls angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go
+  through it.
 - **Parks for the staff**: a pocket park on the corner by the plaza and a bigger one east of the pavilion, with grass,
   paths, trees and benches where employees sit or stand together on their break.
-- **Charging**: cars nose into the chargers, charge (with a pulsing light and cable), back out and leave.
+- **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
+  charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and full.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.
 - **Construction**: a tower crane swings between the material pile and the slab while workers move around.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where

@@ -98,7 +98,7 @@ try {
   console.log(`  vehicles touching people   ${r.people.length}${r.people.length ? '\n    ' + r.people.slice(0, 10).join('\n    ') : ''}`);
   console.log(`  vehicle collisions         ${r.crashes.length}${r.crashes.length ? '\n    ' + r.crashes.slice(0, 10).join('\n    ') : ''}`);
   console.log(`  traffic standing still     ${stoppedPct.toFixed(1)}%   (around 20% is normal: lights, crossings, queues)`);
-  console.log(`  truck runs                 yard ${r.yard}, loading bay ${r.bay}   (about 6 and 6 per 15 minutes)`);
+  console.log(`  truck runs                 yard ${r.yard}, loading bay ${r.bay}   (about 7 and 6 per 15 minutes)`);
   console.log(`  longest stall              ${r.stall.toFixed(0)} s, ${r.stallAt || '-'}`);
   const isBad = r.people.length > 0 || r.crashes.length > 0 || r.stall > 180 || stoppedPct > 35;
   console.log(isBad ? 'FAIL' : 'OK');

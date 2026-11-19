@@ -31,6 +31,8 @@ export function streetFurniture(env: Env, sprites: Sprites, edge: string) {
   const hedges: number[][] = [
     [30.4, 69.6, 34.6, 70.6], [54.7, 67.0, 55.3, 79.8], [80.6, 76.0, 81.2, 86.0],
     [80.8, 38.85, 85.6, 39.35], [91, 38.85, 96.6, 39.35],
+    // the planter on the plaza in front of the entrance
+    [33.6, 51.8, 34.4, 56.4],
   ];
   hedges.forEach((h, i) => S.push(new HedgeItem(sprites, h[0], h[1], h[2], h[3], pal.planter, i)));
   const lamps: number[][] = [

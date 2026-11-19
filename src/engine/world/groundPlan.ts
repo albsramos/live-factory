@@ -75,6 +75,21 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     groundRect(ctx, 64.8, -4.6, 66.2, 6.0);
     groundRect(ctx, 64.8, 28.4, 66.2, 38.6);
     ctx.fill();
+    // raised, kerbed islands the semis can't drive over: one for the bay's charger and the battery bank, one for the
+    // charger beside each dock, all just outside where the semis' trailers sweep
+    ctx.beginPath();
+    groundRect(ctx, 30.6, 19.0, 48.3, 25.8);
+    groundRect(ctx, 44.9, 6.55, 46.7, 7.25);
+    groundRect(ctx, 44.9, 12.2, 46.7, 12.9);
+    ctx.fillStyle = pal.plaza;
+    ctx.fill();
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = pal.curbHi;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+    ctx.strokeStyle = pal.curbLo;
+    ctx.lineWidth = 0.2;
+    ctx.stroke();
     // the pocket park: grass with a path across it
     ctx.fillStyle = pal.lawn;
     ctx.strokeStyle = pal.lawn;
@@ -168,7 +183,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     ctx.setLineDash([]);
     ctx.beginPath();
     // dock bays and the yard lane
-    for (const y of [1.5, 7.5, 13.5, 19.5, 25.5]) lineW(ctx, 30.2, y, 0, 46, y, 0);
+    for (const y of [1.5, 7.5, 13.5, 19.0]) lineW(ctx, 30.2, y, 0, 46, y, 0);
     // truck bay box
     lineW(ctx, 35.4, 73, 0, 35.4, 92.2, 0);
     lineW(ctx, 38.6, 73, 0, 38.6, 92.2, 0);

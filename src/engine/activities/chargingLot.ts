@@ -1,8 +1,8 @@
 // Charging lot: three live stalls (cars pull in nose first, charge, back out and leave) and three parked cars.
 
-import { C, pick, rr, type Mat } from '../core';
-import { box } from '../draw';
-import { rectShadow } from '../ground';
+import { pick, rr, type Mat } from '../core';
+import { boxShadow, rectShadow } from '../ground';
+import { H, HD, HW, drawChargeCable, drawChargerPost } from '../charging';
 import { drawMesh } from '../mesh';
 import { Path } from '../path';
 import { FnItem } from '../statics';
@@ -34,38 +34,18 @@ export class ChargingLot implements Activity {
         ).still(),
       );
     }
-    // charger posts between the two rows
+    // a charger between the two rows for each pair of stalls: the parked car behind is plugged in and full, and the
+    // cable to the stall in front glows while a car charges there
     this.stalls.forEach((x, i) => {
       const px = x + 1.5, py = 67;
       statics.push(
-        new FnItem(px - 0.2, py - 0.15, 0, px + 0.2, py + 0.15, 1.9, (r) => {
-          box(r, px - 0.18, py - 0.13, 0, px + 0.18, py + 0.13, 1.75, pal.white, { edge: 'rgba(255,255,255,0.6)' });
-          box(r, px - 0.19, py - 0.14, 1.75, px + 0.19, py + 0.14, 1.9, pal.dark);
-          const ctx = r.ctx;
-          const on = this.cars[i]?.charging;
-          const pulse = 0.5 + 0.5 * Math.sin(r.t * 2.4 + i);
-          // status light
-          ctx.fillStyle = on ? pal.led : pal.night ? '#2a2c33' : '#c9cad2';
-          ctx.globalAlpha = on ? 0.55 + 0.45 * pulse : 1;
-          const X = (px + 0.18 - (py + 0.05)) * C, Y = (px + 0.18 + py + 0.05) * 0.5 - 1.45;
-          ctx.fillRect(X - 0.05, Y - 0.18, 0.1, 0.32);
-          ctx.globalAlpha = 1;
-          // cables
-          ctx.strokeStyle = pal.night ? '#0c0c0e' : '#3b3d44';
-          ctx.lineWidth = 0.07;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          // to the parked car behind
-          const sx = (px - (py + 0.6)) * C, syy = (px + py + 0.6) * 0.5 - 0.8;
-          ctx.moveTo(X, Y + 0.2);
-          ctx.quadraticCurveTo((X + sx) / 2, Y + 0.6, sx, syy);
-          if (on) {
-            const ex = (x + 0.75 - (py - 0.9)) * C, ey = (x + 0.75 + py - 0.9) * 0.5 - 0.75;
-            ctx.moveTo(X, Y + 0.2);
-            ctx.quadraticCurveTo((X + ex) / 2, Y + 0.7, ex, ey);
-          }
-          ctx.stroke();
-        }),
+        new FnItem(px - HW, py - HD, 0, px + HW, py + HD, H, (r) => {
+          const on = !!this.cars[i]?.charging;
+          drawChargerPost(r, pal, px, py, on ? 'charging' : 'full');
+          // from the post's right side to a port on the charging car's right flank, where the camera sees it
+          if (on) drawChargeCable(r, pal, [px + HW, py, 1.2], [x + 0.96, 65.3, 0.8], true);
+          drawChargeCable(r, pal, [px - HW, py + HD, 1.2], [x + 0.75, 67.9, 0.75], false);
+        }, (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H)),
       );
     });
   }

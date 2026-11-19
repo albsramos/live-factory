@@ -29,6 +29,12 @@
   find its swept area: run the simulation and record the semi's bodies (`v.bodies`) along the route, or replay the
   trailer (it trails the kingpin 9.6 m behind, see `updateTrailer`) along the path points.
 
+- The truck yard: two docks and a charging bay (`activities/truckYard.ts`). A semi loads at a dock, then backs into
+  the bay to charge, then leaves. One semi moves in the yard at a time (a mutex); a second may come in and load while
+  one charges, because neither one's sweep touches the other parked, and it waits at its dock until the bay is free.
+  Each parking spot's charger, and the battery bank, stand on kerbed islands outside every sweep. After changing the yard, record
+  the semis' bodies over 30 minutes and check that nothing fixed lies in them (the island, the platform, the batteries).
+
 ## People
 
 - People walk the walkway graph (`WalkGraph` in `people/crowd.ts`). An edge linked with a zone is a crossing: a person
@@ -38,10 +44,11 @@
   a walkway end off screen (same rule as the vehicles' spawn points) or a building door. Activities that need a
   person mid-scene take one with `crowd.arrival(kind)`, never one placed in view.
 - Nobody walks through a building or a platform: a figure inside another item's box breaks the depth sort and the
-  item flickers. The one exception is the factory's door: its node stands in the entrance recess (`ENTRANCE` in
-  `world/buildings.ts`), inside the factory's box, where the sort's fallback always draws a figure after the
-  factory. Keep it within about 1.5 m of the face, or a figure's head shows over the floor above. Scripted loops (`Looper`) run in a straight line from their last step back to their first, so close
-  the loop explicitly when that line would cut through something.
+  item flickers. The one exception is the factory's door: its node stands in the entrance recess (`ENTRANCE_DOOR`
+  in `world/entrance.ts`), inside the factory's box, where the sort's fallback always draws a figure after the
+  factory. Keep it within about 1.5 m of the face, or a figure's head shows over the floor above. Scripted loops
+  (`Looper`) run in a straight line from their last step back to their first, so close the loop explicitly when that
+  line would cut through something.
 - The parks are for staff on their break: people only (no robots), sitting or chatting; no kids, no ball games.
 - About half the wanderers are humanoid robots (`crowd.targetRobots`), and half the street chat groups' members.
 

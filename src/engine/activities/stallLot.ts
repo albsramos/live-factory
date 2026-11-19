@@ -6,10 +6,10 @@
 // The way in is tagged 'in' and the way out 'out', so a zone at a shared driveway can keep them apart.
 // Used for the charging hub east of the avenue and the staff car park south-west of the factory.
 
-import { C, pick, rr } from '../core';
-import { box } from '../draw';
+import { pick, rr } from '../core';
 import { drawMesh } from '../mesh';
-import { rectShadow } from '../ground';
+import { boxShadow, rectShadow } from '../ground';
+import { H, HD, HW, drawChargeCable, drawChargerPost } from '../charging';
 import { Path } from '../path';
 import { FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
@@ -74,23 +74,22 @@ export class StallLot implements Activity {
     for (const s of plan.stalls.filter((t) => t.isLive).slice(0, 2)) this.seed(s);
   }
 
-  /** A charger post at the head of a stall, its light pulsing green while a car charges. */
+  /**
+   * A charger at the head of a stall. A car that stays is plugged in and full; at a live stall the cable is hung on
+   * the post until a car pulls in, then runs to its charge port and glows while it charges.
+   */
   private charger(s: Stall) {
     const { pal } = this.env;
     // just right of the stall's centre line, clear of the canopy posts on the stall lines
     const px = s.x + 0.9, py = s.y + s.dir * (2.4 + this.plan.chargerGap);
-    return new FnItem(px - 0.2, py - 0.15, 0, px + 0.2, py + 0.15, 1.9, (r) => {
-      box(r, px - 0.18, py - 0.13, 0, px + 0.18, py + 0.13, 1.75, pal.white, { edge: 'rgba(255,255,255,0.6)' });
-      box(r, px - 0.19, py - 0.14, 1.75, px + 0.19, py + 0.14, 1.9, pal.dark);
-      const on = s.isLive ? !!this.cars.get(s)?.charging : true;
-      const pulse = 0.5 + 0.5 * Math.sin(r.t * 2.4 + s.x);
-      const ctx = r.ctx;
-      ctx.fillStyle = on ? pal.led : pal.night ? '#2a2c33' : '#c9cad2';
-      ctx.globalAlpha = on ? 0.55 + 0.45 * pulse : 1;
-      const X = (px + 0.18 - (py + 0.05)) * C, Y = (px + 0.18 + py + 0.05) * 0.5 - 1.45;
-      ctx.fillRect(X - 0.05, Y - 0.18, 0.1, 0.32);
-      ctx.globalAlpha = 1;
-    });
+    // from the post's right side to a port on the car's right flank, where the camera sees it
+    const from = [px + HW, py, 1.2], port = [s.x + 0.96, s.y + s.dir * 1.2, 0.8];
+    return new FnItem(px - HW, py - HD, 0, px + HW, py + HD, H, (r) => {
+      const car = this.cars.get(s);
+      const state = !s.isLive ? 'full' : car?.charging ? 'charging' : 'idle';
+      drawChargerPost(r, pal, px, py, state);
+      if (state !== 'idle') drawChargeCable(r, pal, from, port, state === 'charging');
+    }, (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H));
   }
 
   private charge(dwell: number) {
