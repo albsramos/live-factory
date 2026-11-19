@@ -1,0 +1,41 @@
+# Traffic, people and the checks
+
+## Vehicles
+
+- A vehicle follows a list of legs; each leg is a filleted polyline (`Path.poly(points, radii)`, where `radii[i]` is
+  the fillet at `points[i + 1]`). A leg can wait (`until`), dwell, reverse (`rev`) or ignore the vehicle ahead
+  (`ghost`, only inside lots that a mutex keeps to one car).
+- Vehicles brake for whatever body lies on their own path ahead (`senseAhead`, margin = own half width + 0.15 m).
+  Two vehicles whose bodies come that close across lanes will each see the other and stop: keep a lane's swept
+  area at least that far from opposing traffic.
+- Zones (`traffic.zone`) are reserved before entering. A leg's zones that lie within a gap of each other (3.5 m, or
+  a truck length for semis) are reserved together, all or nothing, and the vehicle queues in each zone it asks.
+  Two consequences that have caused gridlocks:
+  - never let a zone sit closer than 3.5 m to the junction on a car's path, or cars reserve the junction from far
+    away and their queue entries block other movements;
+  - a semi waiting for one zone holds a queue place in every zone of that group, so don't group a busy zone with the
+    junction on a semi's leg. Split the leg instead.
+- A vehicle keeps a zone until no part of its footprint (the box round its turned outline, plus 0.3 m) is in it, so
+  a long trailer holds a crossing until it has fully passed, and lets go as soon as it has.
+- Where two movements of one car park share a driveway, tag their legs (`tag: 'in'` / `'out'`, as `StallLot` does)
+  and give the driveway's zone `keyOf = (_v, leg) => leg.tag ?? 'car'`, so a car turning in and one turning out
+  take turns instead of swinging into each other.
+- Only reservations taken when a leg starts count. If a vehicle's nose is already over a zone when its leg begins,
+  it can't stop before it: end the previous leg earlier.
+- Semis: the trailer cuts inside every turn, by metres. Before adding zones, crossings or props near a semi's route,
+  find its swept area: run the simulation and record the semi's bodies (`v.bodies`) along the route, or replay the
+  trailer (it trails the kingpin 9.6 m behind, see `updateTrailer`) along the path points.
+
+## People
+
+- People walk the walkway graph (`WalkGraph` in `walkers.ts`). An edge linked with a zone is a crossing: a person
+  takes the zone for the whole edge and waits at the node before it. Nodes either side of a crossing must sit outside
+  every vehicle's swept area, offset included (`spread` scales the offset where space is tight).
+- Wanderers never start part-way along a crossing.
+- The parks are for staff on their break: people only (no robots), sitting or chatting; no kids, no ball games.
+
+## Checking a change
+
+`npm run check:sim` (default 20 simulated minutes; pass a number for more). It must report 0 vehicles touching
+people and 0 collisions, traffic standing still around 20 %, and truck runs at their usual rate. Run 60 minutes
+for anything near the junction, the yard or the loading bay.

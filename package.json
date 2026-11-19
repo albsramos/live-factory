@@ -30,7 +30,9 @@
     "build:artifact": "node scripts/build-artifact.mjs",
     "typecheck": "tsc -p . --noEmit",
     "check:components": "bash scripts/check-components.sh",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "check:sim": "node scripts/sim-check.mjs",
+    "record:gifs": "node scripts/record-gifs.mjs"
   },
   "peerDependencies": {
     "react": ">=17"

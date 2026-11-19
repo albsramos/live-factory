@@ -1,0 +1,34 @@
+# live-factory
+
+A self-running isometric factory town for React: one `<canvas>`, no text, no dependencies besides React.
+
+## Stack
+
+- TypeScript (strict) and React (peer, 17 or newer). Vite 8 builds the library (ESM + CJS, marked `'use client'`),
+  the demo website and the dev lab; `tsc` emits the type declarations.
+- The scene engine is plain TypeScript drawing on a 2D canvas, with no runtime dependencies.
+
+## Layout
+
+- `src/` the package: `LivingCity/` (the React component), `engine/` (scene, world, traffic, people), `theme.ts`
+- `site/` the demo website GitHub Pages serves; it imports the package as `live-factory`
+- `demo/` the dev lab (`npm run dev:lab`): `?gallery` shows every vehicle, `?debug` exposes `window.scene`
+- `scripts/` builds and checks; `docs/` README images and the guides below
+
+## Always
+
+- Before committing: `npm run typecheck` and `npm run check:components`; `npm run build` too if `src/` changed.
+- No `useEffect` / `useLayoutEffect` anywhere (`check:components` fails on them). Use a callback ref, an event
+  handler or `useSyncExternalStore`.
+- The scene shows no text, logos or brand marks.
+- Commits are authored by Alberto (the repo's git config) with a `Co-Authored-By:` trailer for the AI agent that
+  worked on it. Subject line in the imperative, then a body that says what changed and why, area by area.
+- Push to `main` only when asked; it redeploys the website.
+
+## Read before you…
+
+- edit anything in `src/engine/` → `docs/engine.md`
+- change a route, zone, lot, walkway, or anything that moves → `docs/simulation.md`, then `npm run check:sim`
+- add or edit a component in `site/` → `docs/site.md` (and the react-component skill)
+- change `<LivingCity>`'s props → update the props table in `README.md`, and bump the version if it breaks callers
+- change how the scene looks, or publish → `docs/release.md`, or the `scene-change` skill for the whole procedure
