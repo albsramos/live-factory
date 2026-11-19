@@ -75,10 +75,12 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     groundRect(ctx, 64.8, -4.6, 66.2, 6.0);
     groundRect(ctx, 64.8, 28.4, 66.2, 38.6);
     ctx.fill();
-    // the charging bay's island: a raised, kerbed pad for the chargers and their battery bank, just outside where
-    // the semis' trailers sweep when they back into the bay
+    // raised, kerbed islands the semis can't drive over: one for the bay's charger and the battery bank, one for the
+    // charger beside each dock, all just outside where the semis' trailers sweep
     ctx.beginPath();
     groundRect(ctx, 30.6, 19.0, 48.3, 25.8);
+    groundRect(ctx, 44.9, 6.55, 46.7, 7.25);
+    groundRect(ctx, 44.9, 12.2, 46.7, 12.9);
     ctx.fillStyle = pal.plaza;
     ctx.fill();
     ctx.lineJoin = 'round';

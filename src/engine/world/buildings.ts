@@ -9,7 +9,7 @@ import { megapacks } from '../blocks';
 import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details';
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
-import { chargerRow } from './chargers';
+import { charger } from './chargers';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -83,10 +83,13 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       });
     }),
   );
-  // the charging bay's island, beside the bay and out of every semi's sweep: a row of chargers facing the bay, and the
-  // battery bank that feeds them where the fourth dock used to be. The kerb itself is drawn with the ground.
+  // a charger beside every spot a semi parks, each on a kerbed island just outside the semis' sweep (measured: the
+  // gap beside the second dock is the tightest), and the battery bank that feeds them where the fourth dock used to
+  // be. The kerbs are drawn with the ground (CHARGER_ISLANDS).
   megapacks(S, pal, edge, [[31.4, 37.2], [38.0, 43.8]], [21.0, 23.4], 7);
-  S.push(chargerRow(pal, [44.2, 45.8, 47.4], 19.5, [47.3, 17.8, 1.1], yard.bay));
+  for (const [spot, py] of [[yard.docks[0], 6.9], [yard.docks[1], 12.55], [yard.bay, 19.4]] as const) {
+    S.push(charger(pal, 45.8, py, [46.7, spot.y + 1.3, 1.1], spot));
+  }
   // pallets in the gaps between docks, by the wall
   for (const [x, y, n] of [[33.4, 13.5, 2], [36.6, 7.5, 1], [32.2, 1.0, 1]] as const) {
     S.push(

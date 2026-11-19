@@ -1,7 +1,7 @@
-// The charging bay's chargers: a row of slim white posts with rounded tops on black bases, each with its black cable
-// looped on its side (no lettering: the scene shows no brand marks). While a semi charges in the bay, the nearest
-// post's cable runs to the cab's charge port and glows green along its whole length, the port glows and the post's
-// light breathes green.
+// The yard's chargers, one beside each spot a semi parks (the two docks and the charging bay): slim white posts with
+// rounded tops on black bases, each with its black cable looped on its side (no lettering: the scene shows no brand
+// marks). While a semi is parked there, the cable runs to the cab's charge port and glows green along its whole
+// length, the port glows and the post's light breathes green.
 
 import { C } from '../core';
 import { box, onFaceY, type R } from '../draw';
@@ -90,22 +90,18 @@ function cable(r: R, pal: Palette, from: [number, number, number], to: [number, 
 }
 
 /**
- * A row of posts along y = py, on the island beside the charging bay. The last post (nearest the cab) serves the
- * bay: a semi backed in has its charge port at `port`, just beyond that post's right side so the whole cable shows.
- * One item for the row and the cable, kept clear of the cab's box (which ends before `port`'s y), so it always sorts
- * in front of the truck.
+ * The charger beside one parking spot (a dock or the bay), on its own kerbed island just outside the semis' sweep.
+ * A semi parked there has its charge port at `port`, just beyond the post's right side so the whole cable shows;
+ * while it is there (`spot.loading`) the cable is plugged in and glows. One item for the post and its cable, kept
+ * clear of the cab's box (which ends before `port`'s y), so it always sorts in front of the truck.
  */
-export function chargerRow(pal: Palette, xs: number[], py: number, port: [number, number, number], bay: Dock) {
-  const last = xs.length - 1;
-  const x0 = Math.min(port[0], xs[0] - HW) - 0.1, x1 = Math.max(port[0], xs[last] + HW) + 0.1;
+export function charger(pal: Palette, px: number, py: number, port: [number, number, number], spot: Dock) {
   return new FnItem(
-    x0, port[1], 0, x1, py + HD + 0.05, H,
+    Math.min(port[0], px - HW) - 0.1, port[1], 0, Math.max(port[0], px + HW) + 0.1, py + HD + 0.05, H,
     (r) => {
-      xs.forEach((x, i) => post(r, pal, x, py, i === last && bay.loading));
-      if (bay.loading) cable(r, pal, [xs[last] + HW, py, 1.2], port);
+      post(r, pal, px, py, spot.loading);
+      if (spot.loading) cable(r, pal, [px + HW, py, 1.2], port);
     },
-    (ctx) => {
-      for (const x of xs) boxShadow(ctx, x - HW, py - HD, x + HW, py + HD, H);
-    },
+    (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H),
   );
 }

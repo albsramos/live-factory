@@ -32,7 +32,7 @@
 - The truck yard: two docks and a charging bay (`activities/truckYard.ts`). A semi loads at a dock, then backs into
   the bay to charge, then leaves. One semi moves in the yard at a time (a mutex); a second may come in and load while
   one charges, because neither one's sweep touches the other parked, and it waits at its dock until the bay is free.
-  The chargers and their battery bank stand on a kerbed island outside every sweep. After changing the yard, record
+  Each parking spot's charger, and the battery bank, stand on kerbed islands outside every sweep. After changing the yard, record
   the semis' bodies over 30 minutes and check that nothing fixed lies in them (the island, the platform, the batteries).
 
 ## People
