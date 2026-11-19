@@ -136,8 +136,9 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   trees.push([78.9, 1.0, 'tree2', 1], [79.0, -12, 'poplar', 1], [79.0, -24, 'poplar', 1]);
 
   // ----------------------------------------------------------------------------------------------- staff park
-  // east of the pavilion: grass with a path across it, trees, benches, and people on their break
-  const lawn = [101.5, 16.5, 131, 16.5, 136.5, 21, 136.5, 38.2, 101.5, 38.2];
+  // east of the pavilion and on north past the hub, to beyond the widest view's edge: grass with a path across it,
+  // trees, benches, and people on their break. Beside the compute platform it keeps clear of the robot's rounds.
+  const lawn = [101.5, 38.2, 101.5, -5, 102.9, -7.5, 102.9, -22, 136.5, -22, 136.5, 38.2];
   const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [152, 14.5]];
   for (const [x0, y0, x1, y1] of [[109.5, 24.2, 111.3, 24.7], [125.6, 31.2, 127.4, 31.7], [113.4, 35, 113.9, 36.8]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   staff(env, 110, 25.05, 'sit', 0, 1);
@@ -149,6 +150,12 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     for (const [x, y] of group) staff(env, x, y, 'chat', cx - x, cy - y);
   }
   trees.push([105.5, 20, 'tree', 1], [116.5, 19, 'tree2', 0.95], [129, 31.5, 'tree', 1], [119.5, 35.5, 'small', 0.9], [134, 35, 'tree2', 0.9], [103.5, 31, 'small', 0.85]);
+  trees.push([107, 6, 'tree2', 0.95], [113.5, 11.5, 'tree', 1], [106.5, -3.5, 'small', 0.85]);
+
+  // ----------------------------------------------------------------------------------------------- grass by the car park
+  // between the car park's east walk and the loading bay's truck lane, down past the bottom of every view (measured:
+  // the semi's trailer comes no nearer than x 35.1, the walkers no further east than x 20.5)
+  const verge = [21.4, 91.6, 33.2, 91.6, 33.2, 140, 21.4, 140];
 
   trees.forEach(([x, y, k, s], i) => S.push(new TreeItem(sprites, x, y, k, s, 40 + i * 1.3)));
 
@@ -172,6 +179,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     ctx.lineWidth = 1.2;
     ctx.beginPath();
     groundPoly(ctx, lawn);
+    groundPoly(ctx, verge);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = pal.plaza;
