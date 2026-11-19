@@ -57,7 +57,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(fd, fe[1], LD);
   g.chain(fe.slice(1));
   g.link(fw1, fe[1], CW1);
-  const door = g.node(ENTRANCE_DOOR.x, ENTRANCE_DOOR.y, true);
+  const door = g.node(ENTRANCE_DOOR.x, ENTRANCE_DOOR.y, true, 0.5);
   const p = [g.node(29.2, 58.6), g.node(36, 61.2), g.node(41.2, 61.6), g.node(29.0, 50.0), g.node(41, 50.2)];
 
   g.chain([door, p[0], p[1]]);

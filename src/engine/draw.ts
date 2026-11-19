@@ -104,6 +104,19 @@ export function onFaceY(r: R, x0: number, x1: number, y1: number, z1: number, fn
   ctx.restore();
 }
 
+/**
+ * Run `fn` with the context mapped onto an upright wall standing on the line from (ax, ay) to (bx, by), at any
+ * angle: local u runs from a to b in metres (put a on the screen's left), v runs down from z1.
+ */
+export function onWall(r: R, ax: number, ay: number, bx: number, by: number, z1: number, fn: (ctx: Ctx, w: number) => void) {
+  const w = Math.hypot(bx - ax, by - ay), ex = (bx - ax) / w, ey = (by - ay) / w;
+  const ctx = r.ctx;
+  ctx.save();
+  ctx.transform((ex - ey) * C, (ex + ey) * 0.5, 0, 1, (ax - ay) * C, (ax + ay) * 0.5 - z1);
+  fn(ctx, w);
+  ctx.restore();
+}
+
 /** Run `fn` with the context mapped onto a horizontal plane at height z: local p runs along +x, q along +y. */
 export function onTop(r: R, x0: number, y0: number, z: number, fn: (ctx: Ctx) => void) {
   const ctx = r.ctx;

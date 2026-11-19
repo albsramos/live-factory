@@ -44,8 +44,11 @@
   a walkway end off screen (same rule as the vehicles' spawn points) or a building door. Activities that need a
   person mid-scene take one with `crowd.arrival(kind)`, never one placed in view.
 - Nobody walks through a building or a platform: a figure inside another item's box breaks the depth sort and the
-  item flickers. Scripted loops (`Looper`) run in a straight line from their last step back to their first, so close
-  the loop explicitly when that line would cut through something.
+  item flickers. The one exception is the factory's door: its node stands in the entrance recess (`ENTRANCE_DOOR`
+  in `world/entrance.ts`), inside the factory's box, where the sort's fallback always draws a figure after the
+  factory. Keep it within about 1.5 m of the face, or a figure's head shows over the floor above. Scripted loops
+  (`Looper`) run in a straight line from their last step back to their first, so close the loop explicitly when that
+  line would cut through something.
 - The parks are for staff on their break: people only (no robots), sitting or chatting; no kids, no ball games.
 - About half the wanderers are humanoid robots (`crowd.targetRobots`), and half the street chat groups' members.
 

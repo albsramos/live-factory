@@ -10,7 +10,7 @@ import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '..
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
-import { drawEntrance } from './entrance';
+import { drawEntrance, entrancePillars } from './entrance';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -25,8 +25,8 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
   const factoryBandsX: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5 },
     { top: 5.2, bot: 7.8, every: 1.5 },
-    // the ground floor, either side of the recessed entrance (entrance.ts), flush up to the column at its end
-    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 8.0], [16.6, 35.5]] },
+    // the ground floor, either side of the recessed entrance (entrance.ts)
+    { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 7.6], [20.4, 35.5]] },
   ];
   const factoryBandsY: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5, spans: [[0.5, 65.5]] },
@@ -36,11 +36,12 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
   S.push(
     new BoxItem(-40, 36, 0, 26, 72, 13, pal.factory, { edge }, (r) => {
       windowsX(r, pal, 26, 36, 72, 13, factoryBandsX);
-      onFaceX(r, 26, 36, 72, 13, (ctx) => drawEntrance(r, pal, ctx, 72, 13));
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
+      drawEntrance(r, pal, edge);
     }),
   );
+  S.push(...entrancePillars(pal, edge));
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];

@@ -1,71 +1,136 @@
-// The factory's main entrance on the plaza: the ground floor is dented into the building under the flush facade
-// above, like a covered porch. Above it runs a dark fascia (left blank: the scene shows no lettering); slim columns
-// stand on the face line holding the floor above; behind them, set back, the glass front with a dark doorway, the glass
-// wrapping round into the recess's side.
+// The factory's main entrance on the plaza: the ground floor steps back in a V under the flush facade above, its
+// glass walls angling in like an arrowhead to a dark door at the tip. A dark fascia runs over the opening (left blank:
+// the scene shows no lettering), and two pillars stand in its mouth, in line with the door's jambs.
 //
-// The recess is painted onto the factory's +x face, which is exact for this camera: a point d metres inside the face
-// lands where the face point (y + d, z + d) would, so the inner glass, the floor and the visible side wall are the
-// face's own drawing shifted up and left by d, clipped to the opening. People walk up to the doorway's front and in
-// at the walkway's door node; nobody stands inside the recess, so nothing has to sort into the building.
+// The recess is drawn as part of the factory's +x face, clipped to the opening, so it needs no sort item of its own.
+// People come and go at the walkway's door node just in front of the door, which is inside the factory's box: the
+// sort's fallback always draws a figure there after the factory (docs/simulation.md). The pillars are items, so they
+// hide whoever walks behind them, and clip to the same opening so the floor above covers their tops.
 
-import type { Ctx, R } from '../draw';
+import { sx, sy } from '../core';
+import { box, onFaceX, onWall, type Ctx, type R } from '../draw';
 import { ribbons, windowGlow, type Band } from '../details';
 import type { Palette } from '../palette';
-
-/** where people go in and out, just in front of the face */
-export const ENTRANCE_DOOR = { x: 26.7, y: 58.0 };
+import { FnItem } from '../statics';
 
 /**
- * The opening along the face (y), its height and how far the glass is set back. The fascia spans a little more:
- * past the opening's end at Y0, the last bay (from FY0) is glazed flush with the facade (the factory's own band).
+ * The opening in the factory's face at x, from y0 to y1 (lined up with the mullions of the floors above), its height
+ * (the underside of the floor above), how far back the door stands and the door's width, centred.
  */
-const Y0 = 55.4, Y1 = 63.6, H = 4.0, D = 1.8, FY0 = 52.4;
+export const ENTRANCE = { x: 26, y0: 52, y1: 64, h: 4.0, depth: 2.4, door: 3.6 };
+const MID = (ENTRANCE.y0 + ENTRANCE.y1) / 2;
 
-/**
- * Draw the recessed entrance on the factory's +x face, inside that face's transform (u along the face from
- * y = faceY1, v down from the top at faceTop).
- */
-export function drawEntrance(r: R, pal: Palette, ctx: Ctx, faceY1: number, faceTop: number) {
-  const u0 = faceY1 - Y1, u1 = faceY1 - Y0, v0 = faceTop - H, v1 = faceTop;
-  ctx.save();
+/** where people go in and out: just in front of the door, shallow enough that a figure stays below the floor above */
+export const ENTRANCE_DOOR = { x: 24.9, y: MID };
+
+/** Clip to the opening: whatever stands in the recess shows only through it. */
+function clipToOpening(ctx: Ctx) {
+  const { x, y0, y1, h } = ENTRANCE;
   ctx.beginPath();
-  ctx.rect(u0, v0, u1 - u0, v1 - v0);
+  ctx.moveTo(sx(x, y1), sy(x, y1, h));
+  ctx.lineTo(sx(x, y0), sy(x, y0, h));
+  ctx.lineTo(sx(x, y0), sy(x, y0, 0));
+  ctx.lineTo(sx(x, y1), sy(x, y1, 0));
+  ctx.closePath();
   ctx.clip();
-  // the porch floor, which fills the lower part of the opening
+}
+
+/** The entrance, drawn over the factory's +x face: call it from the factory's decoration. */
+export function drawEntrance(r: R, pal: Palette, edge: string) {
+  const ctx = r.ctx;
+  const { x, y0, y1, h } = ENTRANCE;
+  const bx = x - ENTRANCE.depth, d0 = MID - ENTRANCE.door / 2, d1 = MID + ENTRANCE.door / 2;
+  ctx.save();
+  clipToOpening(ctx);
+  // the floor fills the opening, in the shade of the storeys above and darker towards the door; the walls and the
+  // door stand on it
   ctx.fillStyle = pal.plaza;
-  ctx.fillRect(u0, v0, u1 - u0, v1 - v0);
-  // the set-back glass front: the face's own glazing, shifted by the depth
-  ctx.save();
-  ctx.translate(-D, -D);
-  const door = faceY1 - ENTRANCE_DOOR.y;
-  const glass: Band[] = [
-    { top: v0 + 0.15, bot: v1, every: 0.9, spans: [[u0, door - 1.2], [door + 1.2, u1]] },
-    { top: v0 + 0.7, bot: v1, every: 0.8, spans: [[door - 1.2, door + 1.2]], dark: true },
-  ];
-  ribbons(r, pal, ctx, u1, glass);
-  windowGlow(r, ctx, u1, glass);
-  ctx.restore();
-  // the side wall at y = Y0, facing the camera: glass too, wrapping round from the front. Mapped so its local
-  // t runs inwards from the face (u = u1 - t, v = v - t), so ribbons draws it with upright mullions.
-  ctx.save();
-  ctx.transform(-1, -1, 0, 1, u1, 0);
-  const side: Band[] = [{ top: v0 + 0.15, bot: v1, every: 0.9, spans: [[0, D]] }];
-  ctx.fillStyle = pal.factory.left;
-  ctx.fillRect(0, v0, D, H);
-  ribbons(r, pal, ctx, D, side);
-  windowGlow(r, ctx, D, side);
-  ctx.restore();
-  // the shade under the floor above, deepest at the back
-  const g = ctx.createLinearGradient(0, v0, 0, v1);
-  g.addColorStop(0, r.night ? 'rgba(0, 0, 0, 0.25)' : 'rgba(40, 42, 56, 0.22)');
-  g.addColorStop(1, 'rgba(40, 42, 56, 0)');
+  ctx.fill();
+  ctx.fillStyle = pal.shadow;
+  ctx.fill();
+  ctx.fill();
+  const g = ctx.createLinearGradient(sx(x, MID), sy(x, MID, 0), sx(bx, MID), sy(bx, MID, 0));
+  g.addColorStop(0, 'rgba(0, 0, 0, 0)');
+  g.addColorStop(1, pal.ao);
   ctx.fillStyle = g;
-  ctx.fillRect(u0, v0, u1 - u0, v1 - v0);
-  // columns on the face line, clear of the doorway
-  ctx.fillStyle = pal.white.right;
-  for (const y of [Y0 + 0.13, 60.6, Y1 - 0.35]) ctx.fillRect(faceY1 - y - 0.13, v0, 0.26, H);
+  ctx.fill();
+  if (r.night) {
+    // the lit glass warms the floor between the walls
+    ctx.fillStyle = 'rgba(255, 186, 104, 0.14)';
+    ctx.fill();
+  }
+  // the two glass walls: the one on the right faces the camera, the left one is seen edge-on and a shade darker
+  const bands: Band[] = [{ top: 0.12, bot: h - 0.12, every: 1.1 }];
+  const pane = (c: Ctx, w: number, dim: number) => {
+    c.fillStyle = pal.white.right;
+    c.fillRect(0, 0, w, h);
+    bands[0].spans = [[0.1, w - 0.1]];
+    ribbons(r, pal, c, w, bands);
+    windowGlow(r, c, w, bands);
+    if (!r.night) {
+      c.fillStyle = pal.faceShadow;
+      for (let i = 0; i < dim; i++) c.fillRect(0, 0, w, h);
+    }
+  };
+  onWall(r, bx, d0, x, y0, h, (c, w) => pane(c, w, 2));
+  onWall(r, x, y1, bx, d1, h, (c, w) => pane(c, w, 3));
+  // the door at the tip: dark glass in two pairs of leaves with pull handles, under a transom
+  onFaceX(r, bx, d0, d1, h, (c, w) => {
+    c.fillStyle = pal.white.right;
+    c.fillRect(0, 0, w, h);
+    c.fillStyle = pal.glassDark;
+    c.fillRect(0.12, 0.12, w - 0.24, h - 0.12);
+    c.strokeStyle = r.night ? 'rgba(255, 255, 255, 0.07)' : 'rgba(255, 255, 255, 0.16)';
+    c.lineWidth = 0.07;
+    c.beginPath();
+    for (let i = 1; i < 4; i++) {
+      c.moveTo((w * i) / 4, h - 2.6);
+      c.lineTo((w * i) / 4, h);
+    }
+    c.moveTo(0.12, h - 2.6);
+    c.lineTo(w - 0.12, h - 2.6);
+    c.stroke();
+    c.strokeStyle = r.night ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.5)';
+    c.lineWidth = 0.06;
+    c.beginPath();
+    for (const u of [w / 4 - 0.14, w / 4 + 0.14, (3 * w) / 4 - 0.14, (3 * w) / 4 + 0.14]) {
+      c.moveTo(u, h - 1.3);
+      c.lineTo(u, h - 0.8);
+    }
+    c.stroke();
+  });
+  // by day the storeys above darken the top of the opening (at night the glass is lit from inside)
+  if (!r.night) onFaceX(r, x, y0, y1, h, (c, w) => {
+    const s = c.createLinearGradient(0, 0, 0, 1.6);
+    s.addColorStop(0, pal.ao);
+    s.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    c.fillStyle = s;
+    c.fillRect(0, 0, w, 1.6);
+  });
   ctx.restore();
-  // the fascia over the opening and the flush bay beside it
-  ctx.fillStyle = pal.factoryDark.right;
-  ctx.fillRect(u0 - 0.3, v0 - 1.15, faceY1 - FY0 - u0 + 0.6, 1.05);
+  // the edge of the slab over the opening, and the blank fascia above it
+  ctx.beginPath();
+  ctx.moveTo(sx(x, y1), sy(x, y1, h));
+  ctx.lineTo(sx(x, y0), sy(x, y0, h));
+  ctx.strokeStyle = edge;
+  ctx.lineWidth = 0.09;
+  ctx.stroke();
+  onFaceX(r, x, y0 - 0.3, y1 + 0.3, h + 1.15, (c, w) => {
+    c.fillStyle = pal.factoryDark.right;
+    c.fillRect(0, 0, w, 1.05);
+  });
+}
+
+/** The two square pillars in the entrance's mouth, carrying the floor above, in line with the door's jambs. */
+export function entrancePillars(pal: Palette, edge: string) {
+  const { x, h, door } = ENTRANCE;
+  const s = 0.15;
+  return [MID - door / 2, MID + door / 2].map((y) =>
+    new FnItem(x - 2 * s, y - s, 0, x, y + s, h, (r) => {
+      r.ctx.save();
+      clipToOpening(r.ctx);
+      box(r, x - 2 * s, y - s, 0, x, y + s, h, pal.white, { edge });
+      r.ctx.restore();
+    }).still(),
+  );
 }
