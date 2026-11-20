@@ -1,5 +1,6 @@
-// Drawing a walker as a tiny clay figure with a walk cycle: people in plain clothes, and humanoid robots with a white
-// shell, black glass head, black waist, hands and feet.
+// Drawing a walker as a tiny clay figure with a walk cycle: people in plain grey clothes, and humanoid robots with a
+// white or champagne shell, a black glass head with a light line round the face, black shoulder straps, waist, hips,
+// elbows, knees, hands and feet.
 
 import { C, css, mix, parse } from '../core';
 import { box, type Ctx, type R } from '../draw';
@@ -54,6 +55,7 @@ export function drawFigure(r: R, w: Walker) {
   ctx.lineJoin = 'round';
   // legs (a robot's far leg in the shade of its shell, its feet black)
   const feet: number[][] = [];
+  const knees: number[][] = [];
   ctx.strokeStyle = tone(w.legs);
   ctx.lineWidth = 0.15 * k;
   ctx.beginPath();
@@ -80,14 +82,19 @@ export function drawFigure(r: R, w: Walker) {
       if (robot) {
         // the knee leads a little, more on the swinging leg
         const bend = (0.03 + 0.04 * Math.max(0, sw * s)) * k;
-        ctx.lineTo((hx + fx) / 2 + dX * bend, (hy + fy) / 2 + dY * bend * 0.5);
+        const kx = (hx + fx) / 2 + dX * bend, ky = (hy + fy) / 2 + dY * bend * 0.5;
+        ctx.lineTo(kx, ky);
+        knees.push([kx, ky]);
         feet.push([fx, fy]);
       }
       ctx.lineTo(fx, fy);
     }
   }
   ctx.stroke();
-  if (robot) drawFeet(w, ctx, feet, dX, dY, tone);
+  if (robot) {
+    drawFeet(w, ctx, feet, dX, dY, tone);
+    joints(w, ctx, knees, 0.045, tone);
+  }
 
   const shY = Y - (sit ? 0.9 : 1.38) * k - bob;
   const tX = X + sway * 2;
@@ -124,12 +131,9 @@ export function drawFigure(r: R, w: Walker) {
   }
   ctx.stroke();
   if (robot) {
-    ctx.fillStyle = tone(w.pal.bot.dark);
-    for (const [hx, hy] of hands) {
-      ctx.beginPath();
-      ctx.arc(hx, hy, 0.055 * k, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    // black hands, and black elbows halfway down
+    joints(w, ctx, hands, 0.055, tone);
+    joints(w, ctx, hands.map(([hx, hy], i) => [(hx + tX + (i ? -1 : 1) * (0.2 * k * Math.abs(dY) + 0.08 * k)) / 2, (hy + shY + 0.04 * k) / 2]), 0.038, tone);
   }
 
   // torso
@@ -156,6 +160,16 @@ export function drawFigure(r: R, w: Walker) {
   if (w.carry && carryFront) drawCarry(w, r);
 }
 
+/** A robot's black joints (hands, elbows, knees): a dot of `rad` (in figure sizes) at each point. */
+function joints(w: Walker, ctx: Ctx, pts: number[][], rad: number, tone: (c: string) => string) {
+  ctx.fillStyle = tone(w.pal.bot.dark);
+  for (const [x, y] of pts) {
+    ctx.beginPath();
+    ctx.arc(x, y, rad * w.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 /** Black feet, pointing the way the robot faces. */
 function drawFeet(w: Walker, ctx: Ctx, pts: number[][], dX: number, dY: number, tone: (c: string) => string) {
   const k = w.size;
@@ -170,8 +184,8 @@ function drawFeet(w: Walker, ctx: Ctx, pts: number[][], dX: number, dY: number, 
 }
 
 /**
- * A humanoid robot's body: a white chest plate shaded on its far side, a black waist, white hips, and a head of
- * black glass that catches the light on the side it looks towards.
+ * A humanoid robot's body: a chest plate in its shell colour, shaded on its far side, under black shoulder straps; a
+ * black waist and hips; and a head of black glass with a thin light line round the face, seen from the front.
  */
 function drawShell(w: Walker, r: R, tX: number, top: number, bot: number, dX: number, dY: number, tone: (c: string) => string) {
   const ctx = r.ctx, k = w.size, bot2 = w.pal.bot;
@@ -187,14 +201,14 @@ function drawShell(w: Walker, r: R, tX: number, top: number, bot: number, dX: nu
     ctx.fill();
   };
   // chest, then its shaded side
-  ctx.fillStyle = tone(bot2.shell);
+  ctx.fillStyle = tone(w.body);
   quad(-w0, w0, top, w1, -w1, waist0);
-  ctx.fillStyle = tone(bot2.shade);
+  ctx.fillStyle = tone(w.bodyShade);
   quad(w0 * 0.45, w0, top, w1, w1 * 0.4, waist0);
-  // black waist, white hips
+  // black straps over the shoulders along the top of the chest, a black waist and black hips
   ctx.fillStyle = tone(bot2.dark);
+  quad(-w0, w0, top, w0 * 0.97, -w0 * 0.97, top + 0.05 * k);
   quad(-w1, w1, waist0 - 0.01 * k, w1 * 0.95, -w1 * 0.95, waist1);
-  ctx.fillStyle = tone(bot2.shell);
   quad(-wp, wp, waist1, wp * 0.85, -wp * 0.85, bot);
   // neck
   ctx.fillStyle = tone(bot2.dark);
@@ -205,9 +219,9 @@ function drawShell(w: Walker, r: R, tX: number, top: number, bot: number, dX: nu
   pill(ctx, tX - 0.11 * k, hy - 0.14 * k, 0.22 * k, 0.27 * k, 0.1 * k);
   if (dY > -0.3) {
     ctx.strokeStyle = bot2.glint;
-    ctx.lineWidth = 0.03 * k;
+    ctx.lineWidth = 0.028 * k;
     ctx.beginPath();
-    ctx.arc(tX + dX * 0.05 * k, hy - 0.01 * k, 0.065 * k, Math.PI * 1.05, Math.PI * 1.55);
+    ctx.arc(tX + dX * 0.04 * k, hy, 0.085 * k, Math.PI * 0.75, Math.PI * 1.7);
     ctx.stroke();
   }
 }

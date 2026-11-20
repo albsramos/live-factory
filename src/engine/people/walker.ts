@@ -72,8 +72,8 @@ export class Walker implements Item {
   private headBase: RGB = [0, 0, 0];
   private isBottomDark = false;
   private generation = -1;
-  /** a vest over whatever they wear, its colour and its shade (site workers' hi-vis) */
-  private vest: readonly [string, string] | null = null;
+  /** a robot in the champagne shell rather than the white one, about one in three */
+  readonly isGold: boolean;
   /** @internal a per-walker offset for idle animations */
   readonly seed: number;
 
@@ -81,6 +81,8 @@ export class Walker implements Item {
     this.x = x;
     this.y = y;
     this.seed = rng() * 1000;
+    // from the seed, so choosing it takes nothing more from the random stream
+    this.isGold = kind === 'robot' && Math.floor(this.seed) % 3 === 0;
     this.phase = rng() * 6.28;
     const a = rng() * Math.PI * 2;
     this.hx = Math.cos(a);
@@ -90,7 +92,8 @@ export class Walker implements Item {
     } else {
       this.speed = rr(rng, 1.05, 1.5);
       this.top = pick(rng, pal.people);
-      if (rng() < 0.16) this.top = pick(rng, pal.accents);
+      // (a second pick, once a coloured top: kept so the random stream, and with it the whole scene, stays the same)
+      if (rng() < 0.16) this.top = pick(rng, pal.people);
       this.isBottomDark = rng() < 0.5;
       this.bottom = pick(rng, pal.people);
       this.headBase = pick(rng, pal.people);
@@ -104,11 +107,12 @@ export class Walker implements Item {
     if (this.generation === pal.generation) return;
     this.generation = pal.generation;
     if (this.kind === 'robot') {
-      this.body = pal.bot.shell;
-      this.bodyShade = pal.bot.shade;
-      this.legs = pal.bot.shell;
+      const shell = this.isGold ? pal.botGold : pal.bot;
+      this.body = shell.shell;
+      this.bodyShade = shell.shade;
+      this.legs = shell.shell;
       this.head = pal.bot.dark;
-      this.arm = pal.bot.shell;
+      this.arm = shell.shell;
       return;
     }
     const top = this.top;
@@ -117,13 +121,6 @@ export class Walker implements Item {
     this.legs = css(this.isBottomDark ? mix(this.bottom, [60, 62, 70], pal.night ? 0.1 : 0.35) : this.bottom);
     this.head = css(mix(this.headBase, [255, 255, 255], pal.night ? 0.05 : 0.4));
     this.arm = css(mix(top, [40, 42, 56], 0.08));
-    if (this.vest) [this.body, this.bodyShade] = this.vest;
-  }
-
-  /** Put a vest on: its colour and its shade, kept through theme changes. */
-  wear(vest: readonly [string, string]) {
-    this.vest = vest;
-    [this.body, this.bodyShade] = vest;
   }
 
   go(steps: Step[]) {

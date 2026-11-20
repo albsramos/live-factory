@@ -241,9 +241,9 @@ export function constructionSite(env: Env, edge: string, acts: Activity[]) {
     S.push(new FnItem(57.6, 81.9, 0, 63.4, 84.1, 2, (r) => drawMesh(r, MESH.pickup, 60.5, 83.0, 0, -1, 0, carMats(pal, pal.steel)), (ctx) => rectShadow(ctx, 60.5, 83, -1, 0, 2.8, 1.0, 1.4)).still());
   }
   acts.push(new Crane(env));
-  // workers: robots and people in hi-vis on the slab and by the pile
+  // workers: robots and people on the slab and by the pile
   acts.push(new Looper(env, 'robot', () => [{ x: 57.6, y: 88.6, z: 3.6, wait: 2 }, { x: 61.8, y: 94.2, z: 3.6, wait: 2.5 }], 57.6, 88.6, 3.6));
-  acts.push(new Looper(env, 'person', () => [{ x: 61.6, y: 88.4, z: 3.6, wait: 3 }, { x: 58.2, y: 92.8, z: 3.6, wait: 2 }], 61.6, 88.4, 3.6, true));
+  acts.push(new Looper(env, 'person', () => [{ x: 61.6, y: 88.4, z: 3.6, wait: 3 }, { x: 58.2, y: 92.8, z: 3.6, wait: 2 }], 61.6, 88.4, 3.6));
   acts.push(new Looper(env, 'robot', () => [{ x: 58.8, y: 92.4, z: 3.6, wait: 4 }, { x: 59.6, y: 91.6, z: 3.6, wait: 4 }], 58.8, 92.4, 3.6));
-  acts.push(new Looper(env, 'person', () => [{ x: 57.4, y: 87.9, wait: 4 }, { x: 58.9, y: 88.3, wait: 3 }], 57.4, 87.9, 0, true));
+  acts.push(new Looper(env, 'person', () => [{ x: 57.4, y: 87.9, wait: 4 }, { x: 58.9, y: 88.3, wait: 3 }], 57.4, 87.9, 0));
 }

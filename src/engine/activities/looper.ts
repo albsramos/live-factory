@@ -5,11 +5,9 @@ import type { Activity, Env } from './activity';
 
 export class Looper implements Activity {
   readonly w: Walker;
-  constructor(env: Env, kind: 'person' | 'robot', private steps: () => Parameters<Walker['go']>[0], x: number, y: number, z = 0, accent = false) {
+  constructor(env: Env, kind: 'person' | 'robot', private steps: () => Parameters<Walker['go']>[0], x: number, y: number, z = 0) {
     this.w = new Walker(kind, env.pal, env.rng, x, y);
     this.w.z = z;
-    // site workers in a hi-vis vest
-    if (accent) this.w.wear(['#e2b04a', '#c49436']);
     env.crowd.add(this.w);
   }
   update() {
