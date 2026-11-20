@@ -33,8 +33,8 @@ export interface LivingCityProps {
   /** Keep moving even when the visitor asks for reduced motion (by default the scene then holds still). */
   isReducedMotionIgnored?: boolean;
   /**
-   * Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows
-   * no text or brand marks.
+   * Letter the factory's front over its main entrance and light a neon signature inside it, as at Giga Berlin. Off
+   * by default: the scene otherwise shows no text or brand marks.
    */
   isBranded?: boolean;
   /** Accessible description; the scene is decorative when omitted. */

@@ -1,6 +1,6 @@
-// The factory's main entrance on the plaza: the ground floor steps back in a V under the flush facade above, its
-// glass walls angling in like an arrowhead to a dark door at the tip, and two pillars stand in its mouth, in line with
-// the door's jambs.
+// The factory's main entrance on the plaza, after Giga Berlin's: the ground floor steps back into a portico under the
+// flush facade above, its back wall straight across (lit glass, the doors in the middle, a dark feature wall), and two
+// square pillars stand in its mouth, either side of the way in.
 //
 // The recess is drawn as part of the factory's +x face, clipped to the opening, so it needs no sort item of its own.
 // People come and go at the walkway's door node just in front of the door, which is inside the factory's box: the
@@ -8,10 +8,11 @@
 // hide whoever walks behind them, and clip to the same opening so the floor above covers their tops.
 
 import { sx, sy } from '../core';
-import { box, edgeColor, onFaceX, onWall, type Ctx, type R } from '../draw';
+import { box, edgeColor, onFaceX, onFaceY, type Ctx, type R } from '../draw';
 import { ribbons, windowGlow, type Band } from '../details';
 import type { Palette } from '../palette';
 import { FnItem } from '../statics';
+import { drawNeon, type Branding } from './lettering';
 
 /**
  * The opening in the factory's face at x, from y0 to y1 (lined up with the mullions of the floors above), its height
@@ -36,7 +37,7 @@ function clipToOpening(ctx: Ctx) {
 }
 
 /** The entrance, drawn over the factory's +x face: call it from the factory's decoration. */
-export function drawEntrance(r: R, pal: Palette, edge: string) {
+export function drawEntrance(r: R, pal: Palette, edge: string, branding: Branding) {
   const ctx = r.ctx;
   const { x, y0, y1, h } = ENTRANCE;
   const bx = x - ENTRANCE.depth, d0 = MID - ENTRANCE.door / 2, d1 = MID + ENTRANCE.door / 2;
@@ -59,22 +60,28 @@ export function drawEntrance(r: R, pal: Palette, edge: string) {
     ctx.fillStyle = 'rgba(255, 186, 104, 0.14)';
     ctx.fill();
   }
-  // the two glass walls: the one on the right faces the camera, the left one is seen edge-on and a shade darker
+  // the lobby's back wall, straight across as at Giga Berlin: lit glass on the left, the doors in the middle and a dark
+  // feature wall on the right (with the neon signature when branded), and the return wall at its right end
   const bands: Band[] = [{ top: 0.12, bot: h - 0.12, every: 1.1 }];
-  const pane = (c: Ctx, w: number, dim: number) => {
+  onFaceX(r, bx, d1, y1, h, (c, w) => {
     c.fillStyle = pal.white.right;
     c.fillRect(0, 0, w, h);
     bands[0].spans = [[0.1, w - 0.1]];
     ribbons(r, pal, c, w, bands);
     windowGlow(r, c, w, bands);
-    if (!r.night) {
-      c.fillStyle = pal.faceShadow;
-      for (let i = 0; i < dim; i++) c.fillRect(0, 0, w, h);
-    }
-  };
-  onWall(r, bx, d0, x, y0, h, (c, w) => pane(c, w, 2));
-  onWall(r, x, y1, bx, d1, h, (c, w) => pane(c, w, 3));
-  // the door at the tip: dark glass in two pairs of leaves with pull handles, under a transom
+  });
+  onFaceX(r, bx, y0, d0, h, (c, w) => {
+    c.fillStyle = pal.featureWall;
+    c.fillRect(0, 0, w, h);
+    if (branding.isOn) drawNeon(r, pal, c, w, h);
+  });
+  onFaceY(r, bx, x, y0, h, (c, w) => {
+    c.fillStyle = pal.white.left;
+    c.fillRect(0, 0, w, h);
+    c.fillStyle = pal.faceShadow;
+    c.fillRect(0, 0, w, h);
+  });
+  // the doors: dark glass in two pairs of leaves with pull handles, under a transom
   onFaceX(r, bx, d0, d1, h, (c, w) => {
     c.fillStyle = pal.white.right;
     c.fillRect(0, 0, w, h);
@@ -117,11 +124,11 @@ export function drawEntrance(r: R, pal: Palette, edge: string) {
   ctx.stroke();
 }
 
-/** The two square pillars in the entrance's mouth, carrying the floor above, in line with the door's jambs. */
+/** The two square pillars in the entrance's mouth, carrying the floor above, either side of the way in. */
 export function entrancePillars(pal: Palette, edge: string) {
-  const { x, h, door } = ENTRANCE;
+  const { x, h } = ENTRANCE;
   const s = 0.15;
-  return [MID - door / 2, MID + door / 2].map((y) =>
+  return [MID - 3.5, MID + 3.5].map((y) =>
     new FnItem(x - 2 * s, y - s, 0, x, y + s, h, (r) => {
       r.ctx.save();
       clipToOpening(r.ctx);

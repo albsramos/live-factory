@@ -12,6 +12,7 @@ import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
 import { drawEntrance, entrancePillars } from './entrance';
 import { drawLettering, type Branding } from './lettering';
+import { factoryFront } from './plaza';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -40,12 +41,12 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       windowsX(r, pal, 26, 36, 72, 13, factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
-      drawEntrance(r, pal, edge);
+      drawEntrance(r, pal, edge, branding);
       // the opt-in lettering on the panel band over the ribbon window above the entrance (u 8 to 20 on this face)
       if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 14, 3.9));
     }),
   );
-  S.push(...entrancePillars(pal, edge));
+  S.push(...entrancePillars(pal, edge), ...factoryFront(pal));
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];
