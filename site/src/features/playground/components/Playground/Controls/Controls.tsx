@@ -8,9 +8,8 @@ import { CROWD, SPEED, pause, play, setCrowd, setShape, setSpeed, setTheme, useS
 import styles from './Controls.module.css';
 
 const THEMES = [
-  { value: 'auto', label: 'Match page' },
   { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Night' },
+  { value: 'dark', label: 'Dark' },
 ] as const satisfies readonly { value: ThemeChoice; label: string }[];
 
 const SHAPES = [
@@ -25,7 +24,8 @@ export function Controls() {
   const s = useSettings();
   const { isStill, isMotionReduced } = useStillness(s);
   const isPageDark = useMediaQuery('(prefers-color-scheme: dark)');
-  const shownTheme = s.theme === 'auto' ? (isPageDark ? 'night' : 'light') : s.theme === 'dark' ? 'night' : 'light';
+  // with no theme in the URL the scene follows the page, and the tab it shows is the one chosen
+  const shownTheme = s.theme === 'auto' ? (isPageDark ? 'dark' : 'light') : s.theme;
 
   const handlePlay = () => (isStill ? play(isMotionReduced) : pause());
 
@@ -33,11 +33,7 @@ export function Controls() {
     <div className={styles.root} role="group" aria-label="Scene controls">
       <div className={styles.group}>
         <span className={styles.label}>Theme</span>
-        <Segmented label="Theme" options={THEMES} value={s.theme} onChange={setTheme} />
-        <span className={styles.note}>
-          {s.theme === 'auto' ? 'Following page: ' : 'Showing '}
-          <b className={styles.strong}>{shownTheme}</b>
-        </span>
+        <Segmented label="Theme" options={THEMES} value={shownTheme} onChange={setTheme} />
       </div>
       <div className={styles.group}>
         <span className={styles.label}>Shape</span>

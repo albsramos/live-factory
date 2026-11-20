@@ -23,16 +23,6 @@
   color: var(--color-fg);
 }
 
-.note {
-  font-size: var(--text-s);
-  color: var(--color-muted);
-}
-
-.strong {
-  font-weight: 500;
-  color: var(--color-fg);
-}
-
 .play {
   margin-inline-start: auto;
 }
