@@ -29,15 +29,9 @@ export function rackPlatform(S: Static[], pal: Palette, edge: string, pad: Rect,
       if (r.night) ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = pal.glow;
       ctx.shadowColor = pal.glow;
-      ctx.shadowBlur = (1.2 + pulse * 0.8) * r.scale;
-      ctx.globalAlpha = 0.55 + 0.4 * pulse;
-      ctx.lineWidth = 0.12;
+      // the light runs along the pad's top edge, inside the glass hall over it (its walls glow blue at their foot)
       ctx.lineJoin = 'round';
-      ctx.beginPath();
-      lineW(ctx, x0, y1 + 0.1, 0.04, x1 + 0.1, y1 + 0.1, 0.04);
-      lineW(ctx, x1 + 0.1, y1 + 0.1, 0.04, x1 + 0.1, y0, 0.04);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
+      ctx.shadowBlur = (0.6 + pulse * 0.4) * r.scale;
       ctx.globalAlpha = 0.35 + 0.3 * pulse;
       ctx.lineWidth = 0.06;
       ctx.beginPath();

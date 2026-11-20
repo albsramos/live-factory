@@ -28,12 +28,14 @@ export function glassHall(pal: Palette, g: GlassHall): FnItem[] {
   const { x0, y0, x1, y1, h } = g;
   const items: FnItem[] = [];
   const f: Frame = { rails: g.rails ?? [h * 0.62], head: g.isAttached ? 0.5 : 0.16 };
+  // the walls rise to the top of the roof, so its edge is closed (the roof's glass sits on them)
+  const H = h + ROOF;
   // the back walls first: we see them from inside, through the front glass, so only faintly
-  items.push(new FnItem(x0, y0 - T, 0, x1, y0, h, (r) => onFaceY(r, x0, x1, y0, h, (c, w) => pane(r, pal, c, w, h, pal.factory.left, true, f))).still());
-  if (!g.isAttached) items.push(new FnItem(x0 - T, y0, 0, x0, y1, h, (r) => onFaceX(r, x0, y0, y1, h, (c, w) => pane(r, pal, c, w, h, pal.factory.right, true, f))).still());
+  items.push(new FnItem(x0, y0 - T, 0, x1, y0, H, (r) => onFaceY(r, x0, x1, y0, H, (c, w) => pane(r, pal, c, w, H, pal.factory.left, true, f))).still());
+  if (!g.isAttached) items.push(new FnItem(x0 - T, y0, 0, x0, y1, H, (r) => onFaceX(r, x0, y0, y1, H, (c, w) => pane(r, pal, c, w, H, pal.factory.right, true, f))).still());
   // the front walls, facing the camera
-  items.push(new FnItem(x1, y0, 0, x1 + T, y1 + T, h, (r) => onFaceX(r, x1 + T, y0, y1 + T, h, (c, w) => pane(r, pal, c, w, h, pal.factory.right, false, f))).still());
-  items.push(new FnItem(x0, y1, 0, x1, y1 + T, h, (r) => onFaceY(r, x0, x1, y1 + T, h, (c, w) => pane(r, pal, c, w, h, pal.factory.left, false, f))).still());
+  items.push(new FnItem(x1, y0, 0, x1 + T, y1 + T, H, (r) => onFaceX(r, x1 + T, y0, y1 + T, H, (c, w) => pane(r, pal, c, w, H, pal.factory.right, false, f))).still());
+  items.push(new FnItem(x0, y1, 0, x1, y1 + T, H, (r) => onFaceY(r, x0, x1, y1 + T, H, (c, w) => pane(r, pal, c, w, H, pal.factory.left, false, f))).still());
   // the roof
   items.push(new FnItem(x0, y0, h, x1 + T, y1 + T, h + ROOF, (r) => roof(r, pal, x0, y0, x1 + T - x0, y1 + T - y0, h + ROOF, !!g.isAttached)).still());
   return items;
@@ -75,6 +77,15 @@ function pane(r: R, pal: Palette, c: Ctx, w: number, h: number, frame: string, i
     c.lineTo(w, h - z);
   }
   c.stroke();
+  // the compute's cyan light, caught in the foot of the glass: brightest at the sill, fading up the first metre
+  c.fillStyle = pal.glow;
+  for (let k = 0; k < 4; k++) {
+    c.globalAlpha = (isBack ? 0.06 : 0.16) * (1 - k / 4);
+    c.fillRect(0, h - 0.12 - (k + 1) * 0.25, w, 0.25);
+  }
+  c.globalAlpha = isBack ? 0.15 : 0.55;
+  c.fillRect(0, h - 0.2, w, 0.08);
+  c.globalAlpha = isBack ? 0.5 : 1;
   // the head and the sill, and the posts at the ends
   c.fillStyle = frame;
   c.fillRect(0, 0, w, f.head);

@@ -62,11 +62,12 @@ any other React setup.
   the semi at the bay, patrol the battery yard, work on the construction slab and make up about half of the walkers
   on the streets. The people around them dress in plain greys.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
-  far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base, all
-  inside the factory grown out over it in glass, its full height, with a frosted glass roof, so the racks stay dry.
-  Through the dock wing's tall atrium window behind it you can see into the factory, where two Optimus robots carry
-  boxes in from the docks and stack them on the storeroom's shelves (the second platform to the east has a glass
-  hall of its own). Above it, a tall glass atrium in the dock wing glows warm at night.
+  far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base that
+  lights the foot of the glass round it, all inside the factory grown out over it in glass, its full height, with a
+  frosted glass roof, so the racks stay dry. Through the dock wing's tall atrium window behind it you can see into
+  the factory, where two Optimus robots carry boxes in from the docks and stack them on the storeroom's shelves (the
+  second platform to the east has a glass hall of its own). Above it, a tall glass atrium in the dock wing glows
+  warm at night.
 - **The factory's front**: the ground floor steps back in a V under the storeys above, its glass walls angling in to
   a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it. On the roof over
   the entrance, a terrace: a green roof round paving with tables and benches where two Optimus robots walk about,
