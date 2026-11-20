@@ -64,6 +64,7 @@ export function Stage() {
         fit={isBanner ? 'contain' : 'cover'}
         isPaused={s.isPaused}
         isReducedMotionIgnored={s.isMotionForced}
+        isBranded
         label={LABEL}
       />
       <div className={styles.tools}>

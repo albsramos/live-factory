@@ -11,6 +11,7 @@ import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
 import { drawEntrance, entrancePillars } from './entrance';
+import { drawLettering, type Branding } from './lettering';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -21,7 +22,7 @@ import { carMats } from '../palette';
  * The factory and its dock wing: two loading docks and the charging bay (a lamp by each shows the yard's state), the
  * bay's chargers and battery bank on a kerbed island the semis can't drive over, and pallets by the wall.
  */
-export function factory(env: Env, edge: string, yard: TruckYard) {
+export function factory(env: Env, edge: string, yard: TruckYard, branding: Branding) {
   const { pal, statics: S } = env;
   const factoryBandsX: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5 },
@@ -40,6 +41,8 @@ export function factory(env: Env, edge: string, yard: TruckYard) {
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
       drawEntrance(r, pal, edge);
+      // the opt-in lettering on the panel band over the ribbon window above the entrance (u 8 to 20 on this face)
+      if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 14, 3.9));
     }),
   );
   S.push(...entrancePillars(pal, edge));

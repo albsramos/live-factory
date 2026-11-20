@@ -62,6 +62,9 @@ describe('LivingCity', () => {
     const el = box();
     render(<LivingCity speed={2} isPaused />);
     expect(box()).toBe(el);
+    // turning the factory's lettering on is an option change too, not a remount
+    render(<LivingCity speed={2} isPaused isBranded />);
+    expect(box()).toBe(el);
     act(() => root.unmount());
     expect(host.childElementCount).toBe(0);
     root = createRoot(host);

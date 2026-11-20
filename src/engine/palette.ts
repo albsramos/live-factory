@@ -41,6 +41,9 @@ export interface Palette {
   solarLine: string;
   solarFrame: string;
   dockDoor: string;
+  /** the opt-in lettering on the factory's front (world/lettering.ts), and its glow at night */
+  sign: string;
+  signGlow: string;
   glow: string;
   led: string;
   ledBlue: string;
@@ -112,6 +115,8 @@ export function lightPalette(): Palette {
     solarLine: 'rgba(120, 136, 170, 0.35)',
     solarFrame: '#e9e9ee',
     dockDoor: '#5d5f68',
+    sign: '#3a3c43',
+    signGlow: 'rgba(0, 0, 0, 0)',
     glow: '#7fe3ff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',
@@ -177,6 +182,8 @@ export function darkPalette(): Palette {
     solarLine: 'rgba(90, 110, 150, 0.32)',
     solarFrame: '#3a3c44',
     dockDoor: '#121317',
+    sign: '#f2f5ff',
+    signGlow: 'rgba(205, 225, 255, 0.9)',
     glow: '#6fdcff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',

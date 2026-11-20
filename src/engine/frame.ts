@@ -19,6 +19,8 @@ export interface SceneOptions {
   paused: boolean;
   /** extra zoom on top of the fit (1 = fit exactly) */
   zoom: number;
+  /** the opt-in lettering on the factory's front (the scene otherwise shows no text or brand marks) */
+  branded: boolean;
 }
 
 export const DEFAULTS: SceneOptions = {
@@ -32,6 +34,7 @@ export const DEFAULTS: SceneOptions = {
   maxDpr: 2,
   paused: false,
   zoom: 1,
+  branded: false,
 };
 
 /** The composed view in design units; the scene was laid out to fill it. */

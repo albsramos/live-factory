@@ -28,6 +28,7 @@ import type { Activity, Env } from '../activities/activity';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
+import type { Branding } from './lettering';
 import { pocketParkBenches, streetFurniture, chat, staffBreak } from './streetLife';
 import { walkways } from './walkways';
 import { groundPainter } from './groundPlan';
@@ -51,6 +52,8 @@ export interface WorldOptions {
   seed: number;
   /** 0.3 … 1.5: how busy the streets are */
   density: number;
+  /** whether the factory's front carries the opt-in lettering; the scene flips it in place, without a rebuild */
+  branding: Branding;
 }
 
 export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): World {
@@ -69,7 +72,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const zones = roadZones(traffic);
   // two docks are worked by live trucks; the third slot is the charging bay they back into after loading
   const yard = new TruckYard(env, [4.5, 10.5], 16.5);
-  factory(env, edge, yard);
+  factory(env, edge, yard, opts.branding);
   // AI compute: a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
   rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 6);

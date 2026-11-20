@@ -129,6 +129,7 @@ it a height, or put it in a sized box, and it fills that instead:
 | `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
 | `isReducedMotionIgnored` | `false` | Keep moving even when the visitor has asked for reduced motion (by default the scene then holds still) |
+| `isBranded` | `false` | Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows no text or brand marks |
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
 | `className`, `style` | none | Applied to the wrapper `div` |
 

@@ -54,6 +54,7 @@ export class Scene {
     this.ctx = ctx;
     this.pal = this.opts.theme === 'dark' ? darkPalette() : lightPalette();
     this.sprites = new Sprites(this.pal, 1);
+    this.branding.isOn = this.opts.branded;
     this.rebuild();
   }
 
@@ -77,6 +78,11 @@ export class Scene {
       this.baked = new WeakMap();
       this.groundDirty = true;
     }
+    if (o.branded !== prev.branded) {
+      // the lettering is part of the factory's baked front: flip it and bake again
+      this.branding.isOn = o.branded;
+      this.baked = new WeakMap();
+    }
     if (o.seed !== prev.seed || o.density !== prev.density) this.rebuild();
     if (o.fit !== prev.fit || o.focusX !== prev.focusX || o.focusY !== prev.focusY || o.maxDpr !== prev.maxDpr || o.zoom !== prev.zoom) this.layout();
     this.sync();
@@ -84,7 +90,7 @@ export class Scene {
 
   private rebuild() {
     this.sprites.reset(this.pal, this.scale);
-    this.world = buildWorld(this.pal, this.sprites, { seed: this.opts.seed, density: this.opts.density });
+    this.world = buildWorld(this.pal, this.sprites, { seed: this.opts.seed, density: this.opts.density, branding: this.branding });
     this.t = 0;
     // run the world for a while so the first frame is already busy
     for (let i = 0; i < 40 * 20; i++) this.step(1 / 20);
@@ -126,6 +132,8 @@ export class Scene {
   }
 
   private baked = new WeakMap<Item, Baked>();
+  /** shared with the world, so the lettering can change without a rebuild */
+  private readonly branding = { isOn: false };
 
   /** Render an unchanging item once into a bitmap aligned to device pixels (cropped to the view), then stamp it. */
   private stamp(it: Static, r: R) {

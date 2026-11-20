@@ -32,6 +32,11 @@ export interface LivingCityProps {
   maxDpr?: number;
   /** Keep moving even when the visitor asks for reduced motion (by default the scene then holds still). */
   isReducedMotionIgnored?: boolean;
+  /**
+   * Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows
+   * no text or brand marks.
+   */
+  isBranded?: boolean;
   /** Accessible description; the scene is decorative when omitted. */
   label?: string;
   /** Added to the wrapper `div`; its rules win over the component's own defaults. */
@@ -57,6 +62,7 @@ export function LivingCity({
   isPaused = false,
   maxDpr = DEFAULTS.maxDpr,
   isReducedMotionIgnored = false,
+  isBranded = false,
   label,
   className,
   style,
@@ -66,8 +72,8 @@ export function LivingCity({
   // runs in the commit phase whenever an option changes (see CityController)
   const attach = useCallback(
     (el: HTMLDivElement | null) =>
-      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored }),
-    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored],
+      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored, isBranded }),
+    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored, isBranded],
   );
 
   return (

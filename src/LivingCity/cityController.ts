@@ -22,6 +22,7 @@ export interface CityOptions {
   maxDpr: number;
   isPaused: boolean;
   isReducedMotionIgnored: boolean;
+  isBranded: boolean;
 }
 
 const reducedQuery = () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null);
@@ -33,7 +34,7 @@ export class CityController {
   private isDetachPending = false;
   private isMotionReduced = false;
   private opts: CityOptions = {
-    ...DEFAULTS, theme: 'auto', focusX: 0.5, focusY: 0.5, zoom: 1, isPaused: false, isReducedMotionIgnored: false,
+    ...DEFAULTS, theme: 'auto', focusX: 0.5, focusY: 0.5, zoom: 1, isPaused: false, isReducedMotionIgnored: false, isBranded: false,
   };
 
   /** The ref callback's work: an element mounts (or updates with new options); null tears down, unless it comes back. */
@@ -114,6 +115,7 @@ export class CityController {
       zoom: o.zoom,
       maxDpr: o.maxDpr,
       paused: o.isPaused || (this.isMotionReduced && !o.isReducedMotionIgnored),
+      branded: o.isBranded,
     };
   }
 
