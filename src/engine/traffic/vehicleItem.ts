@@ -67,7 +67,7 @@ export class VehicleItem implements Item {
     recolor(v);
     switch (v.kind) {
       case 'semi':
-        if (this.part === 0) drawMesh(r, MESH.tractor, v.x, v.y, 0, v.hx, v.hy, v.mats);
+        if (this.part === 0) drawTractor(r, v);
         else drawTrailer(r, v);
         if (r.night && v.isLit) drawLampGlints(r, v, this.part === 0 ? 'front' : 'rear');
         break;
@@ -101,6 +101,17 @@ export class VehicleItem implements Item {
       ctx.globalAlpha = 1;
     }
   }
+}
+
+/** The cab and its two mirrors: a mirror the cab stands between it and the camera is drawn first, the other after. */
+function drawTractor(r: R, v: Vehicle) {
+  // the +w side faces the camera when its outward normal (-hy, hx) points towards it; the nose when (hx, hy) does
+  const isLeftNear = v.hx - v.hy > 0, isNoseNear = v.hx + v.hy > 0;
+  const near = isLeftNear ? MESH.mirrorL : MESH.mirrorR, far = isLeftNear ? MESH.mirrorR : MESH.mirrorL;
+  drawMesh(r, far, v.x, v.y, 0, v.hx, v.hy, v.mats);
+  if (!isNoseNear) drawMesh(r, near, v.x, v.y, 0, v.hx, v.hy, v.mats);
+  drawMesh(r, MESH.tractor, v.x, v.y, 0, v.hx, v.hy, v.mats);
+  if (isNoseNear) drawMesh(r, near, v.x, v.y, 0, v.hx, v.hy, v.mats);
 }
 
 function drawDoors(r: R, v: Vehicle) {

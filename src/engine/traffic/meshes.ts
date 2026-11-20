@@ -2,6 +2,7 @@
 // paint, 6 and 7 dark trim.
 
 import { MeshBuilder } from '../mesh';
+import { mirrorMesh, tractorMesh } from './tractorMesh';
 
 const box = (l0: number, l1: number, w: number): number[][] => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
 
@@ -138,17 +139,9 @@ export const MESH = {
     }
     return m.build();
   })(),
-  tractor: (() => {
-    const m = new MeshBuilder();
-    // wheels and frame, then the fifth-wheel plate
-    m.frustum(box(-3.0, 2.7, 0.92), 0, box(-3.0, 2.7, 0.92), 0.78, 2, 2);
-    m.frustum(box(-2.5, -0.9, 0.7), 0.78, box(-2.5, -0.9, 0.7), 0.98, 2, 2);
-    // aerodynamic cab: low nose, long raked windscreen
-    m.extrude([[-0.7, 0.55], [3.15, 0.55], [3.2, 1.55], [1.35, 3.35], [0.2, 3.62], [-0.7, 3.62]], -1.25, 1.25, [2, 0, 1, 0, 0, 0], 0);
-    m.extrude([[0.6, 2.2], [1.95, 2.2], [1.2, 2.95], [0.6, 3.05]], -1.251, 1.251, [1], 1, true);
-    lights(m, 3.172, 0.95, 1.0, 1.08, 3);
-    return m.build(true);
-  })(),
+  tractor: tractorMesh(),
+  mirrorL: mirrorMesh(1),
+  mirrorR: mirrorMesh(-1),
   trailer: (() => {
     const m = new MeshBuilder();
     m.frustum(box(-12.3, -8.6, 1.05), 0, box(-12.3, -8.6, 1.05), 1.25, 2, 2);
@@ -207,6 +200,6 @@ export const DIMS: Record<VehicleKind, [number, number, number]> = {
   pod: [1.92, 0.96, 1.33],
   van: [3.62, 1.23, 2.02],
   roadster: [2.32, 1.04, 1.05],
-  semi: [3.15, 1.27, 3.62],
+  semi: [3.15, 1.27, 3.95],
   forklift: [1.15, 0.62, 2.55],
 };

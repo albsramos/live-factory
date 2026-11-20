@@ -18,7 +18,7 @@ const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number }
   pod: { front: [1.9, 0.38, 0.58], rear: [-1.9, 0.4, 0.59], reach: 5.5 },
   van: { front: [3.6, 0.55, 1.22], rear: [-3.6, 0.55, 1.22], reach: 7.5 },
   roadster: { front: [2.3, 0.6, 0.51], rear: [-2.3, 0.62, 0.49], reach: 7.5 },
-  semi: { front: [3.17, 0.95, 1.04], rear: [-12.8, 1.0, 1.38], reach: 9.5 },
+  semi: { front: [3.2, 1.0, 1.24], rear: [-12.8, 1.0, 1.38], reach: 9.5 },
 };
 
 const BEAM = [255, 238, 204] as const;
