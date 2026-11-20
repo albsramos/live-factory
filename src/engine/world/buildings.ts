@@ -41,7 +41,7 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       windowsX(r, pal, 26, 36, 72, 13, factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
-      drawEntrance(r, pal, edge, branding);
+      drawEntrance(r, pal, edge);
       // the opt-in lettering on the panel band over the ribbon window above the entrance (u 8 to 20 on this face)
       if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 14, 3.9));
     }),

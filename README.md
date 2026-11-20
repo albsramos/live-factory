@@ -64,10 +64,10 @@ any other React setup.
 - **AI compute**: a wide platform of 24 server-rack blocks along the dock wing, reaching out into the truck yard as
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
-- **The factory's front, after Giga Berlin's**: the ground floor steps back into a portico under the storeys above,
-  its back wall straight across (lit glass, the doors, a dark feature wall), with two pillars in its mouth; a thin
-  bronze canopy runs along the top of the facade to a sharp point at the corner, and two angular planters on the
-  plaza have LED strips that glow warm at night. Staff and robots come and go through it.
+- **The factory's front**: the ground floor steps back in a V under the storeys above, its glass walls angling in to
+  a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it. As at Giga Berlin,
+  a thin bronze canopy runs along the top of the facade to a sharp point at the corner, and two angular planters on
+  the plaza have LED strips that glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
   east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
@@ -131,7 +131,7 @@ it a height, or put it in a sized box, and it fills that instead:
 | `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
 | `isReducedMotionIgnored` | `false` | Keep moving even when the visitor has asked for reduced motion (by default the scene then holds still) |
-| `isBranded` | `false` | Letter the factory's front over its main entrance and light a neon signature inside it, as at Giga Berlin. Off by default: the scene otherwise shows no text or brand marks |
+| `isBranded` | `false` | Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows no text or brand marks |
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
 | `className`, `style` | none | Applied to the wrapper `div` |
 

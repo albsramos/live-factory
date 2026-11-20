@@ -26,9 +26,8 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
   `Name/Name.test.tsx`.
 - No `useEffect` / `useLayoutEffect` anywhere (`check:components` fails on them). Use a callback ref, an event
   handler or `useSyncExternalStore`.
-- The scene shows no text, logos or brand marks. The one exception is the factory's lettering and the neon signature
-  in its entrance, behind the opt-in `isBranded` prop (off by default; the demo site turns it on), all of it in
-  `src/engine/world/lettering.ts`.
+- The scene shows no text, logos or brand marks. The one exception is the factory's lettering behind the opt-in
+  `isBranded` prop (off by default; the demo site turns it on), all of it in `src/engine/world/lettering.ts`.
 - Commits are authored by Alberto (the repo's git config) with a `Co-Authored-By:` trailer for the AI agent that
   worked on it. Subject line in the imperative, then a body that says what changed and why, area by area.
 - Push to `main` only when asked; it redeploys the website.

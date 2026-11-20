@@ -1,7 +1,6 @@
-// The opt-in branding on the factory (the `isBranded` prop): the scene otherwise shows no text or brand marks. Five
-// wide-set letters on the panel band over the ribbon window above the main entrance, drawn as simple geometric
-// strokes (no font), dark on the light clay by day and glowing white at night; and a neon signature on the dark wall
-// inside the entrance.
+// The opt-in lettering on the factory's front (the `isBranded` prop): the scene otherwise shows no text or brand
+// marks. Five wide-set letters on the panel band over the ribbon window above the main entrance, drawn as simple
+// geometric strokes (no font), dark on the light clay by day and glowing white at night.
 
 import type { Ctx, R } from '../draw';
 import type { Palette } from '../palette';
@@ -46,29 +45,5 @@ export function drawLettering(r: R, pal: Palette, ctx: Ctx, mid: number, top: nu
     const u0 = mid - span / 2 + i * (W + GAP);
     for (const [u, v, w, h] of glyph) ctx.fillRect(u0 + u, top + v, w, h);
   });
-  ctx.restore();
-}
-
-/**
- * The neon signature on the dark wall in the entrance, as points (u, v) in shares of the wall's width and height: low
- * on the wall, where it shows under the floor above.
- */
-const NEON = [
-  [0.1, 0.8], [0.16, 0.64], [0.2, 0.78], [0.24, 0.84], [0.3, 0.67], [0.34, 0.78], [0.4, 0.69], [0.46, 0.8],
-  [0.52, 0.65], [0.56, 0.78], [0.62, 0.7], [0.7, 0.72], [0.76, 0.64], [0.8, 0.8], [0.86, 0.7], [0.9, 0.67],
-];
-
-/** The neon signature, on a wall of width `w` and height `h` (in the wall's own frame): cyan, glowing at night. */
-export function drawNeon(r: R, pal: Palette, ctx: Ctx, w: number, h: number) {
-  ctx.save();
-  ctx.beginPath();
-  NEON.forEach(([u, v], i) => (i ? ctx.lineTo(u * w, v * h) : ctx.moveTo(u * w, v * h)));
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = pal.glow;
-  ctx.lineWidth = 0.09;
-  ctx.shadowColor = pal.glow;
-  ctx.shadowBlur = r.scale * (r.night ? 0.4 : 0.15);
-  ctx.stroke();
   ctx.restore();
 }
