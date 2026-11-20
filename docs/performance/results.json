@@ -179,5 +179,67 @@
       "frameP50": 37.5,
       "frameP95": 54.3
     }
+  ],
+  "adaptive": [
+    {
+      "case": "Dark theme, no GPU",
+      "adaptive": false,
+      "quality": {
+        "fps": 30,
+        "dpr": 1.5
+      },
+      "mainThreadPct": 99.9,
+      "scriptPct": 93.9,
+      "browserCpuPct": 113.9,
+      "heapMB": 11.9,
+      "fps": 19.1,
+      "frameP50": 49,
+      "frameP95": 58.2
+    },
+    {
+      "case": "Dark theme, no GPU",
+      "adaptive": true,
+      "quality": {
+        "fps": 20,
+        "dpr": 1
+      },
+      "mainThreadPct": 65.8,
+      "scriptPct": 10.7,
+      "browserCpuPct": 72.7,
+      "heapMB": 17.2,
+      "fps": 20,
+      "frameP50": 4.9,
+      "frameP95": 7.2
+    },
+    {
+      "case": "4× slower CPU",
+      "adaptive": false,
+      "quality": {
+        "fps": 30,
+        "dpr": 1.5
+      },
+      "mainThreadPct": 99.8,
+      "scriptPct": 17.8,
+      "browserCpuPct": 113,
+      "heapMB": 13.4,
+      "fps": 7.2,
+      "frameP50": 21.6,
+      "frameP95": 31.9
+    },
+    {
+      "case": "4× slower CPU",
+      "adaptive": true,
+      "quality": {
+        "fps": 15,
+        "dpr": 1
+      },
+      "mainThreadPct": 99.8,
+      "scriptPct": 24.8,
+      "browserCpuPct": 110.8,
+      "heapMB": 9.1,
+      "fps": 9.1,
+      "frameP50": 24.1,
+      "frameP95": 35.6
+    }
   ]
 }
