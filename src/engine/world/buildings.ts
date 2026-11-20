@@ -72,7 +72,6 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       });
       windowsX(r, pal, 30, 0, 36, 10, [{ top: 1.4, bot: 3.0, every: 1.2, spans: [[10.4, 35.6]] }]);
       atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
-      solarRoof(r, pal, -30, 0, 30, 36, 10, 1.0, 2.6);
     }).live((r) => {
       // a lamp beside each dock: green while a trailer is loading (or charging, at the bay), amber while one is coming
       // or going, off when free
@@ -90,6 +89,8 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       });
     }),
   );
+  // the dock wing's solar panels, in rows tilted at 45°
+  S.push(...solarRows(pal, { x0: -30, y0: 0, x1: 30, y1: 36, z: 10, inset: 1.0 }));
   // a charger beside every spot a semi parks, each on a kerbed island just outside the semis' sweep (measured: the
   // gap beside the second dock is the tightest), and the battery bank that feeds them where the fourth dock used to
   // be. The kerbs are drawn with the ground (CHARGER_ISLANDS).
@@ -174,8 +175,9 @@ export function buildings(env: Env, edge: string) {
     new BoxItem(20, 75.2, 3.2, 29.3, 84.6, 6.3, pal.white, { edge }, (r) => {
       windowsY(r, pal, 20, 29.3, 84.6, 6.3, [{ top: 0.65, bot: 2.25, every: 1.25, spans: [[0.6, 5.8]] }]);
       windowsX(r, pal, 29.3, 75.2, 84.6, 6.3, [{ top: 0.65, bot: 2.25, every: 1.25, spans: [[0.8, 3.8], [5.6, 8.6]] }]);
-      solarRoof(r, pal, 20, 75.2, 29.3, 84.6, 6.3, 0.45);
     }),
+    // its solar panels, in rows tilted at 45°
+    ...solarRows(pal, { x0: 20, y0: 75.2, x1: 29.3, y1: 84.6, z: 6.3, inset: 0.45 }),
   );
   // home batteries on the wall facing the bay
   for (const y of [81.6, 82.75]) {

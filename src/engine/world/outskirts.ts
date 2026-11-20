@@ -13,6 +13,7 @@ import { solarRoof, windowsX, windowsY, type Band, type LitFace } from '../detai
 import { groundPoly, groundRect, lineW } from '../ground';
 import type { Ctx } from '../draw';
 import { BoxItem, TreeItem } from '../statics';
+import { solarRows } from './solarRows';
 import type { Sprites } from '../sprites';
 import { StallLot, type Stall } from '../activities/stallLot';
 import { sameKind, type Zone } from '../traffic/zone';
@@ -60,8 +61,9 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     new BoxItem(-40, 72, 0, -6, 100, 9.5, pal.factory, { edge }, (r) => {
       windowsX(r, pal, -6, 72, 100, 9.5, wingBands);
       windowsY(r, pal, -40, -6, 100, 9.5, wingBands);
-      solarRoof(r, pal, -40, 72, -6, 100, 9.5, 1.0, 2.6);
     }),
+    // its solar panels, in rows tilted at 45°
+    ...solarRows(pal, { x0: -40, y0: 72, x1: -6, y1: 100, z: 9.5, inset: 1.0 }),
   );
 
   // ----------------------------------------------------------------------------------------------- staff car park
