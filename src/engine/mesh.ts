@@ -34,6 +34,11 @@ export interface Mesh {
   decals: number;
   /** a mesh drawn first, at the same pose, that this one always stands in front of (a body's wheels) */
   under?: Mesh;
+  /**
+   * Parts beside the body on its +w and -w flanks (wheels flush with its sides): the one on the side facing the
+   * camera is drawn after the body, the other before it.
+   */
+  sides?: readonly [Mesh, Mesh];
 }
 
 export class MeshBuilder {
@@ -169,6 +174,9 @@ const FACE: number[] = [];
  */
 export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
   if (m.under) drawMesh(r, m.under, px, py, pz, hx, hy, mats, roll, rollZ);
+  // the +w flank faces the camera when its outward normal (-hy, hx) points towards it
+  const sides = m.sides, nearSide = sides && (hx - hy > 0 ? sides[0] : sides[1]);
+  if (sides) drawMesh(r, nearSide === sides[0] ? sides[1] : sides[0], px, py, pz, hx, hy, mats, roll, rollZ);
   const v = m.v;
   const n = v.length / 3;
   if (n > MAX_VERTS) throw new Error(`live-factory: a mesh has ${n} vertices, over ${MAX_VERTS}`);
@@ -225,6 +233,7 @@ export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: 
     for (const p of ORDER) drawFaces(r, m, p.s, p.e, hx, hy, mats);
     drawFaces(r, m, m.decals, m.faces.length, hx, hy, mats);
   } else drawFaces(r, m, 0, m.faces.length, hx, hy, mats);
+  if (nearSide) drawMesh(r, nearSide, px, py, pz, hx, hy, mats, roll, rollZ);
 }
 
 /** A glaze's sheen over the face just filled: a gradient along the mesh's length, the same for every face. */

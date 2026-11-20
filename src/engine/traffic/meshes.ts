@@ -3,6 +3,7 @@
 
 import { MeshBuilder } from '../mesh';
 import { plan } from './bodyKit';
+import { podMesh } from './podMesh';
 import { suvMesh } from './suvMesh';
 import { wheelsMesh } from './wheels';
 import { chassisMesh, tractorMesh } from './tractorMesh';
@@ -54,18 +55,7 @@ export const MESH = {
     const under = plan(2.3, -2.3, 0.75, 0.3, 0.3);
     return { ...m.build(), under: wheelsMesh((u) => u.frustum(under, 0.18, under, 0.44, 2, 2), PICKUP_AXLES, 0.42, 0.62, 0.98) };
   })(),
-  pod: (() => {
-    const m = new MeshBuilder();
-    const body = rounded(1.9, 0.95, 0.55, 3);
-    m.frustum(body, 0.27, inset(body, 0.97), 0.74, 0, 0);
-    const cb = rounded(1.3, 0.86, 0.4, 2).map(([l, w]) => [l - 0.2, w]);
-    const ct = rounded(0.62, 0.56, 0.3, 2).map(([l, w]) => [l - 0.05, w]);
-    m.frustum(cb, 0.74, ct, 1.33, 1, 1);
-    lights(m, 1.901, 0.38, 0.55, 0.61, 3);
-    lights(m, -1.901, 0.4, 0.56, 0.62, 4);
-    const under = plan(1.55, -1.55, 0.62, 0.4, 0.4);
-    return { ...m.build(), under: wheelsMesh((u) => u.frustum(under, 0.1, under, 0.3, 2, 2), [1.15, -1.15], 0.3, 0.55, 0.88) };
-  })(),
+  pod: podMesh(),
   van: (() => {
     // the robovan: a long champagne loaf on a dark ribbed skirt that hides most of its wheels, a dark glass arch along each
     // side that wraps round the corners at both ends and runs along the shoulder, a big glass door mid-side, and a

@@ -112,9 +112,10 @@ function drawDoors(r: R, v: Vehicle) {
     // only the camera-facing side reads at this size
     const nx = -v.hy * side, ny = v.hx * side;
     if (nx + ny <= 0) continue;
-    // the van's door is its big glass panel mid-side (see its mesh)
-    const l0 = isVan ? -0.95 : -0.9, l1 = isVan ? 0.95 : 0.6;
-    const zb = isVan ? 0.42 : 0.45, zt = isVan ? 1.56 : 1.25;
+    // the van's door is its big glass panel mid-side (see its mesh); the pod's runs from the windscreen pillar back
+    // over its side glass (podMesh.ts)
+    const l0 = isVan ? -0.95 : -0.5, l1 = isVan ? 0.95 : 0.85;
+    const zb = isVan ? 0.42 : 0.42, zt = isVan ? 1.56 : 1.12;
     const w = v.hw * 0.98;
     const pts: number[] = [];
     if (isVan) {

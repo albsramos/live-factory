@@ -45,14 +45,15 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
   `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look
-  (`bodyKit.ts` smooth bodies built from slices, used by `suvMesh.ts` and `tractorMesh.ts`, the semi's cab;
-  `wheels.ts` the round wheels every vehicle stands on), `hop.ts` the roadster's flight (a vehicle's `z` and
-  `roll`), `exhaust.ts` its jets and the smoke puffs (each puff its own small sort item), `traffic.ts` all of it
-  together.
+  (`bodyKit.ts` smooth bodies built from slices, used by `suvMesh.ts`, `podMesh.ts` (the robotaxi) and
+  `tractorMesh.ts`, the semi's cab; `wheels.ts` the round wheels every vehicle stands on), `hop.ts` the roadster's
+  flight (a vehicle's `z` and `roll`), `exhaust.ts` its jets and the smoke puffs (each puff its own small sort
+  item), `traffic.ts` all of it together.
 - `people/` `walker.ts` a person or robot following steps, `figure.ts` how they are drawn, `crowd.ts` the walkway
   graph and the crowd that wanders it.
 - `draw.ts` boxes and faces (`onWall` for an upright face at any angle), `mesh.ts` convex meshes (a mesh's `under`,
-  such as the SUV's wheels, is drawn just before it; drawn at a height, and optionally rolled about their length
+  such as the SUV's wheels, is drawn just before it, and of its `sides`, such as the robotaxi's flush wheels, the
+  one facing the camera after it and the other before; drawn at a height, and optionally rolled about their length
   axis, which reorders their parts so a body upside down still stacks right), `ground.ts` shadows and ground shapes,
   `lights.ts` night road lighting.
 - `scene.ts` frame loop and baking; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`

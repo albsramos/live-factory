@@ -25,7 +25,8 @@ const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number; 
   // the tail bar follows the body's slice at the tailgate (suvMesh.ts, the band from 0.88 to 1.0)
   suv: { front: [2.42, 0.7, 0.78], rear: [-2.38, 0.72, 0.94], reach: 7, tail: { l: -2.36, w: 0.97, r: 0.54, z: 0.955 } },
   pickup: { front: [2.85, 0.98, 0.94], rear: [-2.85, 1.0, 1.18], reach: 7.5 },
-  pod: { front: [1.9, 0.38, 0.58], rear: [-1.9, 0.4, 0.59], reach: 5.5 },
+  // the pod's tail bar follows the cut-off tail (podMesh.ts, the band from 0.62 to 0.7)
+  pod: { front: [1.92, 0.62, 0.6], rear: [-1.92, 0.62, 0.66], reach: 5.5, tail: { l: -1.92, w: 0.955, r: 0.28, z: 0.66 } },
   van: { front: [3.6, 0.55, 1.22], rear: [-3.6, 0.55, 1.22], reach: 7.5 },
   roadster: { front: [2.3, 0.6, 0.51], rear: [-2.3, 0.62, 0.49], reach: 7.5 },
   semi: { front: [3.2, 1.0, 1.24], rear: [-12.8, 1.0, 1.38], reach: 9.5 },
