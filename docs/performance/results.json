@@ -95,5 +95,89 @@
       "frameP50": 5.7,
       "frameP95": 8
     }
+  ],
+  "sizes": [
+    {
+      "size": "1366×768",
+      "mainThreadPct": 64.5,
+      "scriptPct": 15.5,
+      "browserCpuPct": 73,
+      "heapMB": 10.4,
+      "fps": 30,
+      "frameP50": 4.7,
+      "frameP95": 7.5
+    },
+    {
+      "size": "1600×860",
+      "mainThreadPct": 71,
+      "scriptPct": 15.9,
+      "browserCpuPct": 80,
+      "heapMB": 13.6,
+      "fps": 30,
+      "frameP50": 4.8,
+      "frameP95": 7.1
+    },
+    {
+      "size": "1920×1080",
+      "mainThreadPct": 82.7,
+      "scriptPct": 15.2,
+      "browserCpuPct": 93.1,
+      "heapMB": 14,
+      "fps": 30,
+      "frameP50": 4.7,
+      "frameP95": 6.3
+    },
+    {
+      "size": "2560×1440",
+      "mainThreadPct": 99.5,
+      "scriptPct": 64.4,
+      "browserCpuPct": 112.1,
+      "heapMB": 13.3,
+      "fps": 28.5,
+      "frameP50": 22,
+      "frameP95": 26.4
+    }
+  ],
+  "throttle": [
+    {
+      "slowdown": 1,
+      "mainThreadPct": 65.5,
+      "scriptPct": 15.8,
+      "browserCpuPct": 73.5,
+      "heapMB": 15.4,
+      "fps": 30,
+      "frameP50": 4.7,
+      "frameP95": 7.4
+    },
+    {
+      "slowdown": 2,
+      "mainThreadPct": 99.8,
+      "scriptPct": 24.7,
+      "browserCpuPct": 114.9,
+      "heapMB": 17.5,
+      "fps": 22.8,
+      "frameP50": 9.8,
+      "frameP95": 14
+    },
+    {
+      "slowdown": 4,
+      "mainThreadPct": 99.8,
+      "scriptPct": 26.4,
+      "browserCpuPct": 111.6,
+      "heapMB": 17.8,
+      "fps": 9.9,
+      "frameP50": 24,
+      "frameP95": 36.6
+    },
+    {
+      "slowdown": 6,
+      "mainThreadPct": 99.8,
+      "scriptPct": 26.4,
+      "browserCpuPct": 110.3,
+      "heapMB": 10.6,
+      "fps": 6.4,
+      "frameP50": 37.5,
+      "frameP95": 54.3
+    }
   ]
 }
