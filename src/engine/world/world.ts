@@ -114,6 +114,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   crowd.targetRobots = Math.round(16 * density);
   for (let i = 0; i < crowd.targetPeople; i++) crowd.wanderer('person');
   for (let i = 0; i < crowd.targetRobots; i++) crowd.wanderer('robot');
+  // however long the page stays open, the crowd never grows past half again its size
+  crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
   const ground = groundPainter(pal, lot, outskirts);
 

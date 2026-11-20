@@ -17,6 +17,8 @@ import type { Traffic } from './traffic';
 import type { Hop } from './hop';
 
 let VID = 1;
+/** seconds a blocked vehicle waits at most; the longest wait in normal traffic is about a minute (check:sim) */
+const WATCHDOG = 240;
 
 export class Vehicle {
   readonly id = VID++;
@@ -206,11 +208,12 @@ export class Vehicle {
     else this.v = Math.max(vt, this.v - DEC * 2.2 * dt);
     this.braking = this.v < 0.1 || this.v < v0 - 1e-3;
     if (dStop <= 0.02 && dStop < len - this.s - 0.05) this.v = 0;
-    // deadlock breaker: when the vehicles in front block each other in a loop that comes back to us, or as a last
-    // resort after a very long stall. A plain queue (say, behind a truck at a red light) just waits.
+    // deadlock breaker: when the vehicles in front block each other in a loop that comes back to us, or after a very
+    // long stall. A plain queue (say, behind a truck loading) just waits, but nothing waits for ever: past WATCHDOG
+    // seconds it drives on whatever holds it, so a jam the rules didn't foresee can't freeze the scene for good
     if (blocked && this.v < 0.05) {
       this.stuckT += dt;
-      if ((this.stuckT > 6 && inCycle(this)) || (this.stuckT > 90 && !behindHold(this))) {
+      if ((this.stuckT > 6 && inCycle(this)) || (this.stuckT > 90 && !behindHold(this)) || this.stuckT > WATCHDOG) {
         this.ghostT = 2.5;
         this.stuckT = 0;
       }

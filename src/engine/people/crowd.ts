@@ -54,6 +54,8 @@ export class Crowd {
   private spawnT = 0;
   targetPeople = 0;
   targetRobots = 0;
+  /** the most walkers there may be: newcomers stop when people are held up somewhere (a blocked crossing) */
+  cap = Infinity;
 
   constructor(readonly graph: WalkGraph, readonly pal: Palette, readonly rng: Rng) {}
 
@@ -157,8 +159,10 @@ export class Crowd {
       this.spawnT = rr(this.rng, 0.4, 1.4);
       let people = 0, robots = 0;
       for (const w of this.walkers) if (w.onIdle) w.kind === 'robot' ? robots++ : people++;
-      if (people < this.targetPeople) this.arrival('person');
-      else if (robots < this.targetRobots) this.arrival('robot');
+      // with the crowd at its cap, newcomers wait for someone to leave
+      const hasRoom = this.walkers.length < this.cap;
+      if (hasRoom && people < this.targetPeople) this.arrival('person');
+      else if (hasRoom && robots < this.targetRobots) this.arrival('robot');
     }
   }
 
