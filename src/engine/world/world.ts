@@ -29,7 +29,8 @@ import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
 import { roofWalks } from './plaza';
-import { glassHall, glassLoading } from './glassHall';
+import { glassHall } from './glassHall';
+import { DockInterior } from './dockInterior';
 import type { Branding } from './lettering';
 import { pocketParkBenches, streetFurniture, chat, staffBreak } from './streetLife';
 import { walkways } from './walkways';
@@ -74,15 +75,15 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const zones = roadZones(traffic);
   // two docks are worked by live trucks; the third slot is the charging bay they back into after loading
   const yard = new TruckYard(env, [4.5, 10.5], 16.5);
-  factory(env, edge, yard, opts.branding);
+  // the view in through the dock wing's atrium: Optimus robots carrying boxes in from the docks
+  const inside = new DockInterior(pal, opts.seed * 4513 + 7);
+  acts.push(inside);
+  factory(env, edge, yard, opts.branding, inside);
   // AI compute: a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
-  // five columns, leaving a strip by the truck yard where Optimus robots load boxes
-  rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 5);
+  rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 6);
   // the dock wing grows out over it in glass, its full height (10 m), so the racks stay dry and show through
   S.push(...glassHall(pal, { x0: 30, y0: 26.4, x1: 54.0, y1: 37.0, h: 10, isAttached: true, rails: [3.6, 7] }));
-  // on a random stream of their own, so the rest of the seeded scene stays as it was
-  acts.push(...glassLoading({ ...env, rng: makeRng(opts.seed * 4513 + 7) }, edge));
   pocketParkBenches(env, edge);
   buildings(env, edge);
   constructionSite(env, edge, acts);

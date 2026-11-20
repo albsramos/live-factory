@@ -7,9 +7,7 @@
 import type { Ctx, R } from '../draw';
 import { onFaceX, onFaceY, onTop } from '../draw';
 import type { Palette } from '../palette';
-import { BoxItem, FnItem } from '../statics';
-import { Looper } from '../activities/looper';
-import type { Activity, Env } from '../activities/activity';
+import { FnItem } from '../statics';
 
 export interface GlassHall {
   x0: number;
@@ -37,7 +35,7 @@ export function glassHall(pal: Palette, g: GlassHall): FnItem[] {
   items.push(new FnItem(x1, y0, 0, x1 + T, y1 + T, h, (r) => onFaceX(r, x1 + T, y0, y1 + T, h, (c, w) => pane(r, pal, c, w, h, pal.factory.right, false, f))).still());
   items.push(new FnItem(x0, y1, 0, x1, y1 + T, h, (r) => onFaceY(r, x0, x1, y1 + T, h, (c, w) => pane(r, pal, c, w, h, pal.factory.left, false, f))).still());
   // the roof
-  items.push(new FnItem(x0, y0, h, x1 + T, y1 + T, h + ROOF, (r) => roof(r, pal, x0, y0, x1 + T - x0, y1 + T - y0, h + ROOF)).still());
+  items.push(new FnItem(x0, y0, h, x1 + T, y1 + T, h + ROOF, (r) => roof(r, pal, x0, y0, x1 + T - x0, y1 + T - y0, h + ROOF, !!g.isAttached)).still());
   return items;
 }
 
@@ -86,10 +84,19 @@ function pane(r: R, pal: Palette, c: Ctx, w: number, h: number, frame: string, i
   c.globalAlpha = 1;
 }
 
-/** The glass roof seen from above: tinted glass on a grid of beams, framed round the edge. */
-function roof(r: R, pal: Palette, x0: number, y0: number, w: number, d: number, z: number) {
+/**
+ * The glass roof seen from above: frosted glass on a grid of beams, framed round the edge. On a hall leaning on the
+ * factory it is clear along the factory's wall, so the view in through the factory's atrium stays sharp, and frosts
+ * over the next 8 m.
+ */
+function roof(r: R, pal: Palette, x0: number, y0: number, w: number, d: number, z: number, isAttached: boolean) {
   onTop(r, x0, y0, z, (c) => {
-    c.fillStyle = pal.hallRoof;
+    if (isAttached) {
+      const g = c.createLinearGradient(0, 0, 8, 0);
+      g.addColorStop(0, pal.hallGlass);
+      g.addColorStop(1, pal.hallRoof);
+      c.fillStyle = g;
+    } else c.fillStyle = pal.hallRoof;
     c.fillRect(0, 0, w, d);
     if (!r.night) {
       c.fillStyle = pal.hallSheen;
@@ -109,23 +116,5 @@ function roof(r: R, pal: Palette, x0: number, y0: number, w: number, d: number, 
     c.stroke();
     c.lineWidth = 0.22;
     c.strokeRect(0.11, 0.11, w - 0.22, d - 0.22);
-  });
-}
-
-/**
- * Inside the glass extension, in the strip between the last column of racks (x 49.7) and the glass by the truck yard
- * (x 54): a pallet stack of boxes at each end, one by the trucks and one at the front glass, and two Optimus robots
- * on lanes of their own carrying boxes from the one to the other. They stand on the platform (z 0.35).
- */
-export function glassLoading(env: Env, edge: string): Activity[] {
-  const { pal, statics: S } = env;
-  const z = 0.35;
-  for (const [y0, y1, layers] of [[26.9, 27.7, 3], [35.9, 36.7, 2]]) {
-    for (let i = 0; i < layers; i++) S.push(new BoxItem(51.0, y0, z + i * 0.4, 53.0, y1, z + (i + 1) * 0.4, pal.crate, { edge }, undefined, false));
-  }
-  const carry = (on: boolean) => (w: { carry: boolean }) => (w.carry = on);
-  return [51.4, 52.6].map((x, i) => {
-    const pick = { x, y: 28.3, z, wait: 0.9 + i * 0.3, then: carry(true) }, drop = { x, y: 35.3, z, wait: 0.8 + i * 0.2, then: carry(false) };
-    return new Looper(env, 'robot', () => (i ? [drop, pick] : [pick, drop]), x, i ? 34 : 29.5, z);
   });
 }

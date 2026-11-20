@@ -49,6 +49,10 @@ export interface Palette {
   hallSheen: string;
   /** the halls' roof glass: frosted, so a hall reads as a closed volume over what lies behind it */
   hallRoof: string;
+  /** inside the dock wing, seen through its atrium (world/dockInterior.ts): the glass's tint, the floor and the back wall */
+  atriumTint: string;
+  interiorFloor: string;
+  interiorWall: string;
   glow: string;
   led: string;
   ledBlue: string;
@@ -125,6 +129,9 @@ export function lightPalette(): Palette {
     hallGlass: 'rgba(196, 218, 236, 0.22)',
     hallSheen: 'rgba(255, 255, 255, 0.28)',
     hallRoof: 'rgba(228, 236, 244, 0.62)',
+    atriumTint: 'rgba(214, 226, 238, 0.16)',
+    interiorFloor: '#b9bcc5',
+    interiorWall: '#9fa2ad',
     glow: '#7fe3ff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',
@@ -195,6 +202,9 @@ export function darkPalette(): Palette {
     hallGlass: 'rgba(110, 150, 190, 0.12)',
     hallSheen: 'rgba(0, 0, 0, 0)',
     hallRoof: 'rgba(52, 60, 74, 0.62)',
+    atriumTint: 'rgba(255, 196, 120, 0.1)',
+    interiorFloor: '#4c4438',
+    interiorWall: '#3a342b',
     glow: '#6fdcff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',

@@ -73,16 +73,17 @@ export function windowGlow(r: R, ctx: Ctx, w: number, bands: Band[]) {
 
 /**
  * A tall glazed atrium on a +x face, floor to near the roof: warm glass in a mullion grid, with a soft daylight
- * reflection (or a glow at night). `u0`…`u1` run along the face, `top`…`bot` down from its top edge.
+ * reflection (or a glow at night). `u0`…`u1` run along the face, `top`…`bot` down from its top edge. With `isSeeThrough`
+ * the glass is only a light tint, over a view of the inside drawn first (world/dockInterior.ts).
  */
-export function atrium(r: R, pal: Palette, x1: number, y0: number, y1: number, z1: number, u0: number, u1: number, top: number, bot: number) {
+export function atrium(r: R, pal: Palette, x1: number, y0: number, y1: number, z1: number, u0: number, u1: number, top: number, bot: number, isSeeThrough = false) {
   onFaceX(r, x1, y0, y1, z1, (ctx) => {
     const [c0, c1] = r.night ? pal.windowNight : pal.window;
     const w = u1 - u0, h = bot - top;
-    ctx.fillStyle = vgrad(ctx, pal, 'atrium', top, bot, c0, c1);
+    ctx.fillStyle = isSeeThrough ? pal.atriumTint : vgrad(ctx, pal, 'atrium', top, bot, c0, c1);
     ctx.fillRect(u0, top, w, h);
-    // daylight sliding down the glass in two soft diagonal bands
-    if (!r.night) {
+    // daylight sliding down the glass in two soft diagonal bands (not when we look in through it)
+    if (!r.night && !isSeeThrough) {
       ctx.save();
       ctx.beginPath();
       ctx.rect(u0, top, w, h);

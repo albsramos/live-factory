@@ -12,6 +12,7 @@ import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
 import { drawEntrance, entrancePillars } from './entrance';
 import { drawLettering, type Branding } from './lettering';
+import type { DockInterior } from './dockInterior';
 import { TERRACE_AREA, drawRoofTerrace, factoryFront } from './plaza';
 import { solarRows } from './solarRows';
 import { Crane } from '../activities/crane';
@@ -24,7 +25,7 @@ import { carMats } from '../palette';
  * The factory and its dock wing: two loading docks and the charging bay (a lamp by each shows the yard's state), the
  * bay's chargers and battery bank on a kerbed island the semis can't drive over, and pallets by the wall.
  */
-export function factory(env: Env, edge: string, yard: TruckYard, branding: Branding) {
+export function factory(env: Env, edge: string, yard: TruckYard, branding: Branding, inside: DockInterior) {
   const { pal, statics: S } = env;
   // the ground floor, either side of the recessed entrance (entrance.ts)
   const groundFloor: Band = { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 7.6], [20.4, 35.5]] };
@@ -73,6 +74,8 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       windowsX(r, pal, 30, 0, 36, 10, [{ top: 1.4, bot: 3.0, every: 1.2, spans: [[10.4, 35.6]] }]);
       atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
     }).live((r) => {
+      // the view in through the atrium, Optimus robots carrying boxes in from the docks
+      inside.draw(r);
       // a lamp beside each dock: green while a trailer is loading (or charging, at the bay), amber while one is coming
       // or going, off when free
       onFaceX(r, 30, 0, 36, 10, (ctx) => {
