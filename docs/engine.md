@@ -23,8 +23,9 @@
 - Night lighting: window bloom (`details.ts` `windowGlow`), light spilling onto the ground in front of lit facades
   (`windowSpill`, faces listed in `world/groundPlan.ts` `litFaces` and `world/outskirts.ts`), and headlights / tail
   lights (`lights.ts`: a full-width light bar glows along its whole length, and a low beam is one soft fan of light,
-  drawn once as an image and laid on the road along each vehicle's heading). The road pass runs after the moving
-  shadows and before anything standing, so a vehicle's own body covers its beams.
+  drawn once as an image and laid on the road along each vehicle's heading, clipped out of the shadows that the
+  vehicles standing in it cast away from the lamp, `beamShadows.ts`). The road pass runs after the moving shadows
+  and before anything standing, so a vehicle's own body covers its beams.
 - Tall `BoxItem`s become shadow casters automatically (`world/world.ts` end, `shade.ts`): objects in their shadow
   are tinted.
 

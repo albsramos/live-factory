@@ -9,6 +9,7 @@ import type { Ctx, R } from './draw';
 import type { Vehicle } from './traffic/vehicle';
 import type { VehicleKind } from './traffic/meshes';
 import { makeCanvas } from './sprites';
+import { beamShadows, clipShadows } from './beamShadows';
 
 /** Light bar position per kind, from the meshes in vehicles.ts: [distance along the body, half width, height]. */
 type Bar = readonly [number, number, number];
@@ -86,12 +87,16 @@ function beamSprite() {
   return (beamImage = c);
 }
 
-/** The low beam on the road from a light bar at (x, y) of half width `halfWidth`, reaching `reach` ahead. */
-function beam(ctx: Ctx, x: number, y: number, hx: number, hy: number, halfWidth: number, reach: number, a: number) {
+/**
+ * The low beam on the road from a light bar at (x, y) of half width `halfWidth`, reaching `reach` ahead, kept out of
+ * the `shadows` of whatever stands in it.
+ */
+function beam(ctx: Ctx, x: number, y: number, hx: number, hy: number, halfWidth: number, reach: number, a: number, shadows: readonly number[][][]) {
   const img = beamSprite();
   if (!img) return;
   const far = halfWidth / BEAM_FOOT;
   ctx.save();
+  clipShadows(ctx, shadows, x, y, reach);
   ctx.transform(hx, hy, -hy, hx, x, y);
   ctx.globalAlpha = a;
   ctx.drawImage(img, 0, -far, reach, 2 * far);
@@ -123,8 +128,11 @@ function frame(v: Vehicle) {
   };
 }
 
-/** Beams and tail glow on the road for every vehicle, in one pass. Call with the canvas in screen units. */
-export function drawRoadLight(ctx: Ctx, vehicles: readonly Vehicle[]) {
+/**
+ * Beams and tail glow on the road for every lit vehicle in `vehicles`, in one pass; everything in `blockers` stands
+ * in the way of the beams. Call with the canvas in screen units.
+ */
+export function drawRoadLight(ctx: Ctx, vehicles: readonly Vehicle[], blockers: readonly Vehicle[] = vehicles) {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   onGround(ctx);
@@ -134,7 +142,9 @@ export function drawRoadLight(ctx: Ctx, vehicles: readonly Vehicle[]) {
     const f = frame(v);
     const [fl, fw] = bar.front;
     const cx = f.fx + f.fhx * fl, cy = f.fy + f.fhy * fl;
-    beam(ctx, cx, cy, f.fhx, f.fhy, fw, bar.reach * 1.3, 0.55);
+    // a vehicle in front stops the light: the road behind it, seen from the lamp, stays dark
+    const reach = bar.reach * 1.3;
+    beam(ctx, cx, cy, f.fhx, f.fhy, fw, reach, 0.55, beamShadows(v, blockers, cx, cy, f.fhx, f.fhy, reach));
     const [rl, rw] = bar.rear;
     if (bar.tail) {
       // a full-width bar throws a wide band of red on the road behind, broader than the car
