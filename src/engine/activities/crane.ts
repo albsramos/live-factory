@@ -18,7 +18,9 @@ export class Crane implements Activity {
   private t = 0;
   private dropped: { x: number; y: number; t: number }[] = [];
   private readonly pick = [56.6, 85.5, 0.9];
-  private readonly drop = [59.75, 93.4, 3.75];
+  // set down in the open bay between the frame's columns (x 56, 59.75) and beams (y 91.33, 95.67), so the cable and
+  // the load come down through the gaps rather than through a beam
+  private readonly drop = [57.9, 93.5, 3.75];
   private parts: Item[] = [];
 
   constructor(private env: Env) {
@@ -35,13 +37,11 @@ export class Crane implements Activity {
       x0: this.mx - 12, x1: this.mx + 12, y0: this.my - 12, y1: this.my + 12, z0: this.h, z1: this.h + 1.6,
       draw: (r: R) => self.drawJib(r),
     } as Item);
-    // hook, cable and load
-    const hookItem = {
-      x0: 0, x1: 0, y0: 0, y1: 0, z0: 0, z1: 0,
-      draw: (r: R) => self.drawHook(r),
-    } as Item;
-    this.parts.push(hookItem);
-    this.hookItem = hookItem;
+    // the cable and hook block, and the load slung under it: two items with tight boxes, so neither overlaps the
+    // frame's beams (a box overlapping one in all three axes sorts unpredictably, and flickers)
+    this.cableItem = { x0: 0, x1: 0, y0: 0, y1: 0, z0: 0, z1: 0, draw: (r: R) => self.drawCable(r) } as Item;
+    this.loadItem = { x0: 0, x1: 0, y0: 0, y1: 0, z0: 0, z1: 0, draw: (r: R) => self.drawSlung(r) } as Item;
+    this.parts.push(this.cableItem, this.loadItem);
     // material pile
     env.statics.push(
       new FnItem(55.3, 84.4, 0, 57.9, 86.6, 0.8, (r) => {
@@ -49,7 +49,8 @@ export class Crane implements Activity {
       }).still(),
     );
   }
-  private hookItem: Item;
+  private cableItem: Item;
+  private loadItem: Item;
 
   private target(): { ang: number; d: number; hook: number; loaded: boolean } {
     // a 24 s loop
@@ -86,13 +87,21 @@ export class Crane implements Activity {
     for (const d of this.dropped) d.t -= dt;
     this.dropped = this.dropped.filter((d) => d.t > 0);
     const hx = this.mx + Math.cos(this.ang) * this.trolley, hy = this.my + Math.sin(this.ang) * this.trolley;
-    const it = this.hookItem;
-    it.x0 = hx - 1.3;
-    it.x1 = hx + 1.3;
-    it.y0 = hy - 0.5;
-    it.y1 = hy + 0.5;
-    it.z0 = this.hook - 1.2;
-    it.z1 = this.h - 0.2;
+    const c = this.cableItem;
+    c.x0 = hx - 0.15;
+    c.x1 = hx + 0.15;
+    c.y0 = hy - 0.15;
+    c.y1 = hy + 0.15;
+    c.z0 = this.hook;
+    c.z1 = this.h - 0.2;
+    // the load and its slings, from the bottom of the bundle up to the hook (nothing when it hangs empty)
+    const l = this.loadItem, w = this.loaded ? 1 : 0;
+    l.x0 = hx - 1.3 * w;
+    l.x1 = hx + 1.3 * w;
+    l.y0 = hy - 0.35 * w;
+    l.y1 = hy + 0.35 * w;
+    l.z0 = this.hook - 1.2;
+    l.z1 = this.loaded ? this.hook : this.hook - 1.2;
   }
 
   items(out: Item[]) {
@@ -211,24 +220,33 @@ export class Crane implements Activity {
     }
   }
 
-  private drawHook(r: R) {
-    const { mx, my, h } = this;
-    const ctx = r.ctx;
-    const x = mx + Math.cos(this.ang) * this.trolley, y = my + Math.sin(this.ang) * this.trolley;
+  private hookAt() {
+    return [this.mx + Math.cos(this.ang) * this.trolley, this.my + Math.sin(this.ang) * this.trolley];
+  }
+
+  /** The cable from the trolley down to the hook block. */
+  private drawCable(r: R) {
+    const ctx = r.ctx, [x, y] = this.hookAt();
     ctx.strokeStyle = this.env.pal.night ? '#0c0c0e' : '#5b5d66';
     ctx.lineWidth = 0.04;
     ctx.beginPath();
-    lineW(ctx, x, y, h, x, y, this.hook);
+    lineW(ctx, x, y, this.h, x, y, this.hook);
     ctx.stroke();
     ctx.fillStyle = this.env.pal.dark.left;
     const X = (x - y) * C, Y = (x + y) * 0.5 - this.hook;
     ctx.fillRect(X - 0.12, Y, 0.24, 0.22);
-    if (this.loaded) {
-      ctx.beginPath();
-      lineW(ctx, x, y, this.hook, x - 1.0, y, this.hook - 1.0);
-      lineW(ctx, x, y, this.hook, x + 1.0, y, this.hook - 1.0);
-      ctx.stroke();
-      this.drawLoad(r, x, y, this.hook - 1.2, 0);
-    }
+  }
+
+  /** The load slung under the hook, when there is one. */
+  private drawSlung(r: R) {
+    if (!this.loaded) return;
+    const ctx = r.ctx, [x, y] = this.hookAt();
+    ctx.strokeStyle = this.env.pal.night ? '#0c0c0e' : '#5b5d66';
+    ctx.lineWidth = 0.04;
+    ctx.beginPath();
+    lineW(ctx, x, y, this.hook, x - 1.0, y, this.hook - 1.0);
+    lineW(ctx, x, y, this.hook, x + 1.0, y, this.hook - 1.0);
+    ctx.stroke();
+    this.drawLoad(r, x, y, this.hook - 1.2, 0);
   }
 }
