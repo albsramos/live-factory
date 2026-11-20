@@ -21,11 +21,24 @@ const MATS = [0, 0, 0, 0, 1, 1, 1];
 /** wheel centres along the body */
 const AXLES = [1.4, -1.4];
 
+/**
+ * The four wheels and a small rounded underbody tucked in under the body, so the body overhangs them. Drawn before
+ * the body (its `under`), and sorted among themselves so a far wheel never covers a near one.
+ */
+function wheelsMesh(): Mesh {
+  const m = new MeshBuilder();
+  m.frustum(plan(1.95, -1.95, 0.78, 0.5, 0.5), 0.1, plan(1.95, -1.95, 0.78, 0.5, 0.5), 0.32, 2, 2);
+  const R = 0.33;
+  const tyre = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+    const a = ((i + 0.5) / 8) * Math.PI * 2;
+    return [Math.cos(a) * R, R + Math.sin(a) * R];
+  });
+  for (const L of AXLES) for (const s of [1, -1]) m.extrude(tyre.map(([l, z]) => [l + L, z]), s * 0.7, s * 0.95, [2], 2);
+  return m.build(true);
+}
+
 export function suvMesh(): Mesh {
   const m = new MeshBuilder();
-  // wheels and the dark sill under the body
-  const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
-  m.frustum(box(-2.05, 2.05, 0.92), 0, box(-2.05, 2.05, 0.92), 0.34, 2, 2);
   const body = new SlicedBody(m, SLICES.map(([z, lf, lr, w, rf, rr]) => ({ z, pts: plan(lf, lr, w, rf, rr) })), MATS);
 
   // the lower band: a dark intake low across the nose, and a dark arch over each wheel
@@ -50,5 +63,5 @@ export function suvMesh(): Mesh {
   // the light bar across the tailgate, wrapping onto the back corners
   for (const f of body.band(3)) if (f.place === 'rear' || f.place === 'rearCorner') body.rect(f, 0, 1, 0.45, 0.78, 4);
   // stacked bottom up, so drawn in the order built
-  return m.build();
+  return { ...m.build(), under: wheelsMesh() };
 }

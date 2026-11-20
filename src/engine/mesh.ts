@@ -32,6 +32,8 @@ export interface Mesh {
   sort: boolean;
   /** faces from this index on are flush decals, always drawn last */
   decals: number;
+  /** a mesh drawn first, at the same pose, that this one always stands in front of (a body's wheels) */
+  under?: Mesh;
 }
 
 export class MeshBuilder {
@@ -166,6 +168,7 @@ const FACE: number[] = [];
  * drawn from the one furthest below the camera's side of the body up, so a body upside down still stacks right.
  */
 export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
+  if (m.under) drawMesh(r, m.under, px, py, pz, hx, hy, mats, roll, rollZ);
   const v = m.v;
   const n = v.length / 3;
   if (n > MAX_VERTS) throw new Error(`live-factory: a mesh has ${n} vertices, over ${MAX_VERTS}`);
