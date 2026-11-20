@@ -17,7 +17,11 @@ const T_LIFT = 1.2;
 const T_LAND = 1.5;
 const T_ROLL = 1.25;
 const T_BOOST = 1.4;
-const V_FLY = 12.5;
+const V_FLY = 15;
+/** extra acceleration from the tail jets while off the road, on top of a car's own */
+const A_FLY = 3;
+/** the smoke where the jets blast the road as it comes down, against that as it lifts off */
+const LAND_SMOKE = 0.75;
 
 /** A puff of smoke: where, its radius at first and at the end, how long it lasts, and its drift. */
 export type Emit = (x: number, y: number, z: number, r0: number, r1: number, life: number, vx: number, vy: number, vz: number) => void;
@@ -108,6 +112,7 @@ export class Hop {
         break;
     }
     if (this.aloft) {
+      if (this.phase !== 'land' && v.v < this.vmax) v.v = Math.min(this.vmax, v.v + A_FLY * dt);
       // the zones it has flown right over are behind it: it never asks for those again
       for (const q of leg.reqs) if (!q.done && q.sOut < v.s - v.hl - 0.5) q.done = true;
     }
@@ -167,7 +172,7 @@ export class Hop {
     this.puffT -= dt;
     if (this.puffT > 0) return;
     this.puffT = 0.03;
-    const near = this.down * Math.max(0, 1 - v.z / 4.5);
+    const near = this.down * Math.max(0, 1 - v.z / 4.5) * (this.phase === 'land' ? LAND_SMOKE : 1);
     if (near > 0.05) {
       for (const [l, w] of DOWN_JETS) {
         if (rng() > near * 0.7) continue;
