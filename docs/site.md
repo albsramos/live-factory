@@ -6,11 +6,15 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
 ## Structure
 
 - `src/app/App/` the page: composes the features (only here do features meet).
+- The page is just the name and the playground: no other text (how to install and use the component is in the
+  README).
 - `src/features/playground/` the live scene and its controls. Settings live in the URL (`model/settings.ts`), read
-  with `useSyncExternalStore` (`shared/lib/searchParams.ts`), so a configured view can be shared.
-- `src/features/usage/` how to install and use the component.
-- `src/shared/ui/` domain-free primitives (Button, Segmented, Slider, CodeBlock, Code, Panel); `src/shared/lib/` hooks
-  and helpers. Tokens are in `src/styles/tokens.css` (light and dark).
+  with `useSyncExternalStore` (`shared/lib/searchParams.ts`), so a configured view can be shared. The button in the
+  scene's corner shows it on the whole screen: the browser's full screen where a page may have it, otherwise (an
+  iPhone, which keeps full screen for video) the stage is `position: fixed` over the window. No ancestor of the
+  stage may set `container-type` or other containment, which would trap it.
+- `src/shared/ui/` domain-free primitives (Button, Segmented, Slider); `src/shared/lib/` hooks and helpers. Tokens
+  are in `src/styles/tokens.css` (light and dark).
 
 ## Rules (the react-component skill, albsramos/skills)
 

@@ -1,5 +1,5 @@
+/* no container here: containment would trap the stage when it fills the screen (it is `position: fixed`) */
 .root {
-  container-type: inline-size;
   display: grid;
   gap: var(--space-4);
 }

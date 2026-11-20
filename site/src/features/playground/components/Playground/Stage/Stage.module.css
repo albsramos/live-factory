@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   overflow: hidden;
   border-radius: var(--radius-xl);
   background: var(--color-surface);
@@ -14,8 +15,37 @@
   height: 100%;
 }
 
-/* on a phone a 1630 × 520 strip would be a sliver: the banner falls back to the scene's own shape */
-@container (max-width: 640px) {
+/* on the whole screen: the browser's full screen, or else the window */
+.root[data-state="full"] {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.root[data-state="full"] > .scene {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.button {
+  position: absolute;
+  inset-block-end: var(--space-3);
+  inset-inline-end: var(--space-3);
+}
+
+.root[data-state="full"] > .button {
+  inset-block-end: max(var(--space-4), env(safe-area-inset-bottom, 0px));
+  inset-inline-end: max(var(--space-4), env(safe-area-inset-right, 0px));
+}
+
+/*
+ * On a phone a 1630 × 520 strip would be a sliver: the banner falls back to the scene's own shape. A media query,
+ * not a container one: a container's containment would trap the stage when it fills the screen. 672px is a 640px
+ * stage plus the page's gutters.
+ */
+@media (max-width: 672px) {
   .root[data-shape="banner"] {
     aspect-ratio: auto;
   }

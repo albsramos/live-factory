@@ -1,56 +1,6 @@
-.root {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-6);
-}
-
-.eyebrow {
-  margin: 0 0 var(--space-2);
-  font: 500 var(--text-xs) / 1.5 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
 .title {
   margin: 0;
   font: 600 var(--text-xl) / 1.05 var(--font-display);
   letter-spacing: -0.02em;
   text-wrap: balance;
-}
-
-.aside {
-  display: grid;
-  gap: var(--space-3);
-  max-inline-size: 58ch;
-}
-
-.lede {
-  margin: 0;
-  color: var(--color-muted);
-}
-
-.source {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font: 500 var(--text-s) / 1 var(--font-body);
-  color: var(--color-fg);
-  text-decoration: none;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-pill);
-  padding: var(--space-2) 14px;
-}
-
-.source:hover {
-  border-color: var(--color-muted);
-}
-
-.icon {
-  inline-size: 15px;
-  block-size: 15px;
 }
