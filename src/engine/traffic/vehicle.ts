@@ -14,6 +14,7 @@ import { type Leg, type LegState, type Body, ACC, DEC, prepareLeg, reserveZones,
 import { behindHold, inCycle, senseAhead } from './sense';
 import { VehicleItem } from './vehicleItem';
 import type { Traffic } from './traffic';
+import type { Hop } from './hop';
 
 let VID = 1;
 
@@ -49,6 +50,10 @@ export class Vehicle {
   keep = false;
   /** slowing down or standing: the tail lights burn brighter */
   braking = false;
+  /** the roadster's hop: its height above the road, its roll about its length, and what flies it */
+  z = 0;
+  roll = 0;
+  hop: Hop | null = null;
   private dwellT = 0;
   private arrived = false;
   private stuckT = 0;
@@ -168,15 +173,17 @@ export class Vehicle {
       const sp = this.kind === 'semi' ? 0.45 : 1.6;
       this.door = this.door < this.doorTarget ? Math.min(this.doorTarget, this.door + dt * sp) : Math.max(this.doorTarget, this.door - dt * sp);
     }
+    this.hop?.update(this, leg, dt);
+    const aloft = !!this.hop?.aloft;
     const len = leg.path.len;
     const isLast = this.li === this.legs.length - 1;
     const stopsHere = isLast || leg.dwell !== undefined || !!leg.until || !!leg.arrive || leg.rev !== this.legs[this.li + 1]?.rev;
     let dStop = stopsHere ? len - this.s : Infinity;
-    dStop = reserveZones(this, leg, dStop);
+    if (!aloft) dStop = reserveZones(this, leg, dStop);
     releaseZones(this, leg);
     // vehicles ahead
     let blocked = false;
-    if (!leg.ghost && this.ghostT <= 0) {
+    if (!leg.ghost && this.ghostT <= 0 && !this.hop?.blind) {
       const gap = this.sense();
       if (gap < dStop + 1.4) {
         if (gap - 1.4 < 0.5) blocked = true;
@@ -184,7 +191,7 @@ export class Vehicle {
       }
     }
     if (this.ghostT > 0) this.ghostT -= dt;
-    let vt = leg.vmax;
+    let vt = aloft ? this.hop!.vmax : leg.vmax;
     for (const lim of leg.limits) {
       if (this.s > lim.s1) continue;
       const d = lim.s0 - this.s;
@@ -277,7 +284,7 @@ export class Vehicle {
   }
 
   shadow(ctx: Ctx) {
-    rectShadow(ctx, this.x, this.y, this.hx, this.hy, this.hl * 0.96, this.hw * 0.96, this.h * 0.78);
+    rectShadow(ctx, this.x, this.y, this.hx, this.hy, this.hl * 0.96, this.hw * 0.96, this.h * 0.78, this.z);
     if (this.kind === 'semi') {
       const t = this.bodies[1];
       rectShadow(ctx, t.x, t.y, t.hx, t.hy, t.hl, t.hw, 3.6);

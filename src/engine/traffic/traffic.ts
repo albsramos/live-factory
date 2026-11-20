@@ -56,6 +56,6 @@ export class Traffic {
 
   /** Headlight beams and tail glow on the road (night only), drawn before the vehicles themselves. */
   lights(ctx: Ctx) {
-    drawRoadLight(ctx, this.vehicles.filter((v) => v.isLit));
+    drawRoadLight(ctx, this.vehicles.filter((v) => v.isLit && v.z < 0.3));
   }
 }

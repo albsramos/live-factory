@@ -96,6 +96,19 @@ export class Zone {
     }
     return true;
   }
+  /** Whether `who` could enter now if it joined the back of the queue; unlike `ask`, it doesn't join it. */
+  wouldGrant(who: object, key: string): boolean {
+    if (this.holders.has(who)) return true;
+    for (const [, k] of this.holders) if (!this.compat(k, key)) return false;
+    const waiting = this.queue.filter((q) => q.who !== who && this.clock - q.seen <= 0.5);
+    if (this.phases) {
+      const here = this.phases[this.phase];
+      if (this.clearing > 0 || !here.includes(key[0])) return false;
+      return !waiting.some((q) => here.includes(q.key[0]) && !this.compat(q.key, key));
+    }
+    if (this.yieldKey !== null && key === this.yieldKey) return !this.yieldToQueue || !waiting.some((q) => !this.compat(q.key, key));
+    return !waiting.some((q) => q.key !== this.yieldKey && !this.compat(q.key, key));
+  }
   enter(who: object, key: string) {
     this.holders.set(who, key);
     this.dequeue(who);

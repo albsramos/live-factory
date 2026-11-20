@@ -49,14 +49,14 @@ export function boxShadow(ctx: Ctx, x0: number, y0: number, x1: number, y1: numb
   hullPath(ctx, SP);
 }
 
-/** Shadow of an oriented rectangle (centre, heading, half length/width) of height h. */
-export function rectShadow(ctx: Ctx, cx: number, cy: number, hx: number, hy: number, hl: number, hw: number, h: number) {
-  const dx = SHADOW_DX * h, dy = SHADOW_DY * h;
+/** Shadow of an oriented rectangle (centre, heading, half length/width) of height h, standing `base` off the ground. */
+export function rectShadow(ctx: Ctx, cx: number, cy: number, hx: number, hy: number, hl: number, hw: number, h: number, base = 0) {
+  const dx = SHADOW_DX * (base + h), dy = SHADOW_DY * (base + h), bx = SHADOW_DX * base, by = SHADOW_DY * base;
   SP.length = 0;
   const lx = hx * hl, ly = hy * hl, wx = -hy * hw, wy = hx * hw;
   for (const [a, b] of [[1, 1], [1, -1], [-1, -1], [-1, 1]]) {
     const x = cx + lx * a + wx * b, y = cy + ly * a + wy * b;
-    SP.push(x, y, x + dx, y + dy);
+    SP.push(x + bx, y + by, x + dx, y + dy);
   }
   hullPath(ctx, SP);
 }

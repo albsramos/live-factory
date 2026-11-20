@@ -3,6 +3,7 @@
 import { rr } from '../core';
 import { Path } from '../path';
 import type { Vehicle } from '../traffic/vehicle';
+import { ALOFT_Z } from '../traffic/hop';
 import { Walker } from '../people/walker';
 import type { Activity, Env } from './activity';
 
@@ -36,7 +37,7 @@ export class TaxiStop implements Activity {
 
   private clearToLeave(me: Vehicle) {
     for (const o of this.env.traffic.vehicles) {
-      if (o === me || o.dead) continue;
+      if (o === me || o.dead || o.z > ALOFT_Z) continue;
       // queued in the lane beside us, or coming up from behind
       for (const b of o.bodies) if (b.x > 71.5 && b.x < 76.5 && b.y > 50 && b.y < me.y + 28) return false;
     }

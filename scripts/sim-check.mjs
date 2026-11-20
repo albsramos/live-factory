@@ -3,6 +3,7 @@
 //   - vehicles touching each other on screen (should be 0; the bay truck's spawn point off the bottom edge is
 //     ignored, it is out of every view)
 //   - how much of the moving traffic stands still, how many truck runs complete, and the longest stall
+//   - how often the roadster hops, and how many of its hops set down in view
 // It starts the dev lab (`vite --mode lab`) itself and drives window.scene from ?debug.
 //
 // Usage: node scripts/sim-check.mjs [minutes = 20]
@@ -43,14 +44,16 @@ try {
       return false;
     };
     const onScreen = (x, y) => Math.abs((x - y) * 0.866) < 105 && (x + y) / 2 < 82;
-    const out = { people: [], crashes: [], stopped: 0, samples: 0, yard: 0, bay: 0, stall: 0, stallAt: '' };
+    const out = { people: [], crashes: [], stopped: 0, samples: 0, yard: 0, bay: 0, stall: 0, stallAt: '', hops: 0, landed: 0 };
+    const hopSeen = new Map();
     const seenPeople = new Map(), seenCrash = new Set(), semis = new Map(), still = new Map();
     for (let i = 0; i < secs * 20; i++) {
       w.update(1 / 20);
       const t = i / 20;
       const vs = tr.vehicles.filter((v) => v.kind !== 'forklift');
-      // people inside a vehicle's body (with a little room for their own size)
+      // people inside a vehicle's body (with a little room for their own size); the roadster flying over them isn't
       for (const v of vs) for (const b of v.bodies) for (const p of w.crowd.walkers) {
+        if (v.z > 0.5) continue;
         const dx = p.x - b.x, dy = p.y - b.y, a = dx * b.hx + dy * b.hy, c = -dx * b.hy + dy * b.hx;
         if (Math.abs(a) < b.hl + 0.15 && Math.abs(c) < b.hw + 0.15) {
           const k = v.id + ':' + w.crowd.walkers.indexOf(p);
@@ -61,6 +64,9 @@ try {
       // vehicles inside each other
       const now = new Set();
       for (let a = 0; a < vs.length; a++) for (let b = a + 1; b < vs.length; b++) {
+        // one flying over the other
+        const top = (v) => v.z + (v.kind === 'semi' ? 4.1 : v.h);
+        if (vs[a].z > top(vs[b]) || vs[b].z > top(vs[a])) continue;
         let hit = false;
         for (const ba of vs[a].bodies) for (const bb of vs[b].bodies) if (!hit && Math.hypot(ba.x - bb.x, ba.y - bb.y) < ba.hl + bb.hl + 2 && !apart(corners(ba, 0.15), corners(bb, 0.15))) hit = true;
         if (!hit) continue;
@@ -70,6 +76,13 @@ try {
       }
       seenCrash.clear();
       for (const k of now) seenCrash.add(k);
+      // the roadster's hops, and how many of them set down in view
+      for (const v of vs) if (v.hop) {
+        const was = hopSeen.get(v.id), now = v.hop.phase;
+        if (was === 'road' && now === 'lift') out.hops++;
+        if (was === 'land' && now === 'boost') out.landed++;
+        hopSeen.set(v.id, now);
+      }
       // traffic flow and truck runs
       const alive = new Set();
       for (const v of vs) {
@@ -100,6 +113,7 @@ try {
   console.log(`  traffic standing still     ${stoppedPct.toFixed(1)}%   (around 20% is normal: lights, crossings, queues)`);
   console.log(`  truck runs                 yard ${r.yard}, loading bay ${r.bay}   (about 7 and 6 per 15 minutes)`);
   console.log(`  longest stall              ${r.stall.toFixed(0)} s, ${r.stallAt || '-'}`);
+  console.log(`  roadster hops              ${r.hops}, ${r.landed} set down in view   (about one a minute; most set down)`);
   const isBad = r.people.length > 0 || r.crashes.length > 0 || r.stall > 180 || stoppedPct > 35;
   console.log(isBad ? 'FAIL' : 'OK');
   process.exitCode = isBad ? 1 : 0;

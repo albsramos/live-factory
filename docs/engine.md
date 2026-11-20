@@ -33,13 +33,15 @@ Every file stays under 300 lines; split by responsibility when one grows past th
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge) and `megapacks`;
   `details.ts` windows, glass, solar roofs.
 - `activities/` the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
-  walk, loopers) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
+  walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
   `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look,
-  `traffic.ts` all of it together.
+  `hop.ts` the roadster's flight (a vehicle's `z` and `roll`), `exhaust.ts` its jets and the smoke puffs (each puff
+  its own small sort item), `traffic.ts` all of it together.
 - `people/` `walker.ts` a person or robot following steps, `figure.ts` how they are drawn, `crowd.ts` the walkway
   graph and the crowd that wanders it.
-- `draw.ts` boxes and faces (`onWall` for an upright face at any angle), `mesh.ts` convex meshes, `ground.ts` shadows and ground shapes, `lights.ts` night road
+- `draw.ts` boxes and faces (`onWall` for an upright face at any angle), `mesh.ts` convex meshes (drawn at a height,
+  and optionally rolled about their length axis, which reorders their parts so a body upside down still stacks right), `ground.ts` shadows and ground shapes, `lights.ts` night road
   lighting.
 - `scene.ts` frame loop and baking; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`
   lets a box wider than that show up to 210 m across in `cover` mode. `contain` shows the whole height, so anything

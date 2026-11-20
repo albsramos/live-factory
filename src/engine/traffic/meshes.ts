@@ -103,6 +103,19 @@ export const MESH = {
     lights(m, -12.801, 1.15, 1.3, 1.46, 4, 0.75);
     return m.build();
   })(),
+  roadster: (() => {
+    // a low wedge with a dark glass canopy, a full-width light bar at each end and a wing (secondary paint) on two struts
+    const m = new MeshBuilder();
+    m.frustum(box(-1.7, 1.7, 0.94), 0, box(-1.7, 1.7, 0.94), 0.4, 2, 2);
+    const body = rounded(2.3, 1.04, 0.36, 2);
+    m.frustum(body, 0.22, body.map(([l, w]) => [l * 0.98 - 0.03, w * 0.95]), 0.64, 0, 0);
+    m.frustum([[1.25, -0.84], [1.25, 0.84], [-1.95, 0.9], [-1.95, -0.9]], 0.64, [[-0.25, -0.52], [-0.25, 0.52], [-1.5, 0.58], [-1.5, -0.58]], 1.0, 1, 1);
+    for (const w of [0.46, -0.46]) m.frustum(box(-2.02, -1.9, 0.04).map(([l, d]) => [l, d + w]), 0.64, box(-2.12, -2.0, 0.04).map(([l, d]) => [l, d + w]), 1.22, 6, 6);
+    m.frustum(box(-2.5, -1.96, 1.14), 1.2, box(-2.5, -2.04, 1.14), 1.3, 5, 5);
+    lights(m, 2.301, 0.6, 0.48, 0.54, 3);
+    lights(m, -2.301, 0.62, 0.44, 0.53, 4);
+    return m.build();
+  })(),
   forklift: (() => {
     const m = new MeshBuilder();
     m.frustum(box(-0.95, 0.75, 0.6), 0, box(-0.95, 0.75, 0.6), 0.34, 2, 2);
@@ -129,7 +142,7 @@ export const MESH = {
   })(),
 };
 
-export type VehicleKind = 'car' | 'suv' | 'pickup' | 'pod' | 'van' | 'semi' | 'forklift';
+export type VehicleKind = 'car' | 'suv' | 'pickup' | 'pod' | 'van' | 'roadster' | 'semi' | 'forklift';
 
 export const DIMS: Record<VehicleKind, [number, number, number]> = {
   // half length, half width, height
@@ -138,6 +151,7 @@ export const DIMS: Record<VehicleKind, [number, number, number]> = {
   pickup: [2.88, 1.06, 1.98],
   pod: [1.92, 0.96, 1.33],
   van: [3.62, 1.23, 2.02],
+  roadster: [2.32, 1.04, 1.3],
   semi: [3.15, 1.27, 3.62],
   forklift: [1.15, 0.62, 2.55],
 };

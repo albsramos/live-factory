@@ -7,6 +7,8 @@ import { drawLampGlints } from '../lights';
 import type { Item } from '../sort';
 import { MESH } from './meshes';
 import type { Vehicle } from './vehicle';
+import { drawJets } from './exhaust';
+import { ROLL_Z } from './hop';
 
 /** Drawable part of a vehicle: the vehicle itself, or a semi's trailer. */
 export class VehicleItem implements Item {
@@ -35,8 +37,16 @@ export class VehicleItem implements Item {
     this.x1 = x1;
     this.y0 = y0;
     this.y1 = y1;
-    this.z0 = 0;
-    this.z1 = this.part === 1 ? 4.1 : this.v.h;
+    if (this.v.kind === 'roadster') {
+      // turned on its side its body reaches out sideways and up; the jets reach down
+      const r = this.v.roll === 0 ? 0 : 0.5;
+      this.x0 -= r;
+      this.x1 += r;
+      this.y0 -= r;
+      this.y1 += r;
+    }
+    this.z0 = Math.max(0, this.v.z - (this.v.z > 0 ? 0.4 : 0));
+    this.z1 = this.v.z + (this.part === 1 ? 4.1 : this.v.h + (this.v.roll === 0 ? 0 : 0.5));
   }
 
   draw(r: R) {
@@ -50,6 +60,12 @@ export class VehicleItem implements Item {
         break;
       case 'forklift':
         drawForklift(r, v);
+        break;
+      case 'roadster':
+        drawJets(r, v, 'under');
+        drawMesh(r, MESH.roadster, v.x, v.y, v.z, v.hx, v.hy, v.mats, v.roll, ROLL_Z);
+        drawJets(r, v, 'over');
+        if (r.night && v.isLit && v.z < 0.3) drawLampGlints(r, v, 'both');
         break;
       default: {
         const mesh = MESH[v.kind];

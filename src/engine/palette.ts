@@ -50,6 +50,9 @@ export interface Palette {
   tyre: string;
   headlight: string;
   taillight: string;
+  /** the roadster's thrusters: the jet's hot core and its colour, and the smoke they raise (lit side, shade) */
+  jet: [string, string];
+  smoke: [string, string];
   // people & robots
   people: RGB[];
   accents: RGB[];
@@ -71,7 +74,7 @@ export function lightPalette(): Palette {
     ground: '#ebebef',
     pad: '#e4e4e9',
     plaza: '#efeff2',
-    lawn: '#dfe6dc',
+    lawn: '#d5e2cf',
     road: '#dcdce2',
     roadLine: '#f6f6f8',
     curbHi: '#f9f9fb',
@@ -117,6 +120,8 @@ export function lightPalette(): Palette {
     tyre: '#2a2b30',
     headlight: '#ffffff',
     taillight: '#e0605a',
+    jet: ['#ffffff', 'rgba(120, 196, 255, 0.85)'],
+    smoke: ['#fdfdfe', '#c3c6d0'],
     people: [hex('#e2e3e8'), hex('#d3d4da'), hex('#c4c5cc'), hex('#b3b4bc'), hex('#a0a1aa'), hex('#8a8b94')],
     accents: [hex('#e2b04a'), hex('#d9925a'), hex('#5c5f69'), hex('#8aa0c8')],
     robot: '#2b2c31',
@@ -180,6 +185,8 @@ export function darkPalette(): Palette {
     tyre: '#0b0b0d',
     headlight: '#fff6dc',
     taillight: '#ff5a50',
+    jet: ['#effcff', 'rgba(100, 210, 255, 0.8)'],
+    smoke: ['#a3a6b1', '#5d606b'],
     people: [hex('#6a6c76'), hex('#61636c'), hex('#575962'), hex('#4c4e57'), hex('#7a7c86'), hex('#444650')],
     accents: [hex('#d9a440'), hex('#c98450'), hex('#2c2e35'), hex('#6f84ad')],
     robot: '#0f1013',

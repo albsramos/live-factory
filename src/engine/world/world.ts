@@ -21,6 +21,7 @@ import { ChargingLot } from '../activities/chargingLot';
 import { DogWalk } from '../activities/dogWalk';
 import { Looper } from '../activities/looper';
 import { TaxiStop } from '../activities/taxiStop';
+import { Roadsters } from '../activities/roadster';
 import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
@@ -92,6 +93,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(lot);
   acts.push(new TaxiStop(env, (w) => crowd.adopt(w)));
   acts.push(new DogWalk(env));
+  // the roadster that now and then hops over the avenue's traffic, on a random stream of its own
+  acts.push(new Roadsters(env, makeRng(opts.seed * 7919 + 17)));
   // the factory wing, car park, compute, Megapacks, charging hub and staff park out on the sides
   const outskirts = buildOutskirts(env, sprites, edge);
   acts.push(...outskirts.acts);

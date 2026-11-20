@@ -36,6 +36,17 @@
   Each parking spot's charger, and the battery bank, stand on kerbed islands outside every sweep. After changing the yard, record
   the semis' bodies over 30 minutes and check that nothing fixed lies in them (the island, the platform, the batteries).
 
+- The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one at a time, on the avenue's straight lanes, with a
+  random stream of its own so the rest of the scene runs as before until it shows up. In its take-off stretch it
+  lifts off once it is moving with room ahead, or standing in a queue (it hops over it). From take-off to touchdown
+  it is `aloft`: it lets go of every zone it holds or queues for, marks those it has flown right over as done and
+  reserves none, brakes for nothing, and nothing brakes for it above `ALOFT_Z` (`sense.ts`, the robotaxi stop). It
+  cruises at 6.2 m, over a semi's trailer. It only comes down in its landing stretch, and only when nothing would be
+  in its way down by then (each vehicle carried on at its own speed; a semi counts from higher up) and every zone it
+  comes down in, or reaches within its stopping room, would let it in (`Zone.wouldGrant`, which doesn't queue). It
+  takes those zones as it starts down, like a car arriving, so a hub car waits rather than merging under it.
+  Otherwise it flies on off the edge. The checks ignore a vehicle that is above another or above people.
+
 ## People
 
 - People walk the walkway graph (`WalkGraph` in `people/crowd.ts`). An edge linked with a zone is a crossing: a person

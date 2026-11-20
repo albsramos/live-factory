@@ -8,7 +8,7 @@ import { windowSpill, type LitFace } from '../details';
 import type { Palette } from '../palette';
 import type { ChargingLot } from '../activities/chargingLot';
 import type { Outskirts } from './outskirts';
-import { POCKET_LAWN, POCKET_PATH } from './streetLife';
+import { POCKET_LAWN, POCKET_PATH, TAXI_LAWN, TAXI_PATHS } from './streetLife';
 
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
 export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts) {
@@ -90,20 +90,23 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     ctx.strokeStyle = pal.curbLo;
     ctx.lineWidth = 0.2;
     ctx.stroke();
-    // the pocket park: grass with a path across it
+    // the pocket park and the park by the robotaxi stop: grass with paths across it
     ctx.fillStyle = pal.lawn;
     ctx.strokeStyle = pal.lawn;
     ctx.lineJoin = 'round';
     ctx.lineWidth = 1.2;
     ctx.beginPath();
     groundPoly(ctx, POCKET_LAWN);
+    groundPoly(ctx, TAXI_LAWN);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = pal.plaza;
     ctx.lineWidth = 1.1;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    for (let i = 1; i < POCKET_PATH.length; i++) lineW(ctx, POCKET_PATH[i - 1][0], POCKET_PATH[i - 1][1], 0, POCKET_PATH[i][0], POCKET_PATH[i][1], 0);
+    for (const path of [POCKET_PATH, ...TAXI_PATHS]) {
+      for (let i = 1; i < path.length; i++) lineW(ctx, path[i - 1][0], path[i - 1][1], 0, path[i][0], path[i][1], 0);
+    }
     ctx.stroke();
     ctx.lineCap = 'butt';
     // apron joints

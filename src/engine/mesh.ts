@@ -159,12 +159,23 @@ const FACE: number[] = [];
 /**
  * Draw a mesh at (px, py, pz) facing (hx, hy). Faces turned away from the camera are skipped, so each convex
  * part draws correctly in any order; parts are drawn in the order they were added.
+ *
+ * With `roll` the mesh also turns about its length axis (radians, about the height `rollZ`), and its parts are
+ * drawn from the one furthest below the camera's side of the body up, so a body upside down still stacks right.
  */
-export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[]) {
+export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
   const v = m.v;
   const n = v.length / 3;
+  RC = roll === undefined ? 1 : Math.cos(roll);
+  RS = roll === undefined ? 0 : Math.sin(roll);
   for (let i = 0; i < n; i++) {
-    const l = v[i * 3], w = v[i * 3 + 1], z = v[i * 3 + 2];
+    const l = v[i * 3];
+    let w = v[i * 3 + 1], z = v[i * 3 + 2];
+    if (roll !== undefined) {
+      const zc = z - rollZ;
+      w = w * RC - zc * RS;
+      z = rollZ + v[i * 3 + 1] * RS + zc * RC;
+    }
     const x = px + l * hx - w * hy;
     const y = py + l * hy + w * hx;
     SCR[i * 2] = (x - y) * C;
@@ -180,7 +191,19 @@ export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: 
   const ctx = r.ctx;
   ctx.lineWidth = r.hair;
   ctx.lineJoin = 'round';
-  if (m.sort) {
+  if (roll !== undefined) {
+    // stacked parts (wheels, body, canopy, wing) in the order they face the camera across the turned body
+    ORDER.length = 0;
+    for (const p of m.parts) {
+      if (p.s >= m.decals) continue;
+      const zc = p.z - rollZ;
+      p.d = (p.w * RC - zc * RS) * (hx - hy) + (p.w * RS + zc * RC) * 0.8;
+      ORDER.push(p);
+    }
+    ORDER.sort((a, b) => a.d! - b.d!);
+    for (const p of ORDER) drawFaces(r, m, p.s, p.e, hx, hy, mats);
+    drawFaces(r, m, m.decals, m.faces.length, hx, hy, mats);
+  } else if (m.sort) {
     // convex parts back to front along the view direction
     ORDER.length = 0;
     for (const p of m.parts) {
@@ -197,16 +220,20 @@ export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: 
 
 const ORDER: (Part & { d?: number })[] = [];
 let SHADE = false;
+/** the current mesh's roll, as cosine and sine */
+let RC = 1;
+let RS = 0;
 
 function drawFaces(r: R, m: Mesh, s: number, e: number, hx: number, hy: number, mats: MatSlot[]) {
   const ctx = r.ctx;
   for (let fi = s; fi < e; fi++) {
     const f = m.faces[fi];
-    const nx = f.nl * hx - f.nw * hy;
-    const ny = f.nl * hy + f.nw * hx;
-    if (nx + ny + f.nz <= 1e-9) continue;
+    const nw = f.nw * RC - f.nz * RS, nz = f.nw * RS + f.nz * RC;
+    const nx = f.nl * hx - nw * hy;
+    const ny = f.nl * hy + nw * hx;
+    if (nx + ny + nz <= 1e-9) continue;
     const s = mats[f.mat];
-    const fill = typeof s === 'string' ? s : s.at(lightT(nx, ny, f.nz));
+    const fill = typeof s === 'string' ? s : s.at(lightT(nx, ny, nz));
     const idx = f.idx;
     ctx.beginPath();
     ctx.moveTo(SCR[idx[0] * 2], SCR[idx[0] * 2 + 1]);

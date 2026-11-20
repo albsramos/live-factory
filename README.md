@@ -64,8 +64,11 @@ any other React setup.
   it, a tall glass atrium in the dock wing glows warm at night.
 - **The factory's front entrance**: the ground floor steps back in a V under the storeys above, its glass walls
   angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it.
-- **Parks for the staff**: a pocket park on the corner by the plaza and a bigger one east of the pavilion, with grass,
-  paths, trees and benches where employees sit or stand together on their break.
+- **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
+  east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
+- **The roadster**: every minute or so a low roadster with a gold wing comes along the avenue and hops. Four
+  thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
+  junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear.
 - **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
   charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and full.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.

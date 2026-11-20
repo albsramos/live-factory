@@ -3,6 +3,7 @@
 import type { Pose } from '../path';
 import type { Body } from './legs';
 import type { Vehicle } from './vehicle';
+import { ALOFT_Z } from './hop';
 
 const PROBE: Pose = { x: 0, y: 0, hx: 1, hy: 0 };
 
@@ -44,7 +45,8 @@ export function senseAhead(v: Vehicle): number {
   const rev = v.legs[v.li]?.rev;
   const mx = rev ? -v.hx : v.hx, my = rev ? -v.hy : v.hy;
   for (const o of v.traffic.vehicles) {
-    if (o === v || o.dead) continue;
+    // nothing brakes for the roadster flying over it
+    if (o === v || o.dead || o.z > ALOFT_Z) continue;
     for (const b of o.bodies) {
       if (Math.abs(b.x - v.x) > look + v.hl + b.hl + 2 || Math.abs(b.y - v.y) > look + v.hl + b.hl + 2) continue;
       // whatever is behind our centre is not in our way
