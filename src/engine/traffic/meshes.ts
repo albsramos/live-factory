@@ -34,16 +34,6 @@ function lights(m: MeshBuilder, l: number, w: number, z0: number, z1: number, ma
 }
 
 export const MESH = {
-  car: (() => {
-    const m = new MeshBuilder();
-    m.frustum(box(-2.05, 2.05, 0.86), 0, box(-2.05, 2.05, 0.86), 0.44, 2, 2);
-    const body = rounded(2.35, 0.97, 0.42, 2);
-    m.frustum(body, 0.3, body.map(([l, w]) => [l * 0.97 - 0.04, w * 0.95]), 0.86, 0, 0);
-    m.frustum(box(-1.6, 0.95, 0.86), 0.86, box(-1.12, 0.22, 0.6), 1.42, 1, 1);
-    lights(m, 2.351, 0.62, 0.6, 0.67, 3);
-    lights(m, -2.351, 0.66, 0.64, 0.72, 4);
-    return m.build();
-  })(),
   suv: suvMesh(),
   pickup: (() => {
     const m = new MeshBuilder();
@@ -181,11 +171,10 @@ export const MESH = {
   })(),
 };
 
-export type VehicleKind = 'car' | 'suv' | 'pickup' | 'pod' | 'van' | 'roadster' | 'semi' | 'forklift';
+export type VehicleKind = 'suv' | 'pickup' | 'pod' | 'van' | 'roadster' | 'semi' | 'forklift';
 
 export const DIMS: Record<VehicleKind, [number, number, number]> = {
   // half length, half width, height
-  car: [2.38, 0.98, 1.42],
   suv: [2.43, 1.0, 1.65],
   pickup: [2.88, 1.06, 1.98],
   pod: [1.92, 0.96, 1.33],

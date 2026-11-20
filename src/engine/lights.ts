@@ -12,7 +12,6 @@ import type { VehicleKind } from './traffic/meshes';
 /** Light bar position per kind, from the meshes in vehicles.ts: [distance along the body, half width, height]. */
 type Bar = readonly [number, number, number];
 const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number }>> = {
-  car: { front: [2.35, 0.62, 0.64], rear: [-2.35, 0.66, 0.68], reach: 7 },
   suv: { front: [2.42, 0.7, 0.78], rear: [-2.38, 0.72, 0.94], reach: 7 },
   pickup: { front: [2.85, 0.98, 0.94], rear: [-2.85, 1.0, 1.18], reach: 7.5 },
   pod: { front: [1.9, 0.38, 0.58], rear: [-1.9, 0.4, 0.59], reach: 5.5 },

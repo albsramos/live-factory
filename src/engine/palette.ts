@@ -46,7 +46,7 @@ export interface Palette {
   ledBlue: string;
   ledWarm: string;
   // vehicles
-  /** car paints; which of them each kind may wear is in `traffic/paints.ts` */
+  /** the cars' paints, the Model Y's colours: white (twice, so it comes up more often), silver, graphite, black */
   paints: Mat[];
   gold: Mat;
   carGlass: Mat;
@@ -120,10 +120,8 @@ export function lightPalette(): Palette {
       mat('#f4f4f6', 0.2), // white
       mat('#f4f4f6', 0.2),
       mat('#c9cad0', 0.24), // silver
-      mat('#a7a9b1', 0.26), // grey
       mat('#3d3f46', 0.36), // graphite
       mat('#2b2c31', 0.38), // black
-      mat('#d9c7a0', 0.26), // champagne gold
     ],
     gold: mat('#d6c094', 0.28),
     carGlass: mat('#2f323a', 0.32),
@@ -187,10 +185,8 @@ export function darkPalette(): Palette {
       mat('#7d808a', 0.34),
       mat('#6c6f78', 0.34),
       mat('#555861', 0.36),
-      mat('#3e4048', 0.36),
       mat('#2b2c32', 0.38),
       mat('#1f2025', 0.38),
-      mat('#9c8a63', 0.34),
     ],
     gold: mat('#a8915f', 0.34),
     carGlass: mat('#14151a', 0.3),

@@ -207,7 +207,7 @@ export function buildings(env: Env, edge: string) {
     }),
   );
   {
-    S.push(new FnItem(22.2, 86.5, 0, 27.0, 88.5, 1.65, (r) => drawMesh(r, MESH.suv, 24.6, 87.5, 0, -1, 0, carMats(pal, pal.paints[4])), (ctx) => rectShadow(ctx, 24.6, 87.5, -1, 0, 2.3, 0.95, 1.2)).still());
+    S.push(new FnItem(22.2, 86.5, 0, 27.0, 88.5, 1.65, (r) => drawMesh(r, MESH.suv, 24.6, 87.5, 0, -1, 0, carMats(pal, pal.paints[3])), (ctx) => rectShadow(ctx, 24.6, 87.5, -1, 0, 2.3, 0.95, 1.2)).still());
   }
 }
 /** The construction site: a steel frame on a slab, a stair tower, the pickup, the crane and the workers. */

@@ -18,13 +18,13 @@ export function gallery(root: HTMLElement) {
   ctx.fillRect(0, 0, c.width, c.height);
   const scale = 22 * dpr;
   const r: R = { ctx, t: 0, hair: 0.7 / scale, scale, night: false };
-  const kinds = ['car', 'suv', 'pickup', 'pod', 'van', 'roadster', 'tractor', 'forklift', 'crate'] as const;
+  const kinds = ['suv', 'pickup', 'pod', 'van', 'roadster', 'tractor', 'forklift', 'crate'] as const;
   kinds.forEach((k, row) => {
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2;
       const X = 90 + i * 190, Y = 70 + row * 105;
       ctx.setTransform(scale, 0, 0, scale, X * dpr, Y * dpr);
-      const mats = [k === 'pod' || k === 'van' ? pal.gold : pal.paints[k === 'car' || k === 'roadster' ? 0 : 3], k === 'roadster' ? pal.tintGlass : pal.carGlass, pal.tyre, pal.headlight, pal.taillight, pal.white, pal.robot, pal.robotHead];
+      const mats = [k === 'pod' || k === 'van' ? pal.gold : pal.paints[k === 'roadster' ? 0 : 2], k === 'roadster' ? pal.tintGlass : pal.carGlass, pal.tyre, pal.headlight, pal.taillight, pal.white, pal.robot, pal.robotHead];
       drawMesh(r, MESH[k], 0, 0, 0, Math.cos(a), Math.sin(a), mats);
     }
   });

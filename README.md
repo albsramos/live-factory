@@ -45,9 +45,10 @@ any other React setup.
 
 ## What's in the scene
 
-- **Traffic**: cars, SUVs, an angular pickup, two-seat robotaxis and a robovan drive a small road network. They stop
-  at an invisible signal at the junction, give way to people already on the zebra crossings, and hold back while a
-  truck pulls out. Semis only come for the yard and the loading bay, so there are never more than two at once.
+- **Traffic**: sleek crossovers in white, silver, graphite or black, a silver angular pickup, two-seat robotaxis and
+  a robovan drive a small road network. They stop at an invisible signal at the junction, give way to people already
+  on the zebra crossings, and hold back while a truck pulls out. Semis only come for the yard and the loading bay,
+  so there are never more than two at once.
 - **Truck yard**: a semi turns in off the avenue, drives down the yard lane past one of the two docks, then backs in
   with the trailer swinging round. It loads under a green dock lamp, pulls out, and backs into the charging bay
   beside the docks, charges, then pulls out across the yard and turns onto the avenue once there's a gap. Every spot

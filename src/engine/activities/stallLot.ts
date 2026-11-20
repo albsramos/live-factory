@@ -15,7 +15,6 @@ import { FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import type { Vehicle } from '../traffic/vehicle';
 import type { Leg } from '../traffic/legs';
-import { paintFor } from '../traffic/paints';
 import { Mutex, type Activity, type Env } from './activity';
 import { carMats } from '../palette';
 
@@ -62,10 +61,10 @@ export class StallLot implements Activity {
     const { pal, rng, statics } = env;
     for (const s of plan.stalls) {
       if (!s.isLive) {
-        const kind = rng() < 0.65 ? 'car' : 'suv';
-        const paint = paintFor(pal, kind, pick(rng, pal.paints));
+        rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
+        const paint = pick(rng, pal.paints);
         statics.push(
-          new FnItem(s.x - 1.0, s.y - 2.5, 0, s.x + 1.0, s.y + 2.5, 1.65, (r) => drawMesh(r, MESH[kind], s.x, s.y, 0, 0, s.dir, carMats(pal, paint)), (ctx) =>
+          new FnItem(s.x - 1.0, s.y - 2.5, 0, s.x + 1.0, s.y + 2.5, 1.65, (r) => drawMesh(r, MESH.suv, s.x, s.y, 0, 0, s.dir, carMats(pal, paint)), (ctx) =>
             rectShadow(ctx, s.x, s.y, 0, s.dir, 2.35, 0.98, 1.2),
           ).still(),
         );
@@ -130,7 +129,8 @@ export class StallLot implements Activity {
   private spawn(s: Stall) {
     const { traffic, pal, rng } = this.env;
     const a = this.plan.arrive;
-    const v = traffic.add(rng() < 0.6 ? 'car' : 'suv', pick(rng, pal.paints), [
+    rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
+    const v = traffic.add('suv', pick(rng, pal.paints), [
       { path: P(a.pts, a.radii), tag: 'in', vmax: 7, until: (vv) => this.lot.take(vv), done: () => (this.incoming = null) },
       this.park(s),
       ...this.leave(s),
@@ -142,7 +142,8 @@ export class StallLot implements Activity {
   /** A car already in its stall, charging (for the opening frame). */
   private seed(s: Stall) {
     const { traffic, pal, rng } = this.env;
-    const v = traffic.add(rng() < 0.6 ? 'car' : 'suv', pick(rng, pal.paints), [
+    rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
+    const v = traffic.add('suv', pick(rng, pal.paints), [
       { path: P([[s.x, s.y - s.dir * 0.1], [s.x, s.y]]), vmax: 1, ghost: true, ...this.charge(rr(rng, 6, 26)), arrive: (vv: Vehicle) => (vv.charging = true) },
       ...this.leave(s),
     ], this.plan.role);

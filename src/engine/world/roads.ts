@@ -64,7 +64,7 @@ export function carSpawner(env: Env, density: number) {
   const paths = routes.map((rt) => Path.poly(rt.pts, rt.r));
   const totalW = routes.reduce((a, r) => a + r.w, 0);
   // semis only come for the yard and the loading bay, not as through traffic
-  const kinds: [VehicleKind, number, number][] = [['car', 0.46, 7.4], ['suv', 0.28, 7], ['pod', 0.13, 6.4], ['pickup', 0.08, 7], ['van', 0.05, 6]];
+  const kinds: [VehicleKind, number, number][] = [['suv', 0.74, 7.2], ['pod', 0.13, 6.4], ['pickup', 0.08, 7], ['van', 0.05, 6]];
   let spawnT = 0;
   const targetCars = Math.round(11 * density);
   const spawnCar = () => {

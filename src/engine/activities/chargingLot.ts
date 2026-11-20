@@ -29,8 +29,8 @@ export class ChargingLot implements Activity {
     for (const x of this.stalls) this.parked.push({ x, paint: pick(rng, pal.paints) });
     for (const p of this.parked) {
       statics.push(
-        new FnItem(p.x - 1.0, 67.6, 0, p.x + 1.0, 72.4, 1.45, (r) => drawMesh(r, MESH.car, p.x, 70.0, 0, 0, -1, carMats(pal, p.paint)), (ctx) =>
-          rectShadow(ctx, p.x, 70, 0, -1, 2.3, 0.95, 1.1),
+        new FnItem(p.x - 1.0, 67.5, 0, p.x + 1.0, 72.5, 1.65, (r) => drawMesh(r, MESH.suv, p.x, 70.0, 0, 0, -1, carMats(pal, p.paint)), (ctx) =>
+          rectShadow(ctx, p.x, 70, 0, -1, 2.35, 0.98, 1.2),
         ).still(),
       );
     }
@@ -86,8 +86,8 @@ export class ChargingLot implements Activity {
     const { traffic, pal, rng } = this.env;
     const sx = this.stalls[i];
     this.busy[i] = true;
-    const kind = rng() < 0.6 ? 'car' : 'suv';
-    const v = traffic.add(kind, pick(rng, pal.paints), [
+    rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
+    const v = traffic.add('suv', pick(rng, pal.paints), [
       // wait for the lot inside its entrance, well clear of the street and of trucks swinging round the bend
       { path: P([[50, 135], [50, 48], [60.4, 48], [60.4, 55.6]], [6, 2.5]), vmax: 7, until: (vv) => this.lot.take(vv), done: () => (this.incoming = null) },
       { path: P([[60.4, 55.6], [60.4, 57.5], [sx, 61.5], [sx, 64.2]], [2, 2]), vmax: 2.4, ghost: true, ...this.charge(rr(rng, 14, 30)) },
@@ -102,7 +102,8 @@ export class ChargingLot implements Activity {
     const { traffic, pal, rng } = this.env;
     const sx = this.stalls[i];
     this.busy[i] = true;
-    const v = traffic.add(rng() < 0.6 ? 'car' : 'suv', pick(rng, pal.paints), [
+    rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
+    const v = traffic.add('suv', pick(rng, pal.paints), [
       { path: P([[sx, 64.1], [sx, 64.2]]), vmax: 1, ghost: true, ...this.charge(rr(rng, 4, 20)), arrive: (vv: Vehicle) => (vv.charging = true) },
       ...this.leave(i, sx),
     ], 'lot');

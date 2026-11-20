@@ -6,24 +6,19 @@ describe.each([
   ['light', lightPalette()],
   ['dark', darkPalette()],
 ])('paintFor (%s)', (_name, pal) => {
-  // white is listed twice, so it comes up twice as often
-  const [white, white2, silver, , graphite, black] = pal.paints;
-
-  it('keeps the SUV to white, silver, graphite and black', () => {
-    const allowed = [white, white2, silver, graphite, black];
-    for (const p of pal.paints) expect(allowed).toContain(paintFor(pal, 'suv', p));
+  it('offers only the Model Y colours: white (twice), silver, graphite and black', () => {
+    expect(pal.paints).toHaveLength(5);
   });
 
-  it('leaves an SUV already in one of its colours as it is', () => {
-    for (const p of [white, white2, silver, graphite, black]) expect(paintFor(pal, 'suv', p)).toBe(p);
+  it('lets the SUV wear any of them', () => {
+    for (const p of pal.paints) expect(paintFor(pal, 'suv', p)).toBe(p);
   });
 
   it('always paints the pickup silver', () => {
-    for (const p of pal.paints) expect(paintFor(pal, 'pickup', p)).toBe(silver);
+    for (const p of pal.paints) expect(paintFor(pal, 'pickup', p)).toBe(pal.paints[2]);
   });
 
-  it('lets cars wear any paint, and leaves colours from outside the list alone', () => {
-    for (const p of pal.paints) expect(paintFor(pal, 'car', p)).toBe(p);
+  it('leaves colours from outside the list alone', () => {
     expect(paintFor(pal, 'pod', pal.gold)).toBe(pal.gold);
     expect(paintFor(pal, 'semi', pal.white)).toBe(pal.white);
   });
