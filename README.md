@@ -178,6 +178,18 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 // scene.set({ paused: true }) · scene.setVisible(false) · scene.destroy()
 ```
 
+## As a Mac screen saver
+
+The demo site has a bare page for screen savers, `?saver`: the scene alone on the whole screen, with no controls and
+no cursor, following the Mac's light or dark appearance (add `&theme=dark` or `&theme=light` to fix one).
+
+1. Install [WebViewScreenSaver](https://github.com/liquidx/webviewscreensaver), a free, open-source screen saver that
+   shows a web page: `brew install --cask webviewscreensaver`, or download it from its releases page.
+2. In System Settings → Screen Saver, choose WebViewScreenSaver, open its options and set the address to
+   `https://albsramos.github.io/live-factory/?saver`.
+
+It needs an internet connection, and always shows the latest version of the site.
+
 ## Other ways to install
 
 - **From GitHub** (the quick start): `npm install github:albsramos/live-factory`. npm clones the repository and builds

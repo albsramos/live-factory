@@ -16,6 +16,8 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   (`StageButton`), since the theme tabs are out of reach there. No ancestor of the stage may set `container-type` or
   other containment, which would trap it. The site shows the factory's lettering (`isBranded`), which the component
   leaves off by default.
+- `src/features/saver/` the bare scene for a screen saver, `?saver` in the URL (see the README): the scene alone on the
+  whole window, no page, controls or cursor, branded, and moving even when the computer asks for reduced motion.
 - `src/shared/ui/` domain-free primitives (Button, Segmented, Slider) in the plain neutral look of shadcn/ui: a
   near-black primary (near-white at night), grey tabs and tracks, no accent colour. `src/shared/lib/` hooks and
   helpers. Tokens are in `src/styles/tokens.css` (light and dark).

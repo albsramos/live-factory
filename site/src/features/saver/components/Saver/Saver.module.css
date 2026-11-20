@@ -1,0 +1,11 @@
+.root {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  cursor: none;
+}
+
+.scene {
+  height: 100%;
+  aspect-ratio: auto;
+}

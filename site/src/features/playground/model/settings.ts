@@ -16,6 +16,8 @@ export interface Settings {
   isMotionForced: boolean;
   /** the scene on the whole screen, so a link can open straight into it */
   isFull: boolean;
+  /** the bare scene for a screen saver (`?saver`): no page round it, no controls, no cursor */
+  isSaver: boolean;
 }
 
 export const SPEED = { min: 0.25, max: 3, step: 0.25 } as const;
@@ -38,6 +40,7 @@ export function readSettings(search: string): Settings {
     isPaused: p.get('paused') === '1',
     isMotionForced: p.get('motion') === '1',
     isFull: p.get('full') === '1',
+    isSaver: p.has('saver'),
   };
 }
 
