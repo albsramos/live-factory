@@ -32,8 +32,9 @@ export function streetFurniture(env: Env, sprites: Sprites, edge: string) {
     [31.9, 46.4, 'tree2', 0.85], [42.4, 45.4, 'small', 0.8], [31.8, 39.6, 'small', 0.75],
   ];
   trees.forEach(([x, y, k, s], i) => S.push(new TreeItem(sprites, x, y, k, s, i * 1.7)));
+  // the charging lot's west hedge keeps clear of the parked car beside it (x 55.2), so it sorts behind it
   const hedges: number[][] = [
-    [30.4, 69.6, 34.6, 70.6], [54.7, 67.0, 55.3, 79.8], [80.6, 76.0, 81.2, 86.0],
+    [30.4, 69.6, 34.6, 70.6], [54.55, 67.0, 55.1, 79.8], [80.6, 76.0, 81.2, 86.0],
     [80.8, 38.85, 85.6, 39.35], [91, 38.85, 96.6, 39.35],
   ];
   hedges.forEach((h, i) => S.push(new HedgeItem(sprites, h[0], h[1], h[2], h[3], pal.planter, i)));
