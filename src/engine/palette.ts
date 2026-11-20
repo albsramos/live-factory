@@ -46,7 +46,7 @@ export interface Palette {
   ledBlue: string;
   ledWarm: string;
   // vehicles
-  /** car and SUV paints; index 2 is silver, the pickup's only colour (see `world/roads.ts`) */
+  /** car paints; which of them each kind may wear is in `traffic/paints.ts` */
   paints: Mat[];
   gold: Mat;
   carGlass: Mat;

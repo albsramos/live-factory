@@ -15,6 +15,7 @@ import { FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import type { Vehicle } from '../traffic/vehicle';
 import type { Leg } from '../traffic/legs';
+import { paintFor } from '../traffic/paints';
 import { Mutex, type Activity, type Env } from './activity';
 import { carMats } from '../palette';
 
@@ -62,7 +63,7 @@ export class StallLot implements Activity {
     for (const s of plan.stalls) {
       if (!s.isLive) {
         const kind = rng() < 0.65 ? 'car' : 'suv';
-        const paint = pick(rng, pal.paints);
+        const paint = paintFor(pal, kind, pick(rng, pal.paints));
         statics.push(
           new FnItem(s.x - 1.0, s.y - 2.5, 0, s.x + 1.0, s.y + 2.5, 1.65, (r) => drawMesh(r, MESH[kind], s.x, s.y, 0, 0, s.dir, carMats(pal, paint)), (ctx) =>
             rectShadow(ctx, s.x, s.y, 0, s.dir, 2.35, 0.98, 1.2),

@@ -76,10 +76,8 @@ export function carSpawner(env: Env, density: number) {
     const [kind, , vmax] = kinds[k];
     const [sx0, sy0] = rt.pts[0];
     if (!traffic.clear(sx0, sy0, 9)) return;
-    // robotaxis come in gold; the pickup only ever in its bare stainless silver (the draw still happens, so the
-    // random stream, and the rest of the scene, stays as it was)
-    const pickedPaint = kind === 'pod' || kind === 'van' ? pal.gold : pick(rng, pal.paints);
-    const paint = kind === 'pickup' ? pal.paints[2] : pickedPaint;
+    // robotaxis come in gold; `traffic.add` keeps the others to their kind's colours (traffic/paints.ts)
+    const paint = kind === 'pod' || kind === 'van' ? pal.gold : pick(rng, pal.paints);
     traffic.add(kind, paint, [{ path: paths[i], vmax: vmax * rr(rng, 0.9, 1.05) }]);
   };
   return (dt: number) => {

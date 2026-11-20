@@ -6,6 +6,7 @@ import type { Ctx } from '../draw';
 import { drawRoadLight } from '../lights';
 import type { Palette } from '../palette';
 import type { Item } from '../sort';
+import { paintFor } from './paints';
 import { type Compat, Zone, sameKind } from './zone';
 import type { VehicleKind } from './meshes';
 import type { Leg } from './legs';
@@ -24,9 +25,9 @@ export class Traffic {
     return z;
   }
 
-  /** `role` tags vehicles that zones treat specially (see `Zone.keyOf`). */
+  /** `role` tags vehicles that zones treat specially (see `Zone.keyOf`). The paint keeps to the kind's colours (`paintFor`). */
   add(kind: VehicleKind, paint: Mat, legs: Leg[], role = '') {
-    const v = new Vehicle(kind, this.pal, paint, legs, this, role);
+    const v = new Vehicle(kind, this.pal, paintFor(this.pal, kind, paint), legs, this, role);
     this.vehicles.push(v);
     return v;
   }
