@@ -85,62 +85,59 @@ function lineChart({ name, title, sub, xs, ys, xLabel, yMax, yTicks, yFmt, ref, 
   svg(name, h, title, sub, body, alt);
 }
 
-// 1. the frame cap
-const capLabel = (c) => (c ? `${c} fps` : 'every refresh');
-stackedPanels('fps-cap', 'Fewer frames, less work', 'Main-thread time at 1600×860 by frame cap, in each theme (lower is better). 30 fps is the default.',
-  ['light', 'dark'].map((theme) => ({ name: theme === 'light' ? 'Light theme' : 'Dark theme', bars: R.fpsCap.filter((r) => r.theme === theme).map((r) => ({ label: capLabel(r.maxFps), script: r.scriptPct, total: r.mainThreadPct })) })),
-  'Stacked columns of main-thread time by frame cap for the light and dark themes.');
+const OLD = (() => {
+  try {
+    return JSON.parse(readFileSync(`${DIR}/results-0.3.0.json`, 'utf8'));
+  } catch {
+    return null;
+  }
+})();
 
-// 2. screen size
-stackedPanels('screen-size', 'Bigger screens cost more pixels', 'Main-thread time at 30 fps by canvas size, light theme.',
-  [{ name: '', bars: R.sizes.map((r) => ({ label: r.size, script: r.scriptPct, total: r.mainThreadPct })) }],
-  'Stacked columns of main-thread time by screen size.');
-
-// 3. a slower CPU
-lineChart({
-  name: 'slow-cpu', title: 'On a slower CPU the frame rate drops, nothing breaks', sub: 'Frames drawn per second at 1366×768 as the CPU is slowed down (Chromium CPU throttling, software drawing).',
-  xs: R.throttle.map((r) => r.slowdown), ys: R.throttle.map((r) => r.fps), xLabel: (x) => (x === 1 ? 'this machine' : `${x}× slower`),
-  yMax: 40, yTicks: [0, 10, 20, 30, 40], yFmt: (v) => `${Math.round(v)}`, ref: { v: 30, label: 'cap: 30 fps' },
-  alt: 'Line chart of frames drawn per second against CPU slowdown.',
-});
-
-// 4. loading the website
+// 1. adaptive quality on the hard cases
 {
-  const s = R.site, h = 220, left = 24, right = W - 24, top = 96, end = Math.max(1200, Math.ceil((Math.max(s.loadMs, s.firstPaintMs, ...s.longTasks.map((t) => t.start + t.ms)) + 100) / 200) * 200);
-  const X = (ms) => left + ((right - left) * ms) / end;
-  let body = '';
-  for (let t = 0; t <= end; t += 200) body += `<line class="grid" x1="${X(t)}" x2="${X(t)}" y1="${top}" y2="${top + 60}"/><text class="tick" x="${X(t)}" y="${top + 78}" text-anchor="middle">${t} ms</text>`;
-  for (const t of s.longTasks) body += `<rect x="${X(t.start)}" y="${top + 14}" width="${Math.max(2, X(t.start + t.ms) - X(t.start) - 2)}" height="32" rx="4" fill="var(--s2)"/><text class="val" x="${X(t.start + t.ms / 2)}" y="${top + 8}" text-anchor="middle">${t.ms} ms</text>`;
-  body += `<line x1="${X(s.firstPaintMs)}" x2="${X(s.firstPaintMs)}" y1="${top + 4}" y2="${top + 56}" stroke="var(--ink)" stroke-width="2"/><text class="tick" x="${X(s.firstPaintMs) + 6}" y="${top + 56}">first paint</text>`;
-  body += `<text class="tick" x="${left}" y="${h - 14}">Long tasks (over 50 ms) on the main thread while the page loads. Total blocking time: ${s.blockingMs} ms.</text>`;
-  svg('startup', h, 'Loading: the page is busy for a moment, once', 'The built website at 1366×768: building the world and baking its bitmaps blocks the main thread.', body, `Timeline of long tasks while loading; total blocking time ${s.blockingMs} ms.`);
+  const label = (r) => (r.adaptive ? `adaptive: ${r.quality.fps} fps, ${r.quality.dpr}×` : 'fixed: 30 fps, 1.5×');
+  stackedPanels('adaptive', 'Adaptive quality takes the pressure off', 'Main-thread time in the two hard cases, quality fixed and adaptive, on a 1.5× density screen (lower is better).',
+    [...new Set(R.adaptive.map((r) => r.case))].map((name) => ({ name, bars: R.adaptive.filter((r) => r.case === name).map((r) => ({ label: label(r), script: r.scriptPct, total: r.mainThreadPct })) })),
+    'Stacked columns of main-thread time, fixed against adaptive quality, for the dark theme without a GPU and for a 4× slower CPU.');
 }
 
-// 5. out of view
+// 2. at rest
 {
-  const s = R.site, rows = [['On screen', s.steady.browserCpuPct], ['Scrolled out of view', s.offscreen.browserCpuPct], ['Empty tab, for comparison', s.emptyTab.browserCpuPct]];
-  const h = 200, left = 210, right = W - 80, top = 84, max = Math.max(100, ...rows.map((r) => r[1]));
+  const s = R.site, rows = [['On screen', s.steady.browserCpuPct], ['Nobody at the page for 5 min', s.idle.browserCpuPct], ['Scrolled out of view', s.offscreen.browserCpuPct], ['Empty tab, for comparison', s.emptyTab.browserCpuPct]];
+  const h = 236, left = 230, right = W - 80, top = 84, max = Math.max(100, ...rows.map((r) => r[1]));
   let body = '';
   rows.forEach(([label, v], i) => {
-    const y = top + i * 34, w = Math.max(2, ((right - left) * v) / max);
-    body += `<text x="${left - 12}" y="${y + 15}" text-anchor="end">${esc(label)}</text><path fill="var(--s1)" d="M${left},${y + 2} H${left + w - Math.min(4, w / 2)} Q${left + w},${y + 2} ${left + w},${y + 6} V${y + 18} Q${left + w},${y + 22} ${left + w - Math.min(4, w / 2)},${y + 22} H${left} Z"/><text class="val" x="${left + w + 8}" y="${y + 16}">${v.toFixed(1)}%</text>`;
+    const y = top + i * 34, w = Math.max(2, ((right - left) * v) / max), r = Math.min(4, w / 2);
+    body += `<text x="${left - 12}" y="${y + 15}" text-anchor="end">${esc(label)}</text><path fill="var(--s1)" d="M${left},${y + 2} H${left + w - r} Q${left + w},${y + 2} ${left + w},${y + 2 + r} V${y + 22 - r} Q${left + w},${y + 22} ${left + w - r},${y + 22} H${left} Z"/><text class="val" x="${left + w + 8}" y="${y + 16}">${v.toFixed(1)}%</text>`;
   });
-  body += `<text class="tick" x="24" y="${h - 14}">CPU time of the whole browser (every process), share of one core, built website at 1366×768.</text>`;
-  svg('offscreen', h, 'Out of view, it costs nothing', 'The scene stops its frame loop as soon as it leaves the screen.', body, 'Bar chart: browser CPU on screen, scrolled out of view, and for an empty tab.');
+  body += `<text class="tick" x="24" y="${h - 14}">CPU time of the whole browser (every process), share of one core: the demo website at 1366×768, no GPU.</text>`;
+  svg('at-rest', h, 'When nobody is looking, it costs nothing', 'The scene stops when scrolled out of view, in a hidden tab, and after 5 minutes without input.', body, 'Bar chart of browser CPU on screen, idle, scrolled out of view and for an empty tab.');
 }
 
-// 6. a month
+// 3. loading, 0.3.0 against now
+{
+  const lanes = [...(OLD ? [['0.3.0', OLD.site]] : []), ['0.4.0', R.site]];
+  const end = Math.max(1200, ...lanes.flatMap(([, s]) => s.longTasks.map((t) => Math.ceil((t.start + t.ms + 100) / 200) * 200)));
+  const left = 84, right = W - 24, top = 84, lane = 64, h = top + lanes.length * lane + 64;
+  const X = (ms) => left + ((right - left) * ms) / end;
+  let body = '';
+  for (let t = 0; t <= end; t += 200) body += `<line class="grid" x1="${X(t)}" x2="${X(t)}" y1="${top}" y2="${top + lanes.length * lane}"/><text class="tick" x="${X(t)}" y="${top + lanes.length * lane + 18}" text-anchor="middle">${t} ms</text>`;
+  lanes.forEach(([name, s], i) => {
+    const y = top + i * lane;
+    body += `<text class="val" x="${left - 12}" y="${y + 38}" text-anchor="end">${name}</text>`;
+    for (const t of s.longTasks) body += `<rect x="${X(t.start)}" y="${y + 22}" width="${Math.max(2, X(t.start + t.ms) - X(t.start) - 2)}" height="26" rx="4" fill="var(--s2)"/><text class="tick" x="${X(t.start + t.ms / 2)}" y="${y + 16}" text-anchor="middle">${t.ms}</text>`;
+    body += `<line x1="${X(s.firstPaintMs)}" x2="${X(s.firstPaintMs)}" y1="${y + 14}" y2="${y + 56}" stroke="var(--ink)" stroke-width="2"/><text class="tick" x="${X(s.firstPaintMs) + 6}" y="${y + 58}">first paint ${s.firstPaintMs} ms</text>`;
+  });
+  body += `<text class="tick" x="24" y="${h - 14}">Long tasks (over 50 ms, length in ms) on the main thread while the demo website loads at 1366×768.</text>`;
+  svg('startup', h, 'The page paints first, the scene follows', 'Since 0.4.0 the scene is built after the page has loaded, so the page’s own content is not held up.', body, 'Timeline of long tasks while the page loads, 0.3.0 against 0.4.0.');
+}
+
+// 4. a month
 if (R.month?.length) {
-  const m = R.month, days = m.map((d) => d.day);
-  const nice = (v) => { const p = 10 ** Math.floor(Math.log10(v)); return Math.ceil(v / p) * p; };
-  const panel = (key, title, sub, fmt, name) => {
-    const ys = m.map((d) => d[key] ?? NaN);
-    const xs = days.filter((_, i) => !Number.isNaN(ys[i])), vs = ys.filter((v) => !Number.isNaN(v));
-    const max = nice(Math.max(...vs) * 1.25);
-    lineChart({ name, title, sub, xs, ys: vs, xLabel: (d) => `day ${d}`, yMax: max, yTicks: [0, max / 4, max / 2, (3 * max) / 4, max], yFmt: fmt, h: 260, alt: `${title}: line over 30 scene days.` });
-  };
-  panel('heapMB', 'Memory stays flat for a month', 'JavaScript heap after garbage collection, sampled once per scene day.', (v) => `${v.toFixed(1)} MB`, 'month-memory');
-  panel('moving', 'Nothing piles up', 'Things moving in the scene (vehicles, people, robots, smoke puffs), sampled once per scene day.', (v) => `${Math.round(v)}`, 'month-moving');
-  panel('stepUs', 'A simulation step costs the same on day 30 as on day 1', 'Average cost of one 1/30 s simulation step over each scene day.', (v) => `${v.toFixed(1)} µs`, 'month-step');
-  panel('frameMs', 'Drawing a frame costs the same too', 'Average time to draw one frame (1600×860, software drawing), sampled once per scene day.', (v) => `${v.toFixed(1)} ms`, 'month-frame');
+  const m = R.month.filter((d) => d.heapMB != null), max = Math.max(20, Math.ceil((Math.max(...m.map((d) => d.heapMB)) * 1.3) / 10) * 10);
+  lineChart({
+    name: 'month', title: 'A month left running: memory stays flat', sub: 'JavaScript memory after garbage collection, once per day over 30 days of scene time.',
+    xs: m.map((d) => d.day), ys: m.map((d) => d.heapMB), xLabel: (d) => `day ${d}`, yMax: max, yTicks: [0, max / 4, max / 2, (3 * max) / 4, max], yFmt: (v) => `${v.toFixed(1)} MB`, h: 260,
+    alt: 'Line chart of JavaScript memory over 30 scene days.',
+  });
 }

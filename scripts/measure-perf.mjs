@@ -65,7 +65,7 @@ const siteUrl = `http://localhost:${site.address().port}/`;
 
 /** Open a page in a browser of its own, so its CPU time can be told apart from everything else. */
 async function withPage(opts, fn) {
-  const server = await chromium.launchServer({ args: ['--enable-precise-memory-info'] });
+  const server = await chromium.launchServer({ args: ['--enable-precise-memory-info', '--js-flags=--expose-gc'] });
   const browser = await chromium.connect(server.wsEndpoint());
   try {
     const page = await browser.newPage({ viewport: opts.viewport ?? { width: 1600, height: 860 }, deviceScaleFactor: opts.dpr ?? 1, colorScheme: opts.theme ?? 'light' });
@@ -103,16 +103,17 @@ async function sample({ page, cdp, pid }, countFrames) {
   return out;
 }
 
-async function openScene(ctx, { theme = 'light', maxFps = 30, w = 1600, h = 860, throttle = 1 }) {
+/** The lab's bare scene at a size and theme. Adaptive quality is off unless asked for, so a setting is measured as set. */
+async function openScene(ctx, { theme = 'light', maxFps = 30, w = 1600, h = 860, throttle = 1, adaptive = false }) {
   await ctx.page.goto(`${labUrl}?debug`);
   await ctx.page.waitForFunction(() => window.scene);
-  await ctx.page.evaluate(({ theme, maxFps, w, h }) => {
+  await ctx.page.evaluate(({ theme, maxFps, w, h, adaptive }) => {
     const s = window.scene, c = document.querySelector('canvas');
     c.style.width = w + 'px';
     c.style.height = h + 'px';
     s.resize(w, h);
-    s.set({ theme, maxFps });
-  }, { theme, maxFps, w, h });
+    s.set({ theme, maxFps, adaptive });
+  }, { theme, maxFps, w, h, adaptive });
   await ctx.page.waitForTimeout(2000);
   if (throttle > 1) await ctx.cdp.send('Emulation.setCPUThrottlingRate', { rate: throttle });
 }
@@ -146,6 +147,23 @@ for (const rate of [1, 2, 4, 6]) {
 }
 save();
 
+// 3b. adaptive quality on the two hard cases: no GPU in the dark theme, and a slow CPU (judged after 12 s)
+results.adaptive = [];
+for (const [name, opts] of [['Dark theme, no GPU', { theme: 'dark' }], ['4× slower CPU', { w: 1366, h: 768, throttle: 4 }]]) {
+  for (const adaptive of [false, true]) {
+    const viewport = opts.w ? { width: opts.w, height: opts.h } : undefined;
+    const r = await withPage({ viewport, dpr: 1.5 }, async (ctx) => {
+      await openScene(ctx, { ...opts, adaptive });
+      await ctx.page.waitForTimeout(12_000);
+      const quality = await ctx.page.evaluate(() => window.scene.quality);
+      return { quality, ...(await sample(ctx, true)) };
+    });
+    results.adaptive.push({ case: name, adaptive, ...r });
+    log('adaptive', name, adaptive, r);
+  }
+}
+save();
+
 // 4. the built website: loading, steady state, and scrolled out of view
 results.site = await withPage({ viewport: { width: 1366, height: 768 } }, async (ctx) => {
   const { page } = ctx;
@@ -153,6 +171,7 @@ results.site = await withPage({ viewport: { width: 1366, height: 768 } }, async 
     window.__long = [];
     new PerformanceObserver((l) => window.__long.push(...l.getEntries().map((e) => ({ start: e.startTime, ms: e.duration })))).observe({ type: 'longtask', buffered: true });
   });
+  await page.clock.install();
   await page.goto(siteUrl, { waitUntil: 'load' });
   await page.waitForTimeout(3000);
   const load = await page.evaluate(() => ({
@@ -161,6 +180,12 @@ results.site = await withPage({ viewport: { width: 1366, height: 768 } }, async 
     load: performance.getEntriesByType('navigation')[0]?.loadEventEnd ?? null,
   }));
   const steady = await sample(ctx, false);
+  // nobody touches the page for 5 minutes: the scene holds still until the next input
+  await page.clock.fastForward('05:30');
+  await page.waitForTimeout(500);
+  const idle = await sample(ctx, false);
+  await page.mouse.move(200, 200);
+  await page.mouse.move(220, 220);
   // push the scene out of view: its IntersectionObserver should stop the frame loop
   await page.evaluate(() => {
     document.body.style.paddingBottom = '4000px';
@@ -173,7 +198,7 @@ results.site = await withPage({ viewport: { width: 1366, height: 768 } }, async 
     firstPaintMs: Math.round(load.fcp), loadMs: Math.round(load.load),
     longTasks: load.long.map((t) => ({ start: Math.round(t.start), ms: Math.round(t.ms) })),
     blockingMs: Math.round(load.long.reduce((s, t) => s + Math.max(0, t.ms - 50), 0)),
-    steady, offscreen: hidden, emptyTab: blank,
+    steady, idle, offscreen: hidden, emptyTab: blank,
   };
 });
 log('site', results.site);
@@ -199,6 +224,7 @@ if (args.has('--month')) {
     const out = [];
     const probe = () => page.evaluate(() => {
       const s = window.scene, items = [];
+      window.gc?.();
       s.world.items(items);
       const t = performance.now();
       for (let i = 0; i < 30; i++) s.render();
