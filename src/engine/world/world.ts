@@ -1,7 +1,7 @@
 // The city: ground plan, buildings, props, traffic routes, walkways and the activities that bring it to life.
 //
 // Layout (world units ≈ metres). Roads: an avenue along y at x 68–76, a street along x at y 42–50 that bends into
-// the factory road along y at x 44–52. Factory top-left; the dock wing with its tall atrium window, a wide AI-compute
+// the factory road along y at x 44–52. Factory top-left; the dock wing grown out in glass over a wide AI-compute
 // platform in front of it reaching out into the yard, and a pocket park on its corner by the plaza; an open truck
 // yard (gate off the avenue, exit onto the street) top-centre, battery yard top-right; a home with carport and the
 // loading bay left; charging lot and construction bottom-centre; pavilion, robotaxi stop and park bottom-right.
@@ -75,7 +75,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const zones = roadZones(traffic);
   // two docks are worked by live trucks; the third slot is the charging bay they back into after loading
   const yard = new TruckYard(env, [4.5, 10.5], 16.5);
-  // the view in through the dock wing's atrium: Optimus robots carrying boxes in from the docks
+  // inside the dock wing, open to its glass extension and through the open garage by the docks: Optimus at work
   const inside = new DockInterior(pal, opts.seed * 4513 + 7);
   acts.push(inside);
   factory(env, edge, yard, opts.branding, inside);
@@ -113,8 +113,13 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(...outskirts.acts);
   staffBreak(env);
   // dock and yard robots
-  acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 13.6, wait: 0.8, then: (w) => (w.carry = true) }, { x: 32.4, y: 13.4, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 13.6));
-  acts.push(new Looper(env, 'robot', () => [{ x: 30.9, y: 7.5, wait: 0.9, then: (w) => (w.carry = true) }, { x: 35.6, y: 7.5, wait: 0.8, then: (w) => (w.carry = false) }], 30.9, 7.5));
+  // two take boxes from inside the factory, through the open garage between the second dock and the bay
+  // (GARAGE in dockInterior.ts), and stack them on the pallets by it: clear of the trailers either side
+  for (const [y, wait] of [[13.0, 0.8], [14.1, 1.3]] as const) {
+    const pick = { x: 30.45, y, wait, face: [-1, 0] as [number, number], then: (w: { carry: boolean }) => (w.carry = true) };
+    const drop = { x: 32.2, y, wait: wait * 0.9, then: (w: { carry: boolean }) => (w.carry = false) };
+    acts.push(new Looper(env, 'robot', () => [pick, drop], y < 13.5 ? 30.9 : 31.8, y));
+  }
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
   walkways(graph, zones, outskirts);

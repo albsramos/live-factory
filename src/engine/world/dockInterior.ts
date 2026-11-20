@@ -1,23 +1,26 @@
-// Inside the dock wing, seen through its tall atrium window (which the glass extension over the compute now stands in
-// front of): a storeroom behind the glass, its far wall lined with shelves of boxes, and two Optimus robots carrying
-// boxes in from the dock side, where the trucks unload, and stacking them on the shelves. Drawn as part of the wing's face, clipped to the window, like the main
-// entrance's recess: the robots are inside the wing's box, so as items of their own they couldn't be sorted.
+// Inside the dock wing, seen in two places. Where the wing grows out in glass over the compute, its +x face is open
+// to the extension (no wall or window between them): a storeroom, its far wall lined with shelves of boxes, where two
+// Optimus robots carry boxes in from the dock side and put them away. And through an open garage between the second
+// dock and the bay, the boxes the yard robots take out to the pallets. Both are drawn on the wing's face, clipped to
+// their openings, like the main entrance's recess: the robots inside are within the wing's box, so as items of their
+// own they couldn't be sorted.
 
 import { makeRng, sx, sy } from '../core';
 import { box, onFaceX, onTop, type R } from '../draw';
-import { atrium } from '../details';
 import type { Palette } from '../palette';
 import { Walker, type Step } from '../people/walker';
 import type { Activity } from '../activities/activity';
 
-/** The window on the wing's +x face (x 30): along it from y 26.6 to 35.4, from z 0.3 up to 8.6. */
-const X = 30, Y0 = 26.6, Y1 = 35.4, Z0 = 0.3, Z1 = 8.6;
+/** The wing's +x face (x 30) is open to the glass extension from y 26.4 to 36, floor to roof (10 m). */
+const X = 30, Y0 = 26.4, Y1 = 36, H = 10;
 /**
- * The storeroom's far wall, 4 m in (anything much deeper would show only its foot through the window, at this
- * angle), and the shelving along it.
+ * The storeroom's far wall, 4 m in (anything much deeper would show only its foot, at this angle), and the shelving
+ * along it.
  */
 const BACK = 26;
 const SHELF = { x0: 26.1, x1: 27.3, top: 4.4, levels: [0.9, 1.8, 2.7, 3.6] };
+/** The open garage between the second dock (y 10.5) and the bay (16.5): its sides along the face, and its height. */
+export const GARAGE = { y0: 12.3, y1: 14.7, h: 3.4 };
 
 export class DockInterior implements Activity {
   private bots: Walker[];
@@ -42,38 +45,65 @@ export class DockInterior implements Activity {
     });
   }
 
-  /** The view in through the window: call it from the wing's live overlay. */
+  /** The storeroom, open to the glass extension: call it from the wing's live overlay. */
   draw(r: R) {
-    const pal = this.pal, ctx = r.ctx;
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(sx(X, Y1), sy(X, Y1, Z1));
-    ctx.lineTo(sx(X, Y0), sy(X, Y0, Z1));
-    ctx.lineTo(sx(X, Y0), sy(X, Y0, Z0));
-    ctx.lineTo(sx(X, Y1), sy(X, Y1, Z0));
-    ctx.closePath();
-    ctx.clip();
-    // the hall inside: its back wall and its floor
-    onFaceX(r, BACK, Y0 - 6, Y1 + 6, 10, (c, w) => {
-      c.fillStyle = pal.interiorWall;
-      c.fillRect(0, 0, w, 10);
-    });
-    onTop(r, BACK, Y0 - 6, 0, (c) => {
-      c.fillStyle = pal.interiorFloor;
-      c.fillRect(0, 0, X - BACK, Y1 - Y0 + 12);
-    });
-    // the shelving along the back wall: uprights, and boxes on each level (some gaps)
-    for (let y = Y0 - 4; y < Y1; y += 2.4) {
-      for (const z of [0.1, ...SHELF.levels]) {
-        box(r, SHELF.x0, y + 0.08, z - 0.06, SHELF.x1, y + 2.4, z, pal.steel);
-        for (let k = 0; k < 3; k++) if ((Math.round(y * 5) + k * 3 + Math.round(z * 10)) % 4 > 0) box(r, SHELF.x0 + 0.12, y + 0.22 + k * 0.74, z, SHELF.x1 - 0.12, y + 0.84 + k * 0.74, z + 0.55, pal.crate);
+    const pal = this.pal;
+    room(r, pal, Y0, Y1, H, () => {
+      // the shelving along the back wall: uprights, and boxes on each level (some gaps)
+      for (let y = Y0 - 2; y < Y1; y += 2.4) {
+        for (const z of [0.1, ...SHELF.levels]) {
+          box(r, SHELF.x0, y + 0.08, z - 0.06, SHELF.x1, y + 2.4, z, pal.steel);
+          for (let k = 0; k < 3; k++) if ((Math.round(y * 5) + k * 3 + Math.round(z * 10)) % 4 > 0) box(r, SHELF.x0 + 0.12, y + 0.22 + k * 0.74, z, SHELF.x1 - 0.12, y + 0.84 + k * 0.74, z + 0.55, pal.crate);
+        }
+        box(r, SHELF.x0, y + 2.4, 0, SHELF.x1, y + 2.48, SHELF.top, pal.steel);
       }
-      box(r, SHELF.x0, y + 2.4, 0, SHELF.x1, y + 2.48, SHELF.top, pal.steel);
-    }
-    // the robots, back to front
-    for (const w of [...this.bots].sort((a, b) => a.x + a.y - (b.x + b.y))) w.draw(r);
-    ctx.restore();
-    // and the glass over it all, now see-through
-    atrium(r, pal, X, 0, 36, 10, 0.6, 9.4, 1.4, 9.7, true);
+      // the robots, back to front
+      for (const w of [...this.bots].sort((a, b) => a.x + a.y - (b.x + b.y))) w.draw(r);
+    });
   }
+
+  /** The open garage by the docks, boxes stacked just inside it and its door rolled up: from the live overlay too. */
+  drawGarage(r: R) {
+    const pal = this.pal, { y0, y1, h } = GARAGE;
+    room(r, pal, y0, y1, h, () => {
+      for (let i = 0; i < 3; i++) box(r, 28.2, y0 + 0.3, i * 0.5, 29.4, y1 - 0.3, (i + 1) * 0.5, pal.crate);
+    });
+    // the door, rolled up into a drum under the lintel
+    onFaceX(r, X, y0, y1, h, (c, w) => {
+      c.fillStyle = pal.dockDoor;
+      c.fillRect(0, 0, w, 0.32);
+      c.fillStyle = pal.night ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.16)';
+      c.fillRect(0, 0.26, w, 0.05);
+    });
+  }
+}
+
+/** A room inside the wing seen through its +x face from y0 to y1, up to height h: clip to that opening, then draw the
+ * far wall, the floor, what `fill` adds, and at night the room's light. */
+function room(r: R, pal: Palette, y0: number, y1: number, h: number, fill: () => void) {
+  const ctx = r.ctx;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(sx(X, y1), sy(X, y1, h));
+  ctx.lineTo(sx(X, y0), sy(X, y0, h));
+  ctx.lineTo(sx(X, y0), sy(X, y0, 0));
+  ctx.lineTo(sx(X, y1), sy(X, y1, 0));
+  ctx.closePath();
+  ctx.clip();
+  onFaceX(r, BACK, y0 - 6, y1 + 6, H, (c, w) => {
+    c.fillStyle = pal.interiorWall;
+    c.fillRect(0, 0, w, H);
+  });
+  onTop(r, BACK, y0 - 6, 0, (c) => {
+    c.fillStyle = pal.interiorFloor;
+    c.fillRect(0, 0, X - BACK, y1 - y0 + 12);
+  });
+  fill();
+  if (r.night) {
+    // lit inside: a warm wash over the room
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(255, 186, 104, 0.22)';
+    ctx.fillRect(sx(X, y1) - 50, sy(X, y1, h) - 50, 200, 200);
+  }
+  ctx.restore();
 }

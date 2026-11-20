@@ -31,7 +31,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     groundPoly(ctx, [76, 53.5, 79.2, 57.5, 79.2, 70.5, 76, 74.5]);
   };
 
-  // the glazed facades facing the camera: factory, dock wing (atrium and top band), pavilion, the home
+  // the glazed facades facing the camera: factory, dock wing (its open face and top band), pavilion, the home
   const litFaces: LitFace[] = [
     [26, 36, 26, 72, 1, 0], [-40, 72, 26, 72, 0, 1], [30, 26.6, 30, 35.4, 1, 0], [30, 0.4, 30, 25.6, 1, 0],
     [80, 38, 97, 38, 0, 1], [97, 26, 97, 38, 1, 0], [20.4, 84.2, 28.8, 84.2, 0, 1], [28.8, 75.6, 28.8, 84.2, 1, 0],

@@ -97,7 +97,7 @@ function pane(r: R, pal: Palette, c: Ctx, w: number, h: number, frame: string, i
 
 /**
  * The glass roof seen from above: frosted glass on a grid of beams, framed round the edge. On a hall leaning on the
- * factory it is clear along the factory's wall, so the view in through the factory's atrium stays sharp, and frosts
+ * factory it is clear along the factory's wall, so the view into the factory stays sharp, and frosts
  * over the next 8 m.
  */
 function roof(r: R, pal: Palette, x0: number, y0: number, w: number, d: number, z: number, isAttached: boolean) {

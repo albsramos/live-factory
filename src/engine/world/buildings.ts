@@ -6,7 +6,7 @@ import { boxShadow, rectShadow } from '../ground';
 import { box, onFaceX, onFaceY } from '../draw';
 import { drawMesh } from '../mesh';
 import { megapacks } from '../blocks';
-import { atrium, solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details';
+import { solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details';
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
@@ -52,7 +52,8 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
   // the roof's solar panels, in rows tilted at 45° that stop short of the roof terrace
   S.push(...solarRows(pal, { x0: -40, y0: 36, x1: 26, y1: 72, z: 13, inset: 1.2, skip: TERRACE_AREA }));
 
-  // dock wing with roll-up doors and a tall atrium window above the compute platform
+  // dock wing with roll-up doors (one open garage, dockInterior.ts) and its face open to the glass extension over the
+  // compute platform
   const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];
   S.push(
     new BoxItem(-30, 0, 0, 30, 36, 10, pal.factory, { edge }, (r) => {
@@ -72,10 +73,10 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
         }
       });
       windowsX(r, pal, 30, 0, 36, 10, [{ top: 1.4, bot: 3.0, every: 1.2, spans: [[10.4, 35.6]] }]);
-      atrium(r, pal, 30, 0, 36, 10, 0.6, 9.4, 1.4, 9.7);
     }).live((r) => {
-      // the view in through the atrium, Optimus robots carrying boxes in from the docks
+      // the factory open to its glass extension, with Optimus robots at work inside, and the open garage by the docks
       inside.draw(r);
+      inside.drawGarage(r);
       // a lamp beside each dock: green while a trailer is loading (or charging, at the bay), amber while one is coming
       // or going, off when free
       onFaceX(r, 30, 0, 36, 10, (ctx) => {

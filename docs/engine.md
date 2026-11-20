@@ -46,10 +46,11 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   item, and the pillars in its mouth), `outskirts.ts` what lies beyond the classic frame for wide views (factory
   wing, staff car park, second compute platform, Megapack field, charging hub, staff park).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge, each platform under a glass
-  hall from `world/glassHall.ts`, the one by the factory the dock wing grown out in glass, through which the wing's
-  atrium shows the storeroom inside (`world/dockInterior.ts`, drawn on the wing's face clipped to the window, like
-  the entrance): thin wall and roof items outside the racks' boxes, so the sort always knows the racks are inside)
-  and `megapacks`; `details.ts` windows, glass, solar roofs.
+  hall from `world/glassHall.ts`, the one by the factory the dock wing grown out in glass, its face open to it so
+  the storeroom inside shows (`world/dockInterior.ts`, which also draws the open garage by the docks the yard robots
+  load from; both drawn on the wing's face clipped to their openings, like the entrance): thin wall and roof items
+  outside the racks' boxes, so the sort always knows the racks are inside) and `megapacks`; `details.ts` windows,
+  glass, solar roofs.
 - `activities/` the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
   walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,

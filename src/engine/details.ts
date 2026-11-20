@@ -71,69 +71,6 @@ export function windowGlow(r: R, ctx: Ctx, w: number, bands: Band[]) {
   ctx.restore();
 }
 
-/**
- * A tall glazed atrium on a +x face, floor to near the roof: warm glass in a mullion grid, with a soft daylight
- * reflection (or a glow at night). `u0`…`u1` run along the face, `top`…`bot` down from its top edge. With `isSeeThrough`
- * the glass is only a light tint, over a view of the inside drawn first (world/dockInterior.ts).
- */
-export function atrium(r: R, pal: Palette, x1: number, y0: number, y1: number, z1: number, u0: number, u1: number, top: number, bot: number, isSeeThrough = false) {
-  onFaceX(r, x1, y0, y1, z1, (ctx) => {
-    const [c0, c1] = r.night ? pal.windowNight : pal.window;
-    const w = u1 - u0, h = bot - top;
-    ctx.fillStyle = isSeeThrough ? pal.atriumTint : vgrad(ctx, pal, 'atrium', top, bot, c0, c1);
-    ctx.fillRect(u0, top, w, h);
-    // daylight sliding down the glass in two soft diagonal bands (not when we look in through it)
-    if (!r.night && !isSeeThrough) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(u0, top, w, h);
-      ctx.clip();
-      ctx.fillStyle = 'rgba(255,255,255,0.28)';
-      ctx.beginPath();
-      ctx.moveTo(u0 + w * 0.18, top);
-      ctx.lineTo(u0 + w * 0.42, top);
-      ctx.lineTo(u0 + w * 0.02, bot);
-      ctx.lineTo(u0 - w * 0.22, bot);
-      ctx.closePath();
-      ctx.moveTo(u0 + w * 0.55, top);
-      ctx.lineTo(u0 + w * 0.63, top);
-      ctx.lineTo(u0 + w * 0.23, bot);
-      ctx.lineTo(u0 + w * 0.15, bot);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
-    // mullions, and heavier floor slabs every few panes
-    ctx.strokeStyle = pal.mullion;
-    ctx.lineWidth = 0.07;
-    ctx.beginPath();
-    const cols = Math.max(2, Math.round(w / 1.1));
-    for (let i = 1; i < cols; i++) {
-      const u = u0 + (w * i) / cols;
-      ctx.moveTo(u, top);
-      ctx.lineTo(u, bot);
-    }
-    for (let v = top + 1.1; v < bot - 0.3; v += 1.1) {
-      ctx.moveTo(u0, v);
-      ctx.lineTo(u1, v);
-    }
-    ctx.stroke();
-    ctx.lineWidth = 0.16;
-    ctx.strokeStyle = r.night ? 'rgba(30,22,14,0.55)' : 'rgba(150,132,104,0.45)';
-    ctx.beginPath();
-    for (let v = top + 2.2; v < bot - 0.6; v += 2.2) {
-      ctx.moveTo(u0, v);
-      ctx.lineTo(u1, v);
-    }
-    ctx.stroke();
-    // a slim frame round the opening
-    ctx.strokeStyle = r.night ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.7)';
-    ctx.lineWidth = 0.12;
-    ctx.strokeRect(u0, top, w, h);
-    windowGlow(r, ctx, u1, [{ top, bot, spans: [[u0, u1]] }]);
-  });
-}
-
 export function windowsX(r: R, pal: Palette, x1: number, y0: number, y1: number, z1: number, bands: Band[]) {
   onFaceX(r, x1, y0, y1, z1, (ctx, w) => {
     ribbons(r, pal, ctx, w, bands);
