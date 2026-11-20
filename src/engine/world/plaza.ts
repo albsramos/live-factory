@@ -1,20 +1,26 @@
-// The factory's front, after Giga Berlin's: a glass rooftop bar along the front edge of the roof, under a thin bronze
-// roof that overhangs the facade and flares out to a sharp point at the plaza's corner, and two angular planters on
-// the plaza with LED strips along their top edges that glow warm at night. The planters stand clear of every walkway (and the walkers' offset), the
-// chatting group and the bench (walkways.ts, streetLife.ts).
+// The factory's front: a roof terrace over the main entrance and two angular planters on the plaza. The terrace,
+// after Giga Texas's: a green roof round a paved terrace with tables under umbrellas and a reflecting pool facing the
+// front, and a glass pavilion behind it under a big pale roof plate that comes to a point towards the front. The
+// planters have LED strips along their top edges that glow warm at night, and stand clear of every walkway (and the
+// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts).
 
 import { C } from '../core';
-import type { R } from '../draw';
+import { onTop, type R } from '../draw';
 import { windowsX, windowsY } from '../details';
 import { MeshBuilder, drawMesh } from '../mesh';
 import type { Palette } from '../palette';
 import { BoxItem, FnItem, type Static } from '../statics';
 
-/** the rooftop bar on the factory's roof (z 13), set back a little from its facade (x 26): [x0, y0, x1, y1, height] */
-const BAR = [21.5, 40, 25.8, 70, 3.4];
-/** the bar's roof, counter-clockwise (x, y): over the whole bar, out past the facade, widening to a point at the corner */
-const CANOPY = [[21.2, 39.2], [26.6, 39.2], [28.2, 74], [21.2, 71.2]];
-const CANOPY_Z = [16.4, 16.65];
+/** the factory's roof (z 13) and the terrace on it, back from the facade (x 26), all as (x, y) */
+const ROOF = 13;
+const TERRACE = { lawn: [[12, 40.5], [25.6, 40.5], [25.6, 67.5], [12, 67.5]], paving: [[13.5, 45], [19.5, 45], [24.4, 48.5], [24.4, 59.5], [19.5, 63], [13.5, 63]] };
+const POOL = [[20.5, 50.5], [23.4, 51.5], [23.4, 56.5], [20.5, 57.5]];
+/** the tables' umbrellas, seen from above, out in the open on the paving */
+const TABLES = [[23.5, 49.4], [23.5, 58.6], [21.3, 46.4], [21.3, 61.6]];
+/** the glass pavilion [x0, y0, x1, y1, height], and its roof plate, coming to a point towards the front */
+const PAVILION = [14.5, 48, 19, 60, 2.6];
+const PLATE = [[12.8, 46], [19.8, 46], [22.4, 54], [19.8, 62], [12.8, 62]];
+const PLATE_Z = [15.6, 15.85];
 /** the planters' plans, counter-clockwise (x, y), and their height */
 const PLANTERS = [
   [[33.0, 57.0], [35.0, 52.2], [39.5, 53.5], [39.5, 57.0]],
@@ -31,20 +37,19 @@ function prism(plan: number[][], z0: number, z1: number) {
   return m.build();
 }
 
-/** The rooftop bar and its roof, and the planters, as static items. */
+/** The terrace's pavilion and its roof plate, and the planters, as static items. */
 export function factoryFront(pal: Palette, edge: string) {
-  const canopy = prism(CANOPY, CANOPY_Z[0], CANOPY_Z[1]);
-  const [cx0, cy0, cx1, cy1] = bounds(CANOPY);
-  const [bx0, by0, bx1, by1, bh] = BAR;
+  const plate = prism(PLATE, PLATE_Z[0], PLATE_Z[1]);
+  const [px0, py0, px1, py1] = bounds(PLATE);
+  const [bx0, by0, bx1, by1, bh] = PAVILION;
   // glass all round, lit at night; it stands on the roof, so it casts no shadow on the ground
   const glass = [{ top: 0.15, bot: bh - 0.15, every: 1.5 }];
   const items: Static[] = [
-    new BoxItem(bx0, by0, 13, bx1, by1, 13 + bh, pal.factory, { edge }, (r) => {
-      windowsX(r, pal, bx1, by0, by1, 13 + bh, glass);
-      windowsY(r, pal, bx0, bx1, by1, 13 + bh, glass);
+    new BoxItem(bx0, by0, ROOF, bx1, by1, ROOF + bh, pal.factory, { edge }, (r) => {
+      windowsX(r, pal, bx1, by0, by1, ROOF + bh, glass);
+      windowsY(r, pal, bx0, bx1, by1, ROOF + bh, glass);
     }, false),
-    // the roof: bronze all over, as at Giga Berlin
-    new FnItem(cx0, cy0, CANOPY_Z[0], cx1, cy1, CANOPY_Z[1], (r) => drawMesh(r, canopy, 0, 0, 0, 1, 0, [pal.gold, pal.gold])).still(),
+    new FnItem(px0, py0, PLATE_Z[0], px1, py1, PLATE_Z[1], (r) => drawMesh(r, plate, 0, 0, 0, 1, 0, [pal.white, pal.white])).still(),
   ];
   for (const plan of PLANTERS) {
     const mesh = prism(plan, 0, PLANTER_H);
@@ -75,4 +80,24 @@ function ledStrip(r: R, pal: Palette, plan: number[][], z: number) {
   } else ctx.strokeStyle = 'rgba(255, 252, 240, 0.9)';
   ctx.stroke();
   ctx.restore();
+}
+
+/** The terrace on the factory's roof, over its solar panels: call it from the factory's decoration. */
+export function drawRoofTerrace(r: R, pal: Palette) {
+  onTop(r, 0, 0, ROOF, (ctx) => {
+    const fill = (pts: number[][], color: string) => {
+      ctx.beginPath();
+      pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
+    fill(TERRACE.lawn, pal.lawn);
+    fill(TERRACE.paving, pal.plaza);
+    // at night the pavilion's light warms the paving
+    if (r.night) fill(TERRACE.paving, 'rgba(255, 186, 104, 0.12)');
+    fill(POOL, pal.pool);
+    ctx.fillStyle = pal.white.top;
+    for (const [x, y] of TABLES) ctx.fillRect(x - 0.45, y - 0.45, 0.9, 0.9);
+  });
 }

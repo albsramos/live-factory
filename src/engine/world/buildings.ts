@@ -12,7 +12,7 @@ import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
 import { drawEntrance, entrancePillars } from './entrance';
 import { drawLettering, type Branding } from './lettering';
-import { factoryFront } from './plaza';
+import { drawRoofTerrace, factoryFront } from './plaza';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -48,6 +48,7 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       windowsX(r, pal, 26, 36, 72, 13, branding.isOn ? letteredBandsX : factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
+      drawRoofTerrace(r, pal);
       drawEntrance(r, pal, edge);
       // the opt-in lettering, centred on the entrance (u 8 to 20 on this face) and in its widened panel band (3.4 to 5.6)
       if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 14, 3.9));

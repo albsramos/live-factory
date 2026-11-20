@@ -65,9 +65,10 @@ any other React setup.
   far as the semis' turning room allows, with blinking status lights and a pulsing cyan glow along its base. Above
   it, a tall glass atrium in the dock wing glows warm at night.
 - **The factory's front**: the ground floor steps back in a V under the storeys above, its glass walls angling in to
-  a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it. As at Giga Berlin,
-  a glass rooftop bar runs along the top of the facade under a thin bronze roof that overhangs it and flares to a
-  sharp point at the corner, and two angular planters on the plaza have LED strips that glow warm at night.
+  a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it. On the roof over
+  the entrance, a terrace: a green roof round paving with tables under umbrellas and a reflecting pool, and a glass
+  pavilion under a big pale roof plate that comes to a point towards the front. Two angular planters on the plaza
+  have LED strips that glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
   east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
