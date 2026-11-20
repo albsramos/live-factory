@@ -4,6 +4,7 @@
 
 import { MeshBuilder, type Mesh } from '../mesh';
 import { SlicedBody, plan } from './bodyKit';
+import { wheelsMesh } from './wheels';
 
 /** Back of the cab, a little ahead of the trailer's nose (which sits at -1.0) so the two clear in a turn. */
 const LR = -0.7;
@@ -51,8 +52,8 @@ function decorate(body: SlicedBody, band: number) {
 export function tractorMesh(): Mesh {
   const m = new MeshBuilder();
   const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
-  // the front wheels and the frame under the cab (the rest is `chassisMesh`), and the black bumper wrapping the nose
-  m.frustum(box(LR, 2.7, 0.92), 0, box(LR, 2.7, 0.92), 0.8, 2, 2);
+  // the black bumper wrapping the nose (the steer wheels and the frame under the cab are its `under`; the rest of the
+  // chassis is `chassisMesh`)
   // the dark fairing in the gap between the cab and the trailer: built before the cab and a little narrower, so
   // the body always stands in front of it and it only shows in that gap
   m.frustum(box(-1.0, LR + 0.05, 1.14), 1.0, box(-1.0, LR + 0.05, 0.84), 3.88, 2, 2);
@@ -61,8 +62,10 @@ export function tractorMesh(): Mesh {
 
   // the cab: each slice to the next is one convex part
   new SlicedBody(m, SLICES.map(([z, lf, w, rf]) => ({ z, pts: plan(lf, LR, w, rf, RB) })), SLICES.map(() => 0), decorate);
-  // stacked bottom up, so drawn in the order built
-  return m.build();
+  // stacked bottom up, so drawn in the order built; under it the steer wheels and the dark battery box between them
+  // and the back of the cab
+  const frame = (u: MeshBuilder) => u.frustum(box(LR, 1.3, 0.95), 0.32, box(LR, 1.3, 0.95), 0.8, 2, 2);
+  return { ...m.build(), under: wheelsMesh(frame, [1.95], 0.5, 0.62, 1.18) };
 }
 
 /**
@@ -70,10 +73,12 @@ export function tractorMesh(): Mesh {
  * over it, so it is drawn with the trailer, just before it, rather than with the cab, which is drawn after.
  */
 export function chassisMesh(): Mesh {
-  const m = new MeshBuilder();
   const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
-  m.frustum(box(-3.0, LR, 0.92), 0, box(-3.0, LR, 0.92), 0.8, 2, 2);
-  m.frustum(box(-2.5, -0.9, 0.7), 0.8, box(-2.5, -0.9, 0.7), 1.0, 2, 2);
-  return m.build();
+  // the frame rails, the plate on them, and a tandem of drive wheels either side of the kingpin
+  const frame = (m: MeshBuilder) => {
+    m.frustum(box(-3.1, LR, 0.5), 0.45, box(-3.1, LR, 0.5), 0.8, 2, 2);
+    m.frustum(box(-2.5, -0.9, 0.7), 0.8, box(-2.5, -0.9, 0.7), 1.0, 2, 2);
+  };
+  return wheelsMesh(frame, [-1.0, -2.3], 0.5, 0.55, 1.2);
 }
 

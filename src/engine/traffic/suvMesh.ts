@@ -4,6 +4,7 @@
 
 import { MeshBuilder, type Mesh } from '../mesh';
 import { SlicedBody, plan } from './bodyKit';
+import { wheelsMesh } from './wheels';
 
 /** The body's slices, bottom up: [height, front, back, half width, front corner radius, back corner radius]. */
 const SLICES: [number, number, number, number, number, number][] = [
@@ -20,22 +21,6 @@ const SLICES: [number, number, number, number, number, number][] = [
 const MATS = [0, 0, 0, 0, 1, 1, 1];
 /** wheel centres along the body */
 const AXLES = [1.4, -1.4];
-
-/**
- * The four wheels and a small rounded underbody tucked in under the body, so the body overhangs them. Drawn before
- * the body (its `under`), and sorted among themselves so a far wheel never covers a near one.
- */
-function wheelsMesh(): Mesh {
-  const m = new MeshBuilder();
-  m.frustum(plan(1.95, -1.95, 0.78, 0.5, 0.5), 0.1, plan(1.95, -1.95, 0.78, 0.5, 0.5), 0.32, 2, 2);
-  const R = 0.33;
-  const tyre = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-    const a = ((i + 0.5) / 8) * Math.PI * 2;
-    return [Math.cos(a) * R, R + Math.sin(a) * R];
-  });
-  for (const L of AXLES) for (const s of [1, -1]) m.extrude(tyre.map(([l, z]) => [l + L, z]), s * 0.7, s * 0.95, [2], 2);
-  return m.build(true);
-}
 
 /** Each band's decals, laid right after the band (see `SlicedBody`). */
 function decorate(body: SlicedBody, band: number) {
@@ -66,5 +51,7 @@ export function suvMesh(): Mesh {
   const m = new MeshBuilder();
   new SlicedBody(m, SLICES.map(([z, lf, lr, w, rf, rr]) => ({ z, pts: plan(lf, lr, w, rf, rr) })), MATS, decorate);
   // stacked bottom up, so drawn in the order built
-  return { ...m.build(), under: wheelsMesh() };
+  // four round wheels and a small rounded underbody tucked in under the body, which overhangs them
+  const under = plan(1.95, -1.95, 0.78, 0.5, 0.5);
+  return { ...m.build(), under: wheelsMesh((u) => u.frustum(under, 0.1, under, 0.32, 2, 2), AXLES, 0.33, 0.7, 0.95) };
 }

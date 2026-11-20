@@ -2,7 +2,9 @@
 // paint, 6 and 7 dark trim.
 
 import { MeshBuilder } from '../mesh';
+import { plan } from './bodyKit';
 import { suvMesh } from './suvMesh';
+import { wheelsMesh } from './wheels';
 import { chassisMesh, tractorMesh } from './tractorMesh';
 
 const box = (l0: number, l1: number, w: number): number[][] => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
@@ -33,20 +35,27 @@ function lights(m: MeshBuilder, l: number, w: number, z0: number, z1: number, ma
   } else m.decal([[l, -w, z0], [l, w, z0], [l, w, z1], [l, -w, z1]], mat, n, 0, 0);
 }
 
+/** the pickup's wheel centres along its body */
+const PICKUP_AXLES = [1.9, -1.9];
+
 export const MESH = {
   suv: suvMesh(),
   pickup: (() => {
     const m = new MeshBuilder();
-    m.frustum(box(-2.5, 2.5, 0.95), 0, box(-2.5, 2.5, 0.95), 0.5, 2, 2);
     m.extrude([[-2.85, 0.42], [2.85, 0.42], [2.85, 1.05], [0.45, 1.98], [-2.85, 1.3]], -1.05, 1.05, [2, 0, 1, 0, 0], 0);
+    // flat-topped, angular wheel arches, dark, on both flanks
+    for (const L of PICKUP_AXLES) {
+      const arch = [[L - 0.64, 0.42], [L + 0.64, 0.42], [L + 0.44, 0.92], [L - 0.44, 0.92]];
+      m.extrude(arch, -1.051, 1.051, [2], 2, true);
+    }
     m.extrude([[-0.95, 1.32], [1.55, 1.32], [0.5, 1.86], [-0.95, 1.66]], -1.051, 1.051, [1], 1, true);
     lights(m, 2.851, 0.98, 0.9, 0.97, 3);
     lights(m, -2.851, 1.0, 1.14, 1.22, 4);
-    return m.build();
+    const under = plan(2.3, -2.3, 0.75, 0.3, 0.3);
+    return { ...m.build(), under: wheelsMesh((u) => u.frustum(under, 0.18, under, 0.44, 2, 2), PICKUP_AXLES, 0.42, 0.62, 0.98) };
   })(),
   pod: (() => {
     const m = new MeshBuilder();
-    m.frustum(box(-1.5, 1.5, 0.78), 0, box(-1.5, 1.5, 0.78), 0.38, 2, 2);
     const body = rounded(1.9, 0.95, 0.55, 3);
     m.frustum(body, 0.27, inset(body, 0.97), 0.74, 0, 0);
     const cb = rounded(1.3, 0.86, 0.4, 2).map(([l, w]) => [l - 0.2, w]);
@@ -54,16 +63,17 @@ export const MESH = {
     m.frustum(cb, 0.74, ct, 1.33, 1, 1);
     lights(m, 1.901, 0.38, 0.55, 0.61, 3);
     lights(m, -1.901, 0.4, 0.56, 0.62, 4);
-    return m.build();
+    const under = plan(1.55, -1.55, 0.62, 0.4, 0.4);
+    return { ...m.build(), under: wheelsMesh((u) => u.frustum(under, 0.1, under, 0.3, 2, 2), [1.15, -1.15], 0.3, 0.55, 0.88) };
   })(),
   van: (() => {
-    // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass arch along each
+    // the robovan: a long champagne loaf on a dark ribbed skirt that hides most of its wheels, a dark glass arch along each
     // side that wraps round the corners at both ends and runs along the shoulder, a big glass door mid-side, and a
     // bundle of five thin light lines running all the way round it, white ahead and red at the tail
     const m = new MeshBuilder();
     const L = 3.6, W = 1.22, END = L - 0.55;
     const fp = rounded(L, W, 0.55, 3);
-    m.frustum(inset(fp, 0.97), 0.04, inset(fp, 0.985), 0.4, 2, 2);
+    m.frustum(inset(fp, 0.97), 0.2, inset(fp, 0.985), 0.4, 2, 2);
     // body, then its rounded shoulder up to the roof: [height, length scale, width scale]
     const steps: [number, number, number][] = [[0.38, 1, 1], [1.64, 1, 1], [1.88, 0.985, 0.955], [2.02, 0.94, 0.85]];
     for (let i = 1; i < steps.length; i++) {
@@ -119,17 +129,19 @@ export const MESH = {
         } else on(f, 0, 1, v0, v1, l0 + l1 < 0 ? 4 : 3);
       }
     }
-    return m.build();
+    // its wheels, mostly hidden behind the skirt: just the bottoms of the tyres show under it
+    return { ...m.build(), under: wheelsMesh(() => undefined, [2.35, -2.35], 0.3, 0.8, 1.12) };
   })(),
   tractor: tractorMesh(),
   chassis: chassisMesh(),
   trailer: (() => {
+    // in the kingpin's frame: the landing legs, then the box; its tandem axle sits around the rear axle point 9.6 m back
     const m = new MeshBuilder();
-    m.frustum(box(-12.3, -8.6, 1.05), 0, box(-12.3, -8.6, 1.05), 1.25, 2, 2);
     m.frustum(box(-1.7, -1.3, 0.95), 0.1, box(-1.7, -1.3, 0.95), 1.22, 2, 2);
     m.frustum(box(-12.8, 0.6, 1.27), 1.2, box(-12.8, 0.6, 1.27), 4.1, 5, 5);
     lights(m, -12.801, 1.15, 1.3, 1.46, 4, 0.75);
-    return m.build();
+    const frame = (u: MeshBuilder) => u.frustum(box(-11.3, -8.3, 0.5), 0.8, box(-11.3, -8.3, 0.5), 1.2, 2, 2);
+    return { ...m.build(), under: wheelsMesh(frame, [-8.95, -10.25], 0.5, 0.5, 1.2) };
   })(),
   roadster: (() => {
     // a low wedge with a dark glass canopy, a full-width light bar at each end and a low, slim wing in the body's
