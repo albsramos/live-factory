@@ -81,9 +81,10 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   factory(env, edge, yard, opts.branding, inside);
   // AI compute: a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
-  rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 6);
-  // the dock wing grows out over it in glass, its full height (10 m), so the racks stay dry and show through
-  S.push(...glassHall(pal, { x0: 30, y0: 26.4, x1: 54.0, y1: 37.0, h: 10, isAttached: true, rails: [3.6, 7] }));
+  rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 35.94 }, 4, 6);
+  // the dock wing grows out over it in glass, its full height (10 m) and flush with its +y face (y 36), so the racks
+  // stay dry and show through
+  S.push(...glassHall(pal, { x0: 30, y0: 26.4, x1: 54.0, y1: 35.94, h: 10, isAttached: true, rails: [3.6, 7] }));
   pocketParkBenches(env, edge);
   buildings(env, edge);
   constructionSite(env, edge, acts);
