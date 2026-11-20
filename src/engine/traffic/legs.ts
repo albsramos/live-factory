@@ -4,6 +4,7 @@
 import type { Path, Pose } from '../path';
 import { type Zone, junction, compass } from './zone';
 import type { Vehicle } from './vehicle';
+import { roomOn } from './sense';
 
 export interface Req {
   zone: Zone;
@@ -103,13 +104,29 @@ export function reserveZones(v: Vehicle, leg: LegState, dStop: number): number {
   for (const g of leg.groups) {
     let pending = false;
     for (const q of g) if (!q.held && !q.done) pending = true;
-    if (!pending) continue;
     const sIn = g[0].sIn;
+    const boxed = v.kind !== 'semi' && g.some((q) => q.zone.compat === junction);
+    if (!pending) {
+      // until its nose is in, a car that has the junction backs off if the road past it has filled up since, as
+      // long as it can still stop comfortably
+      const room = sIn - front - 0.4;
+      if (boxed && front < sIn && (v.v * v.v) / (2 * DEC) < room && !g.some((q) => q.done) && !roomPast(v, leg, g)) {
+        for (const q of g) {
+          q.zone.leave(v);
+          q.held = false;
+          v.held.delete(q.zone);
+        }
+        return Math.min(dStop, room);
+      }
+      continue;
+    }
     if (sIn - front >= reach) break;
     // only the front vehicle of a queue reserves what lies ahead; one stuck behind another waits its turn
     if (v.lastGap < sIn - front - 0.5) break;
-    let ok = true;
-    for (const q of g) if (!q.held && !q.done && !q.zone.ask(v, q.key)) ok = false;
+    // don't block the junction: a car goes in only when there's room for all of it past the far side, or a queue
+    // backing up through it can lock it against the movement that would clear that queue (a semi pulling out)
+    let ok = !boxed || roomPast(v, leg, g);
+    if (ok) for (const q of g) if (!q.held && !q.done && !q.zone.ask(v, q.key)) ok = false;
     if (!ok) {
       dStop = Math.min(dStop, sIn - front - 0.4);
       break;
@@ -122,6 +139,13 @@ export function reserveZones(v: Vehicle, leg: LegState, dStop: number): number {
     }
   }
   return dStop;
+}
+
+/** Nothing stands on the road just past the group, where the whole vehicle has to fit once it's through. */
+function roomPast(v: Vehicle, leg: LegState, g: Group): boolean {
+  const sOut = Math.max(...g.map((q) => q.sOut));
+  // the probe finds a body from a little before its end, so look a car length and a gap and a half past the exit
+  return roomOn(v, leg.path, sOut, sOut + v.tail + v.hl + 3.5);
 }
 
 /** Let go of every zone the vehicle has fully left (no part of its footprint in it, nothing more to cross). */

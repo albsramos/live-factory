@@ -18,6 +18,12 @@
     away and their queue entries block other movements;
   - a semi waiting for one zone holds a queue place in every zone of that group, so don't group a busy zone with the
     junction on a semi's leg. Split the leg instead.
+- Don't block the junction: a car (not a semi) only reserves a group holding the junction when the road past it
+  has room for its whole length, free of anything standing, braking or queueing there (`roomPast` in `legs.ts`,
+  `roomOn` in `sense.ts`). Until its nose is in, it gives the junction back if that room fills up and it can still
+  stop. Without this, westbound cars queueing back from the park corner stopped inside the junction while the bay
+  semi, its trailer still holding the corner's zones, waited for that junction: a gridlock that the deadlock
+  breaker (`stuckT` in `vehicle.ts`) ended by letting cars drive through each other.
 - A vehicle keeps a zone until no part of its footprint (the box round its turned outline, plus 0.3 m) is in it, so
   a long trailer holds a crossing until it has fully passed, and lets go as soon as it has.
 - Where two movements of one car park share a driveway, tag their legs (`tag: 'in'` / `'out'`, as `StallLot` does)

@@ -1,6 +1,6 @@
 // Sensing the road ahead: what a vehicle brakes for, and the checks its deadlock breaker uses.
 
-import type { Pose } from '../path';
+import type { Path, Pose } from '../path';
 import type { Body } from './legs';
 import type { Vehicle } from './vehicle';
 import { ALOFT_Z } from './hop';
@@ -87,4 +87,30 @@ export function senseAhead(v: Vehicle): number {
     }
   }
   return Infinity;
+}
+
+/**
+ * Whether the stretch of `path` from `s0` to `s1` is free of vehicles standing or crawling on it: a car checks the
+ * road past a junction before it goes in, so it never stops inside one (see `reserveZones`).
+ */
+export function roomOn(v: Vehicle, path: Path, s0: number, s1: number): boolean {
+  const m = v.hw + 0.15;
+  const near: Body[] = [];
+  path.at(Math.min(path.len, (s0 + s1) / 2), PROBE);
+  const cx = PROBE.x, cy = PROBE.y, reach = (s1 - s0) / 2 + 4;
+  for (const o of v.traffic.vehicles) {
+    // one driving on with open road ahead will be out of the way by the time we get there
+    if (o === v || o.dead || o.z > ALOFT_Z || (o.v > 1.5 && !o.braking && o.lastGap > 8)) continue;
+    for (const b of o.bodies) if (Math.abs(b.x - cx) < reach + b.hl + 2 && Math.abs(b.y - cy) < reach + b.hl + 2) near.push(b);
+  }
+  if (!near.length) return true;
+  for (let s = s0; s <= Math.min(s1, path.len); s += 0.7) {
+    path.at(s, PROBE);
+    for (const b of near) {
+      const dx = PROBE.x - b.x, dy = PROBE.y - b.y;
+      const a = dx * b.hx + dy * b.hy, c = -dx * b.hy + dy * b.hx;
+      if (Math.abs(a) < b.hl + m && Math.abs(c) < b.hw + m) return false;
+    }
+  }
+  return true;
 }

@@ -14,6 +14,8 @@
   `pal.night`): it would keep the old theme. Where a colour must be worked out once (people's clothes, a vehicle's
   lamp slots) redo it when `pal.generation` moves on (`Walker.recolor`, `recolor` in `traffic/vehicleItem.ts`). Box edges take
   `CLAY_EDGE`, which `edgeColor` resolves by theme.
+- Vehicle colours: the pickup is always silver (`pal.paints[2]`), never another paint and never gold; the robotaxi
+  pods and vans are gold (`pal.gold`); cars and SUVs pick from `pal.paints`.
 - Static scenery is baked once per size into device-pixel-aligned bitmaps (`BoxItem`, `FnItem.still()` in
   `statics.ts`); only `.live()` overlays (LEDs, status lights) draw every frame. The ground, roads and static shadows
   are one cached layer (`Scene.renderGround`, `world/groundPlan.ts`).
