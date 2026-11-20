@@ -2,7 +2,7 @@
 // paint, 6 and 7 dark trim.
 
 import { MeshBuilder } from '../mesh';
-import { tractorMesh } from './tractorMesh';
+import { chassisMesh, tractorMesh } from './tractorMesh';
 
 const box = (l0: number, l1: number, w: number): number[][] => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
 
@@ -140,6 +140,7 @@ export const MESH = {
     return m.build();
   })(),
   tractor: tractorMesh(),
+  chassis: chassisMesh(),
   trailer: (() => {
     const m = new MeshBuilder();
     m.frustum(box(-12.3, -8.6, 1.05), 0, box(-12.3, -8.6, 1.05), 1.25, 2, 2);

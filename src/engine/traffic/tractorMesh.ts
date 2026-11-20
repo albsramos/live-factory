@@ -48,9 +48,8 @@ const mix = (a: number[], b: number[], t: number) => a.map((v, i) => v + (b[i] -
 export function tractorMesh(): Mesh {
   const m = new MeshBuilder();
   const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
-  // wheels and frame, the fifth-wheel plate, and the black bumper wrapping the nose
-  m.frustum(box(-3.0, 2.7, 0.92), 0, box(-3.0, 2.7, 0.92), 0.8, 2, 2);
-  m.frustum(box(-2.5, -0.9, 0.7), 0.8, box(-2.5, -0.9, 0.7), 1.0, 2, 2);
+  // the front wheels and the frame under the cab (the rest is `chassisMesh`), and the black bumper wrapping the nose
+  m.frustum(box(LR, 2.7, 0.92), 0, box(LR, 2.7, 0.92), 0.8, 2, 2);
   // the dark fairing in the gap between the cab and the trailer: built before the cab and a little narrower, so
   // the body always stands in front of it and it only shows in that gap
   m.frustum(box(-1.0, LR + 0.05, 1.14), 1.0, box(-1.0, LR + 0.05, 0.84), 3.88, 2, 2);
@@ -116,6 +115,18 @@ export function tractorMesh(): Mesh {
     else if (isNoseCorner(f)) on(f, 0, 1, 0.82, 0.95, 3);
   }
   // stacked bottom up, so drawn in the order built
+  return m.build();
+}
+
+/**
+ * The frame behind the cab, its drive wheels and the fifth-wheel plate, in the tractor's frame. The trailer rides
+ * over it, so it is drawn with the trailer, just before it, rather than with the cab, which is drawn after.
+ */
+export function chassisMesh(): Mesh {
+  const m = new MeshBuilder();
+  const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
+  m.frustum(box(-3.0, LR, 0.92), 0, box(-3.0, LR, 0.92), 0.8, 2, 2);
+  m.frustum(box(-2.5, -0.9, 0.7), 0.8, box(-2.5, -0.9, 0.7), 1.0, 2, 2);
   return m.build();
 }
 

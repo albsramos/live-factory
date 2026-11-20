@@ -179,6 +179,8 @@ function drawTrailer(r: R, v: Vehicle) {
   const pal = v.pal;
   const kx = v.x - v.hx * 1.6, ky = v.y - v.hy * 1.6;
   const hx = v.thx, hy = v.thy;
+  // the tractor's frame behind the cab, which the trailer rides over (it keeps the tractor's own heading)
+  drawMesh(r, MESH.chassis, v.x, v.y, 0, v.hx, v.hy, v.mats);
   drawMesh(r, MESH.trailer, kx, ky, 0, hx, hy, v.mats);
   const open = v.door; // curtain side: 0 closed … 1 rolled up
   if (open <= 0.01) return;
