@@ -1,6 +1,6 @@
 // Colour themes. "light" follows the reference render: white clay, warm windows, dark solar glass, gold accents.
 
-import { type Mat, hex, mat, type RGB } from './core';
+import { Glaze, type Mat, hex, mat, type RGB } from './core';
 
 export interface Palette {
   night: boolean;
@@ -50,6 +50,8 @@ export interface Palette {
   tyre: string;
   headlight: string;
   taillight: string;
+  /** the roadster's glass: dark with a hint of gold, a little lighter towards the windscreen */
+  tintGlass: Glaze;
   /** the roadster's thrusters: the jet's hot core and its colour, and the smoke they raise (lit side, shade) */
   jet: [string, string];
   smoke: [string, string];
@@ -120,6 +122,7 @@ export function lightPalette(): Palette {
     tyre: '#2a2b30',
     headlight: '#ffffff',
     taillight: '#e0605a',
+    tintGlass: new Glaze(mat('#38332b', 0.32), 'rgba(18, 14, 8, 0.16)', 'rgba(222, 190, 132, 0.15)', -2.0, 1.3),
     jet: ['#ffffff', 'rgba(120, 196, 255, 0.85)'],
     smoke: ['#fdfdfe', '#c3c6d0'],
     people: [hex('#e2e3e8'), hex('#d3d4da'), hex('#c4c5cc'), hex('#b3b4bc'), hex('#a0a1aa'), hex('#8a8b94')],
@@ -185,6 +188,7 @@ export function darkPalette(): Palette {
     tyre: '#0b0b0d',
     headlight: '#fff6dc',
     taillight: '#ff5a50',
+    tintGlass: new Glaze(mat('#1a1814', 0.3), 'rgba(0, 0, 0, 0.18)', 'rgba(176, 148, 96, 0.11)', -2.0, 1.3),
     jet: ['#effcff', 'rgba(100, 210, 255, 0.8)'],
     smoke: ['#a3a6b1', '#5d606b'],
     people: [hex('#6a6c76'), hex('#61636c'), hex('#575962'), hex('#4c4e57'), hex('#7a7c86'), hex('#444650')],

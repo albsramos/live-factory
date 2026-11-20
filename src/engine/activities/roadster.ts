@@ -41,7 +41,7 @@ export class Roadsters implements Activity {
     const start = ln.path.at(0, { x: 0, y: 0, hx: 1, hy: 0 });
     if (!traffic.clear(start.x, start.y, 9)) return;
     const v = traffic.add('roadster', pal.paints[0], [{ path: ln.path, vmax: rr(this.rng, 8.4, 9) }], 'roadster');
-    v.mats[5] = pal.gold;
+    v.mats[1] = pal.tintGlass;
     v.hop = new Hop(ln.takeoff, ln.land, this.rng, this.puffs.emit);
     this.car = v;
     this.lane = 1 - this.lane;

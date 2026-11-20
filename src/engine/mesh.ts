@@ -1,9 +1,9 @@
 // Meshes: small convex solids in local space (l forward, w left, z up), placed by a position and heading. Vehicles
 // and a few props are built from them.
 
-import { C, type Mat, lightT } from './core';
+import { C, Glaze, type Mat, lightT } from './core';
 import { shadeFace } from './shade';
-import type { R } from './draw';
+import type { Ctx, R } from './draw';
 
 export interface Face {
   idx: number[];
@@ -150,7 +150,7 @@ export class MeshBuilder {
   private groupStart = 0;
 }
 
-export type MatSlot = Mat | string;
+export type MatSlot = Mat | Glaze | string;
 
 const SCR = new Float64Array(3 * 256);
 const WLD = new Float64Array(3 * 256);
@@ -166,6 +166,9 @@ const FACE: number[] = [];
 export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
   const v = m.v;
   const n = v.length / 3;
+  POSE[0] = px;
+  POSE[1] = py;
+  POSE[2] = pz;
   RC = roll === undefined ? 1 : Math.cos(roll);
   RS = roll === undefined ? 0 : Math.sin(roll);
   for (let i = 0; i < n; i++) {
@@ -218,8 +221,22 @@ export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: 
   } else drawFaces(r, m, 0, m.faces.length, hx, hy, mats);
 }
 
+/** A glaze's sheen over the face just filled: a gradient along the mesh's length, the same for every face. */
+function glaze(ctx: Ctx, g: Glaze, hx: number, hy: number) {
+  const z = POSE[2] + 0.8;
+  const ax = POSE[0] + g.l0 * hx, ay = POSE[1] + g.l0 * hy, bx = POSE[0] + g.l1 * hx, by = POSE[1] + g.l1 * hy;
+  const grad = ctx.createLinearGradient((ax - ay) * C, (ax + ay) * 0.5 - z, (bx - by) * C, (bx + by) * 0.5 - z);
+  grad.addColorStop(0, g.shade);
+  grad.addColorStop(0.5, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, g.sheen);
+  ctx.fillStyle = grad;
+  ctx.fill();
+}
+
 const ORDER: (Part & { d?: number })[] = [];
 let SHADE = false;
+/** the current mesh's position, for glazes */
+const POSE = [0, 0, 0];
 /** the current mesh's roll, as cosine and sine */
 let RC = 1;
 let RS = 0;
@@ -233,7 +250,7 @@ function drawFaces(r: R, m: Mesh, s: number, e: number, hx: number, hy: number, 
     const ny = f.nl * hy + nw * hx;
     if (nx + ny + nz <= 1e-9) continue;
     const s = mats[f.mat];
-    const fill = typeof s === 'string' ? s : s.at(lightT(nx, ny, nz));
+    const fill = typeof s === 'string' ? s : s instanceof Glaze ? s.mat.at(lightT(nx, ny, nz)) : s.at(lightT(nx, ny, nz));
     const idx = f.idx;
     ctx.beginPath();
     ctx.moveTo(SCR[idx[0] * 2], SCR[idx[0] * 2 + 1]);
@@ -243,6 +260,7 @@ function drawFaces(r: R, m: Mesh, s: number, e: number, hx: number, hy: number, 
     ctx.fill();
     ctx.strokeStyle = fill;
     ctx.stroke();
+    if (s instanceof Glaze) glaze(ctx, s, hx, hy);
     if (SHADE) {
       FACE.length = 0;
       for (const k of idx) FACE.push(WLD[k * 3], WLD[k * 3 + 1], WLD[k * 3 + 2]);

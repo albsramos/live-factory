@@ -66,7 +66,7 @@ any other React setup.
   angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
   east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
-- **The roadster**: every minute or so a low roadster with a gold wing comes along the avenue and hops. Four
+- **The roadster**: every minute or so a low roadster with gold-tinted glass comes along the avenue and hops. Four
   thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
   junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear.
 - **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,

@@ -102,3 +102,11 @@ export class Mat {
 }
 
 export const mat = (h: string, k?: number) => new Mat(hex(h), k);
+
+/**
+ * Tinted glass: a material with a faint sheen laid over it, running along a mesh from `shade` at its tail (`l0`) to
+ * `sheen` at its nose (`l1`), the same across every face it covers so the glass reads as one smooth pane.
+ */
+export class Glaze {
+  constructor(readonly mat: Mat, readonly shade: string, readonly sheen: string, readonly l0: number, readonly l1: number) {}
+}

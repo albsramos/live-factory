@@ -104,15 +104,15 @@ export const MESH = {
     return m.build();
   })(),
   roadster: (() => {
-    // a low wedge with a dark glass canopy, a full-width light bar at each end and a low, slim wing (secondary paint)
-    // on two short struts, just above the tail
+    // a low wedge with a dark glass canopy, a full-width light bar at each end and a low, slim wing in the body's
+    // paint on two short struts, just above the tail
     const m = new MeshBuilder();
     m.frustum(box(-1.7, 1.7, 0.94), 0, box(-1.7, 1.7, 0.94), 0.4, 2, 2);
     const body = rounded(2.3, 1.04, 0.36, 2);
     m.frustum(body, 0.22, body.map(([l, w]) => [l * 0.98 - 0.03, w * 0.95]), 0.64, 0, 0);
     m.frustum([[1.25, -0.84], [1.25, 0.84], [-1.95, 0.9], [-1.95, -0.9]], 0.64, [[-0.25, -0.52], [-0.25, 0.52], [-1.5, 0.58], [-1.5, -0.58]], 1.0, 1, 1);
     for (const w of [0.46, -0.46]) m.frustum(box(-2.06, -1.96, 0.035).map(([l, d]) => [l, d + w]), 0.64, box(-2.1, -2.0, 0.035).map(([l, d]) => [l, d + w]), 0.84, 6, 6);
-    m.frustum(box(-2.38, -2.0, 0.98), 0.82, box(-2.38, -2.04, 0.98), 0.87, 5, 5);
+    m.frustum(box(-2.38, -2.0, 0.98), 0.82, box(-2.38, -2.04, 0.98), 0.87, 0, 0);
     lights(m, 2.301, 0.6, 0.48, 0.54, 3);
     lights(m, -2.301, 0.62, 0.44, 0.53, 4);
     return m.build();
