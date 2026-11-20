@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" width="720" height="220" role="img" aria-label="Timeline of long tasks while loading; total blocking time 191 ms.">
+<style>
+  svg { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781; --grid:#e1e0d9; --axis:#c3c2b7; --s1:#2a78d6; --s2:#eb6834; }
+  @media (prefers-color-scheme: dark) { svg { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781; --grid:#2c2c2a; --axis:#383835; --s1:#3987e5; --s2:#d95926; } }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--ink2); font-size: 12px; }
+  .title { fill: var(--ink); font-size: 15px; font-weight: 600; }
+  .sub { fill: var(--ink2); font-size: 12px; }
+  .tick { fill: var(--muted); font-size: 11px; }
+  .val { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .axis { stroke: var(--axis); stroke-width: 1; }
+</style>
+<rect width="720" height="220" rx="12" fill="var(--surface)"/>
+<text class="title" x="24" y="34">Loading: the page is busy for a moment, once</text>
+<text class="sub" x="24" y="54">The built website at 1366×768: building the world and baking its bitmaps blocks the main thread.</text>
+<line class="grid" x1="24" x2="24" y1="96" y2="156"/><text class="tick" x="24" y="174" text-anchor="middle">0 ms</text><line class="grid" x1="136" x2="136" y1="96" y2="156"/><text class="tick" x="136" y="174" text-anchor="middle">200 ms</text><line class="grid" x1="248" x2="248" y1="96" y2="156"/><text class="tick" x="248" y="174" text-anchor="middle">400 ms</text><line class="grid" x1="360" x2="360" y1="96" y2="156"/><text class="tick" x="360" y="174" text-anchor="middle">600 ms</text><line class="grid" x1="472" x2="472" y1="96" y2="156"/><text class="tick" x="472" y="174" text-anchor="middle">800 ms</text><line class="grid" x1="584" x2="584" y1="96" y2="156"/><text class="tick" x="584" y="174" text-anchor="middle">1000 ms</text><line class="grid" x1="696" x2="696" y1="96" y2="156"/><text class="tick" x="696" y="174" text-anchor="middle">1200 ms</text><rect x="201.52" y="110" width="69.67999999999998" height="32" rx="4" fill="var(--s2)"/><text class="val" x="237.36" y="104" text-anchor="middle">128 ms</text><rect x="273.2" y="110" width="65.19999999999999" height="32" rx="4" fill="var(--s2)"/><text class="val" x="306.8" y="104" text-anchor="middle">120 ms</text><rect x="341.52" y="110" width="50.08000000000004" height="32" rx="4" fill="var(--s2)"/><text class="val" x="367.56" y="104" text-anchor="middle">93 ms</text><line x1="346.56" x2="346.56" y1="100" y2="152" stroke="var(--ink)" stroke-width="2"/><text class="tick" x="352.56" y="152">first paint</text><text class="tick" x="24" y="206">Long tasks (over 50 ms) on the main thread while the page loads. Total blocking time: 191 ms.</text>
+</svg>

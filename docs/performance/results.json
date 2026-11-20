@@ -179,5 +179,47 @@
       "frameP50": 40.6,
       "frameP95": 60.5
     }
-  ]
+  ],
+  "site": {
+    "firstPaintMs": 576,
+    "loadMs": 317,
+    "longTasks": [
+      {
+        "start": 317,
+        "ms": 128
+      },
+      {
+        "start": 445,
+        "ms": 120
+      },
+      {
+        "start": 567,
+        "ms": 93
+      }
+    ],
+    "blockingMs": 191,
+    "steady": {
+      "mainThreadPct": 68.5,
+      "scriptPct": 21.9,
+      "browserCpuPct": 79.5,
+      "heapMB": 4.8
+    },
+    "offscreen": {
+      "mainThreadPct": 0.1,
+      "scriptPct": 0,
+      "browserCpuPct": 0.2,
+      "heapMB": 4.7
+    },
+    "emptyTab": {
+      "mainThreadPct": 0,
+      "scriptPct": 0,
+      "browserCpuPct": 0,
+      "heapMB": 5
+    }
+  },
+  "size": {
+    "libraryKB": 182.4,
+    "libraryGzipKB": 54.8,
+    "siteJsGzipKB": 116.6
+  }
 }

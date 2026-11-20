@@ -38,7 +38,7 @@ const column = (x, w, y0, y1, fill, roundTop) => {
   return `<path fill="${fill}" d="M${x},${y0} V${y1 + r} Q${x},${y1} ${x + r},${y1} H${x + w - r} Q${x + w},${y1} ${x + w},${y1 + r} V${y0} Z"/>`;
 };
 const legend = (x, y, items) => items.map(([label, color], i) =>
-  `<rect x="${x + i * 250}" y="${y - 9}" width="10" height="10" rx="2" fill="${color}"/><text x="${x + i * 250 + 16}" y="${y}">${esc(label)}</text>`).join('');
+  `<rect x="${x + i * 340}" y="${y - 9}" width="10" height="10" rx="2" fill="${color}"/><text x="${x + i * 340 + 16}" y="${y}">${esc(label)}</text>`).join('');
 const yAxis = (x0, x1, top, base, max, ticks, fmt) => ticks.map((t) => {
   const y = base - ((base - top) * t) / max;
   return `<line class="${t ? 'grid' : 'axis'}" x1="${x0}" x2="${x1}" y1="${y}" y2="${y}"/><text class="tick" x="${x0 - 8}" y="${y + 4}" text-anchor="end">${fmt(t)}</text>`;
@@ -46,13 +46,13 @@ const yAxis = (x0, x1, top, base, max, ticks, fmt) => ticks.map((t) => {
 
 /** Stacked columns (script, then the rest of the main-thread time) in one or more panels. */
 function stackedPanels(name, title, sub, panels, alt) {
-  const h = 340, top = 104, base = 290, max = 100, left = 64;
+  const named = panels.length > 1, h = named ? 364 : 340, top = named ? 128 : 104, base = h - 50, max = 100, left = 64;
   const pw = (W - left - 24) / panels.length;
   let body = legend(24, 80, [['Page script (what a machine with a GPU pays)', 'var(--s1)'], ['Drawing pixels in software (no GPU)', 'var(--s2)']]);
   body += yAxis(left, W - 24, top, base, max, [0, 25, 50, 75, 100], (t) => `${t}%`);
   panels.forEach((p, pi) => {
     const x0 = left + pi * pw, band = (pw - 16) / p.bars.length, bw = Math.min(24, band * 0.5);
-    if (panels.length > 1) body += `<text class="val" x="${x0 + pw / 2}" y="${top - 6}" text-anchor="middle">${esc(p.name)}</text>`;
+    if (named) body += `<text class="val" x="${x0 + pw / 2}" y="104" text-anchor="middle">${esc(p.name)}</text>`;
     p.bars.forEach((b, i) => {
       const cx = x0 + 8 + band * (i + 0.5), x = cx - bw / 2;
       const yS = base - ((base - top) * Math.min(b.script, max)) / max;
@@ -87,12 +87,12 @@ function lineChart({ name, title, sub, xs, ys, xLabel, yMax, yTicks, yFmt, ref, 
 
 // 1. the frame cap
 const capLabel = (c) => (c ? `${c} fps` : 'every refresh');
-stackedPanels('fps-cap', 'The frame cap halves the work', 'Main-thread time at 1600×860 by frame cap, in each theme (lower is better). 30 fps is the default.',
+stackedPanels('fps-cap', 'Fewer frames, less work', 'Main-thread time at 1600×860 by frame cap, in each theme (lower is better). 30 fps is the default.',
   ['light', 'dark'].map((theme) => ({ name: theme === 'light' ? 'Light theme' : 'Dark theme', bars: R.fpsCap.filter((r) => r.theme === theme).map((r) => ({ label: capLabel(r.maxFps), script: r.scriptPct, total: r.mainThreadPct })) })),
   'Stacked columns of main-thread time by frame cap for the light and dark themes.');
 
 // 2. screen size
-stackedPanels('screen-size', 'Bigger screens cost more pixels, not more script', 'Main-thread time at 30 fps by canvas size, light theme.',
+stackedPanels('screen-size', 'Bigger screens cost more pixels', 'Main-thread time at 30 fps by canvas size, light theme.',
   [{ name: '', bars: R.sizes.map((r) => ({ label: r.size, script: r.scriptPct, total: r.mainThreadPct })) }],
   'Stacked columns of main-thread time by screen size.');
 
