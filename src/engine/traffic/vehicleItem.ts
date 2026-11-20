@@ -10,6 +10,18 @@ import type { Vehicle } from './vehicle';
 import { drawJets } from './exhaust';
 import { ROLL_Z } from './hop';
 
+/** After a theme change, the colours its mesh slots copied out of the palette (its materials recolour themselves). */
+function recolor(v: Vehicle) {
+  const pal = v.pal;
+  if (v.generation === pal.generation) return;
+  v.generation = pal.generation;
+  v.mats[2] = pal.tyre;
+  v.mats[3] = pal.headlight;
+  v.mats[4] = pal.taillight;
+  v.mats[6] = pal.robot;
+  v.mats[7] = pal.robotHead;
+}
+
 /** Drawable part of a vehicle: the vehicle itself, or a semi's trailer. */
 export class VehicleItem implements Item {
   x0 = 0;
@@ -52,6 +64,7 @@ export class VehicleItem implements Item {
   draw(r: R) {
     const v = this.v;
     const pal = v.pal;
+    recolor(v);
     switch (v.kind) {
       case 'semi':
         if (this.part === 0) drawMesh(r, MESH.tractor, v.x, v.y, 0, v.hx, v.hy, v.mats);

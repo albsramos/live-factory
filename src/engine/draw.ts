@@ -68,7 +68,7 @@ export function box(r: R, x0: number, y0: number, z0: number, x1: number, y1: nu
     }
     shadeFace(r.ctx, [x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1], r.casters, f, owner);
   }
-  const edge = st?.edge;
+  const edge = edgeColor(r, st?.edge);
   if (edge) {
     const ctx = r.ctx;
     ctx.beginPath();
@@ -84,6 +84,14 @@ export function box(r: R, x0: number, y0: number, z0: number, x1: number, y1: nu
     ctx.lineJoin = 'round';
     ctx.stroke();
   }
+}
+
+/** The soft highlight along the edges of the clay buildings, which the theme decides (see `edgeColor`). */
+export const CLAY_EDGE = 'clay-edge';
+
+/** A box style's edge colour: `CLAY_EDGE` follows the theme, anything else is used as it is. */
+export function edgeColor(r: R, edge: string | null | undefined) {
+  return edge === CLAY_EDGE ? (r.night ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.55)') : edge;
 }
 
 /** Run `fn` with the context mapped onto the +x face of a box: local u runs left→right, v runs down from z1. */

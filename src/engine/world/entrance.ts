@@ -8,7 +8,7 @@
 // hide whoever walks behind them, and clip to the same opening so the floor above covers their tops.
 
 import { sx, sy } from '../core';
-import { box, onFaceX, onWall, type Ctx, type R } from '../draw';
+import { box, edgeColor, onFaceX, onWall, type Ctx, type R } from '../draw';
 import { ribbons, windowGlow, type Band } from '../details';
 import type { Palette } from '../palette';
 import { FnItem } from '../statics';
@@ -112,7 +112,7 @@ export function drawEntrance(r: R, pal: Palette, edge: string) {
   ctx.beginPath();
   ctx.moveTo(sx(x, y1), sy(x, y1, h));
   ctx.lineTo(sx(x, y0), sy(x, y0, h));
-  ctx.strokeStyle = edge;
+  ctx.strokeStyle = edgeColor(r, edge) ?? '';
   ctx.lineWidth = 0.09;
   ctx.stroke();
 }

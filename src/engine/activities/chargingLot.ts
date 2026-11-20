@@ -10,6 +10,7 @@ import { MESH } from '../traffic/meshes';
 import type { Vehicle } from '../traffic/vehicle';
 import type { Leg } from '../traffic/legs';
 import { type Activity, type Env, Mutex } from './activity';
+import { carMats } from '../palette';
 
 const P = Path.poly;
 export class ChargingLot implements Activity {
@@ -27,9 +28,8 @@ export class ChargingLot implements Activity {
     // the south row stays parked and charging
     for (const x of this.stalls) this.parked.push({ x, paint: pick(rng, pal.paints) });
     for (const p of this.parked) {
-      const mats = [p.paint, pal.carGlass, pal.tyre, pal.headlight, pal.taillight];
       statics.push(
-        new FnItem(p.x - 1.0, 67.6, 0, p.x + 1.0, 72.4, 1.45, (r) => drawMesh(r, MESH.car, p.x, 70.0, 0, 0, -1, mats), (ctx) =>
+        new FnItem(p.x - 1.0, 67.6, 0, p.x + 1.0, 72.4, 1.45, (r) => drawMesh(r, MESH.car, p.x, 70.0, 0, 0, -1, carMats(pal, p.paint)), (ctx) =>
           rectShadow(ctx, p.x, 70, 0, -1, 2.3, 0.95, 1.1),
         ).still(),
       );

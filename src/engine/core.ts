@@ -81,11 +81,11 @@ export const SHADOW_DY = -0.25;
  * Thirty-three shades are precomputed so drawing never builds colour strings.
  */
 export class Mat {
-  readonly lv: string[] = [];
-  readonly top: string;
-  readonly left: string;
-  readonly right: string;
-  constructor(readonly base: RGB, readonly k = 0.19) {
+  lv: string[] = [];
+  top: string;
+  left: string;
+  right: string;
+  constructor(public base: RGB, public k = 0.19) {
     for (let i = 0; i <= 32; i++) {
       const t = i / 32;
       const f = 1 - k * (1 - t);
@@ -99,6 +99,15 @@ export class Mat {
   at(t: number): string {
     return this.lv[Math.round(clamp(t, 0, 1) * 32)];
   }
+  /** Take on another material's colours: a theme change recolours everything that holds this one. */
+  copy(m: Mat) {
+    this.base = m.base;
+    this.k = m.k;
+    this.lv = m.lv;
+    this.top = m.top;
+    this.left = m.left;
+    this.right = m.right;
+  }
 }
 
 export const mat = (h: string, k?: number) => new Mat(hex(h), k);
@@ -108,5 +117,12 @@ export const mat = (h: string, k?: number) => new Mat(hex(h), k);
  * `sheen` at its nose (`l1`), the same across every face it covers so the glass reads as one smooth pane.
  */
 export class Glaze {
-  constructor(readonly mat: Mat, readonly shade: string, readonly sheen: string, readonly l0: number, readonly l1: number) {}
+  constructor(readonly mat: Mat, public shade: string, public sheen: string, public l0: number, public l1: number) {}
+  copy(g: Glaze) {
+    this.mat.copy(g.mat);
+    this.shade = g.shade;
+    this.sheen = g.sheen;
+    this.l0 = g.l0;
+    this.l1 = g.l1;
+  }
 }

@@ -103,6 +103,11 @@ export class Sprites {
     this.cache.clear();
   }
 
+  /** Forget every sprite: the palette they were drawn in has changed. */
+  clear() {
+    this.cache.clear();
+  }
+
   get(name: SpriteName): Sprite {
     let s = this.cache.get(name);
     if (!s) {

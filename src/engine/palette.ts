@@ -1,9 +1,11 @@
 // Colour themes. "light" follows the reference render: white clay, warm windows, dark solar glass, gold accents.
 
-import { Glaze, type Mat, hex, mat, type RGB } from './core';
+import { Glaze, Mat, hex, mat, type RGB } from './core';
 
 export interface Palette {
   night: boolean;
+  /** counts the theme changes this palette has been through (see `morphPalette`) */
+  generation: number;
   bg: string;
   ground: string;
   pad: string;
@@ -72,6 +74,7 @@ export interface Palette {
 export function lightPalette(): Palette {
   return {
     night: false,
+    generation: 0,
     bg: '#e9e9ed',
     ground: '#ebebef',
     pad: '#e4e4e9',
@@ -139,6 +142,7 @@ export function lightPalette(): Palette {
 export function darkPalette(): Palette {
   return {
     night: true,
+    generation: 0,
     bg: '#17181c',
     ground: '#1b1c21',
     pad: '#1f2026',
@@ -200,6 +204,34 @@ export function darkPalette(): Palette {
     leafLo: hex('#2a2c33'),
     trunk: '#3a3c44',
   };
+}
+
+/** A parked car's materials: its paint, then glass, tyres and lamps, read from the palette when drawn so they follow the theme. */
+export function carMats(pal: Palette, paint: Mat): (Mat | string)[] {
+  return [paint, pal.carGlass, pal.tyre, pal.headlight, pal.taillight];
+}
+
+/**
+ * Turn `into` into `from` in place: its materials, colour lists and values take on the other theme's, so everything
+ * that holds them (the world, its vehicles and people) shows the new theme without being rebuilt. The few colours
+ * worked out once from the palette (people's clothes, a vehicle's lamps) are redone when `generation` moves on.
+ */
+export function morphPalette(into: Palette, from: Palette) {
+  const g = into.generation;
+  const t = into as unknown as Record<string, unknown>, f = from as unknown as Record<string, unknown>;
+  for (const k of Object.keys(f)) t[k] = morph(t[k], f[k]);
+  into.generation = g + 1;
+}
+
+function morph(a: unknown, b: unknown): unknown {
+  if (a instanceof Mat && b instanceof Mat) a.copy(b);
+  else if (a instanceof Glaze && b instanceof Glaze) a.copy(b);
+  else if (Array.isArray(a) && Array.isArray(b) && a.length === b.length) for (let i = 0; i < a.length; i++) a[i] = morph(a[i], b[i]);
+  else if (a && b && typeof a === 'object' && typeof b === 'object') {
+    const o = a as Record<string, unknown>, p = b as Record<string, unknown>;
+    for (const k of Object.keys(p)) o[k] = morph(o[k], p[k]);
+  } else return b;
+  return a;
 }
 
 export type { Mat };

@@ -8,7 +8,7 @@
 // The outskirts (outskirts.ts) fill the sides of wide views.
 
 import { makeRng } from '../core';
-import type { Ctx, R } from '../draw';
+import { CLAY_EDGE, type Ctx, type R } from '../draw';
 import { rackPlatform } from '../blocks';
 import type { Palette } from '../palette';
 import type { Item } from '../sort';
@@ -53,8 +53,6 @@ export interface WorldOptions {
   density: number;
 }
 
-const EDGE = 'rgba(255,255,255,0.55)';
-
 export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): World {
   const rng = makeRng(opts.seed);
   const density = Math.max(0.2, Math.min(2, opts.density));
@@ -64,7 +62,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const S: Static[] = [];
   const env: Env = { pal, rng, traffic, crowd, statics: S };
   const acts: Activity[] = [];
-  const edge = pal.night ? 'rgba(255,255,255,0.08)' : EDGE;
+  // the clay highlight follows the theme when drawn, so a theme change needs no rebuild
+  const edge = CLAY_EDGE;
 
   // the order matters: everything below draws from one seeded random stream
   const zones = roadZones(traffic);

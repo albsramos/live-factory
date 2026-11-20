@@ -36,6 +36,8 @@ export class Vehicle {
   tail: number;
   bodies: Body[] = [];
   mats: MatSlot[];
+  /** @internal the palette's generation its colour slots were taken from (see `recolor` in vehicleItem.ts) */
+  generation: number;
   /** 0..1 — door animation for pods and vans, rear doors for trailers */
   door = 0;
   doorTarget = 0;
@@ -74,6 +76,7 @@ export class Vehicle {
     this.h = h;
     this.tail = kind === 'semi' ? 1.6 + 12.8 : hl;
     this.mats = [paint, pal.carGlass, pal.tyre, pal.headlight, pal.taillight, pal.white, pal.robot, pal.robotHead];
+    this.generation = pal.generation;
     this.bodies.push({ x: 0, y: 0, hx: 1, hy: 0, hl, hw });
     if (kind === 'semi') this.bodies.push({ x: 0, y: 0, hx: 1, hy: 0, hl: 6.7, hw: 1.27 });
     this.items.push(new VehicleItem(this, 0));

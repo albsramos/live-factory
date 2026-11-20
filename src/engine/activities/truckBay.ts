@@ -41,10 +41,11 @@ export class TruckBay implements Activity {
       w.face(-0.3, -1);
       this.loaders.push(env.crowd.add(w));
     }
-    const m = [pal.crate, pal.carGlass, pal.concrete.right];
     env.statics.push(
       // pallet stack the forklift draws from, and the robots' box pile
       new FnItem(40.4, 93.8, 0, 43.8, 97.6, 2.0, (r) => {
+        // the pallet's shade read when drawn, so it follows the theme
+        const m = [pal.crate, pal.carGlass, pal.concrete.right];
         drawMesh(r, MESH.crate, 42.9, 94.4, 0, 0, 1, m);
         drawMesh(r, MESH.crate, 42.9, 94.4, 0.95, 0, 1, m);
         drawMesh(r, MESH.crate, 42.9, 96.6, 0, 0, 1, m);

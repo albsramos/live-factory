@@ -8,6 +8,12 @@
   that separates them. Keep boxes tight; a box that overlaps another in all three axes sorts unpredictably.
 - `Mat` (in `core.ts`) is a matte material shaded from one key light. Colours come from the palettes in
   `palette.ts` (light and night); add a palette entry rather than writing a colour into a drawing function.
+- A theme change keeps the scene as it stands: `morphPalette` turns the palette into the other theme's in place
+  (materials, colour lists and values), and the scene re-bakes its bitmaps. So read colours from the palette or a
+  `Mat` when drawing, never copy one out at build time (a `Mat`'s `.right`, `pal.tyre`, a colour worked out from
+  `pal.night`): it would keep the old theme. Where a colour must be worked out once (people's clothes, a vehicle's
+  lamp slots) redo it when `pal.generation` moves on (`Walker.recolor`, `recolor` in `traffic/vehicleItem.ts`). Box edges take
+  `CLAY_EDGE`, which `edgeColor` resolves by theme.
 - Static scenery is baked once per size into device-pixel-aligned bitmaps (`BoxItem`, `FnItem.still()` in
   `statics.ts`); only `.live()` overlays (LEDs, status lights) draw every frame. The ground, roads and static shadows
   are one cached layer (`Scene.renderGround`, `world/groundPlan.ts`).

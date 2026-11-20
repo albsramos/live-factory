@@ -15,6 +15,7 @@ import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
+import { carMats } from '../palette';
 
 /**
  * The factory and its dock wing: two loading docks and the charging bay (a lamp by each shows the yard's state), the
@@ -206,8 +207,7 @@ export function buildings(env: Env, edge: string) {
     }),
   );
   {
-    const mats = [pal.paints[4], pal.carGlass, pal.tyre, pal.headlight, pal.taillight];
-    S.push(new FnItem(22.2, 86.5, 0, 27.0, 88.5, 1.65, (r) => drawMesh(r, MESH.suv, 24.6, 87.5, 0, -1, 0, mats), (ctx) => rectShadow(ctx, 24.6, 87.5, -1, 0, 2.3, 0.95, 1.2)).still());
+    S.push(new FnItem(22.2, 86.5, 0, 27.0, 88.5, 1.65, (r) => drawMesh(r, MESH.suv, 24.6, 87.5, 0, -1, 0, carMats(pal, pal.paints[4])), (ctx) => rectShadow(ctx, 24.6, 87.5, -1, 0, 2.3, 0.95, 1.2)).still());
   }
 }
 /** The construction site: a steel frame on a slab, a stair tower, the pickup, the crane and the workers. */
@@ -238,8 +238,7 @@ export function constructionSite(env: Env, edge: string, acts: Activity[]) {
   }));
   // the pickup parked by the site
   {
-    const mats = [pal.steel, pal.carGlass, pal.tyre, pal.headlight, pal.taillight];
-    S.push(new FnItem(57.6, 81.9, 0, 63.4, 84.1, 2, (r) => drawMesh(r, MESH.pickup, 60.5, 83.0, 0, -1, 0, mats), (ctx) => rectShadow(ctx, 60.5, 83, -1, 0, 2.8, 1.0, 1.4)).still());
+    S.push(new FnItem(57.6, 81.9, 0, 63.4, 84.1, 2, (r) => drawMesh(r, MESH.pickup, 60.5, 83.0, 0, -1, 0, carMats(pal, pal.steel)), (ctx) => rectShadow(ctx, 60.5, 83, -1, 0, 2.8, 1.0, 1.4)).still());
   }
   acts.push(new Crane(env));
   // workers: robots and people in hi-vis on the slab and by the pile

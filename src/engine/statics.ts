@@ -155,7 +155,7 @@ export class LampItem implements Static {
   y1: number;
   z0 = 0;
   z1 = 4.6;
-  constructor(readonly x: number, readonly y: number, readonly ax: number, readonly ay: number, readonly pole: Mat, readonly head: string) {
+  constructor(readonly x: number, readonly y: number, readonly ax: number, readonly ay: number, readonly pole: Mat, readonly head: Mat) {
     this.x0 = Math.min(x, x + ax) - 0.12;
     this.x1 = Math.max(x, x + ax) + 0.12;
     this.y0 = Math.min(y, y + ay) - 0.12;
@@ -174,7 +174,7 @@ export class LampItem implements Static {
     ctx.lineTo(X, Y - 4.4);
     ctx.lineTo(HX, HY);
     ctx.stroke();
-    ctx.strokeStyle = this.head;
+    ctx.strokeStyle = this.head.right;
     ctx.lineWidth = 0.16;
     ctx.beginPath();
     ctx.moveTo(HX - 0.2, HY + 0.02);

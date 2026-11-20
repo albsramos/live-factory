@@ -41,7 +41,7 @@ export function streetFurniture(env: Env, sprites: Sprites, edge: string) {
     [65.4, 2, 1.2, 0], [65.4, 31, 1.2, 0], [65.4, 58, 1.2, 0], [65.4, 92, 1.2, 0], [78.6, 22, -1.2, 0], [78.6, 92, -1.2, 0],
     [94, 39.4, 0, 1.2], [112, 39.4, 0, 1.2], [95.3, 52.6, 0, -1.2], [54.6, 88, -1.2, 0], [41.6, 58, 1.2, 0], [55.0, 39.4, 0, 1.2],
   ];
-  for (const [x, y, ax, ay] of lamps) S.push(new LampItem(x, y, ax, ay, pal.steel, pal.factoryDark.right));
+  for (const [x, y, ax, ay] of lamps) S.push(new LampItem(x, y, ax, ay, pal.steel, pal.factoryDark));
   for (const [x0, y0, x1, y1] of [[31.0, 62.6, 32.8, 63.1], [81.9, 69.2, 82.4, 71.0], [86.6, 60.9, 88.4, 61.4], [92.2, 57.4, 92.7, 59.2], [95.4, 57.0, 97.2, 57.5]]) {
     S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   }

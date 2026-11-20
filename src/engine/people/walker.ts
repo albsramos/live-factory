@@ -61,11 +61,19 @@ export class Walker implements Item {
   ox = 0;
   oy = 0;
   onIdle?: (w: Walker) => void;
-  readonly body: string;
-  readonly bodyShade: string;
-  readonly legs: string;
-  readonly head: string;
-  readonly arm: string;
+  body = '';
+  bodyShade = '';
+  legs = '';
+  head = '';
+  arm = '';
+  // the colours picked for a person, from the palette's lists (which a theme change recolours in place)
+  private top: RGB = [0, 0, 0];
+  private bottom: RGB = [0, 0, 0];
+  private headBase: RGB = [0, 0, 0];
+  private isBottomDark = false;
+  private generation = -1;
+  /** a vest over whatever they wear, its colour and its shade (site workers' hi-vis) */
+  private vest: readonly [string, string] | null = null;
   /** @internal a per-walker offset for idle animations */
   readonly seed: number;
 
@@ -79,22 +87,43 @@ export class Walker implements Item {
     this.hy = Math.sin(a);
     if (kind === 'robot') {
       this.speed = rr(rng, 1.0, 1.25);
+    } else {
+      this.speed = rr(rng, 1.05, 1.5);
+      this.top = pick(rng, pal.people);
+      if (rng() < 0.16) this.top = pick(rng, pal.accents);
+      this.isBottomDark = rng() < 0.5;
+      this.bottom = pick(rng, pal.people);
+      this.headBase = pick(rng, pal.people);
+    }
+    this.recolor();
+  }
+
+  /** Work out the colours to draw with from the palette, again whenever the theme has changed since. */
+  recolor() {
+    const pal = this.pal;
+    if (this.generation === pal.generation) return;
+    this.generation = pal.generation;
+    if (this.kind === 'robot') {
       this.body = pal.bot.shell;
       this.bodyShade = pal.bot.shade;
       this.legs = pal.bot.shell;
       this.head = pal.bot.dark;
       this.arm = pal.bot.shell;
-    } else {
-      this.speed = rr(rng, 1.05, 1.5);
-      let top: RGB = pick(rng, pal.people);
-      if (rng() < 0.16) top = pick(rng, pal.accents);
-      const bottom: RGB = rng() < 0.5 ? mix(pick(rng, pal.people), [60, 62, 70], pal.night ? 0.1 : 0.35) : pick(rng, pal.people);
-      this.body = css(top);
-      this.bodyShade = css(mix(top, [40, 42, 56], 0.18));
-      this.legs = css(bottom);
-      this.head = css(mix(pick(rng, pal.people), [255, 255, 255], pal.night ? 0.05 : 0.4));
-      this.arm = css(mix(top, [40, 42, 56], 0.08));
+      return;
     }
+    const top = this.top;
+    this.body = css(top);
+    this.bodyShade = css(mix(top, [40, 42, 56], 0.18));
+    this.legs = css(this.isBottomDark ? mix(this.bottom, [60, 62, 70], pal.night ? 0.1 : 0.35) : this.bottom);
+    this.head = css(mix(this.headBase, [255, 255, 255], pal.night ? 0.05 : 0.4));
+    this.arm = css(mix(top, [40, 42, 56], 0.08));
+    if (this.vest) [this.body, this.bodyShade] = this.vest;
+  }
+
+  /** Put a vest on: its colour and its shade, kept through theme changes. */
+  wear(vest: readonly [string, string]) {
+    this.vest = vest;
+    [this.body, this.bodyShade] = vest;
   }
 
   go(steps: Step[]) {

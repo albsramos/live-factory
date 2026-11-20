@@ -9,7 +9,8 @@ const gradCache = new WeakMap<Palette, Map<string, CanvasGradient>>();
 function vgrad(ctx: Ctx, pal: Palette, key: string, top: number, bot: number, c0: string, c1: string) {
   let m = gradCache.get(pal);
   if (!m) gradCache.set(pal, (m = new Map()));
-  const k = `${key}:${top}:${bot}`;
+  // the colours are in the key: a theme change recolours this palette in place
+  const k = `${key}:${top}:${bot}:${c0}:${c1}`;
   let g = m.get(k);
   if (!g) {
     g = ctx.createLinearGradient(0, top, 0, bot);

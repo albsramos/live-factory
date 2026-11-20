@@ -1,7 +1,7 @@
 // Runs the world on a canvas: camera fit, a cached ground layer (roads, markings, baked shadows), and the frame loop.
 
 import type { R } from './draw';
-import { darkPalette, lightPalette, type Palette } from './palette';
+import { darkPalette, lightPalette, morphPalette, type Palette } from './palette';
 import { depthSort, type Item } from './sort';
 import { Sprites } from './sprites';
 import { BoxItem, type Static } from './statics';
@@ -65,7 +65,7 @@ export class Scene {
     this.rebuild();
   }
 
-  /** Update options; rebuilds the world only when the theme, seed or density change. */
+  /** Update options; rebuilds the world only when the seed or density change. A new theme recolours it as it stands. */
   set(opts: Partial<SceneOptions>) {
     const prev = this.opts;
     this.opts = { ...prev, ...opts };
@@ -79,9 +79,13 @@ export class Scene {
         f.drawImage(this.canvas, 0, 0);
         this.fadeT = FADE;
       }
-      this.pal = o.theme === 'dark' ? darkPalette() : lightPalette();
-      this.rebuild();
-    } else if (o.seed !== prev.seed || o.density !== prev.density) this.rebuild();
+      // the same moment in the other theme: everything holds this palette, so recolouring it recolours the scene
+      morphPalette(this.pal, o.theme === 'dark' ? darkPalette() : lightPalette());
+      this.sprites.clear();
+      this.baked = new WeakMap();
+      this.groundDirty = true;
+    }
+    if (o.seed !== prev.seed || o.density !== prev.density) this.rebuild();
     if (o.fit !== prev.fit || o.focusX !== prev.focusX || o.focusY !== prev.focusY || o.maxDpr !== prev.maxDpr || o.zoom !== prev.zoom) this.layout();
     this.sync();
   }

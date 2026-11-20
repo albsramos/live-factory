@@ -26,6 +26,7 @@ function pill(ctx: Ctx, x: number, y: number, w: number, h: number, rad: number)
 
 /** Draw a walker: legs, arms, body and head, posed by its stance and walk cycle. */
 export function drawFigure(r: R, w: Walker) {
+  w.recolor();
   if (w.hidden) return;
   const ctx = r.ctx;
   const k = w.size;

@@ -8,10 +8,8 @@ export class Looper implements Activity {
   constructor(env: Env, kind: 'person' | 'robot', private steps: () => Parameters<Walker['go']>[0], x: number, y: number, z = 0, accent = false) {
     this.w = new Walker(kind, env.pal, env.rng, x, y);
     this.w.z = z;
-    if (accent) {
-      (this.w as { body: string }).body = '#e2b04a';
-      (this.w as { bodyShade: string }).bodyShade = '#c49436';
-    }
+    // site workers in a hi-vis vest
+    if (accent) this.w.wear(['#e2b04a', '#c49436']);
     env.crowd.add(this.w);
   }
   update() {
