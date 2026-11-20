@@ -213,10 +213,11 @@ It needs an internet connection, and always shows the latest version of the site
 - **From GitHub** (the quick start): `npm install github:albsramos/live-factory`. npm clones the repository and builds
   `dist/` on install (the `prepare` script). pnpm and Yarn take the same `github:` spec; pnpm may ask you to approve
   that build step. Add `#<tag or commit>` to pin a version.
-- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.2.0.tgz` in your app.
-- **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports;
-  the component's styles are a CSS module beside it (`src/LivingCity/LivingCity.module.css`), which Vite, Next.js
-  and most React toolchains handle out of the box. Its test (`LivingCity.test.tsx`) sits in the same folder.
+- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-<version>.tgz` in your app.
+- **As source in your own codebase:** copy `src/` into it. It is plain TypeScript and React with no other imports;
+  the component's styles are a CSS module beside it, which Vite, Next.js and most React toolchains handle out of the
+  box. [`IMPORTINGRAW.md`](IMPORTINGRAW.md) has the steps, the two things the package does that a copy must do
+  itself (`'use client'` for Next.js, the stylesheet), and how to update.
 - **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
   ESM, CommonJS and type declarations in `dist/`.
 

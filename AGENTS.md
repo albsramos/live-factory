@@ -16,6 +16,7 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 - `site/` the demo website GitHub Pages serves; it imports the package as `live-factory`
 - `demo/` the dev lab (`npm run dev:lab`): `?gallery` shows every vehicle, `?debug` exposes `window.scene`
 - `scripts/` builds and checks; `docs/` README images and the guides below
+- `IMPORTINGRAW.md` how an app copies `src/` into its own codebase instead of installing the package
 
 ## Always
 
@@ -24,6 +25,9 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 - Keep every source file under 300 lines (components: main 250, subcomponents 120); split by responsibility.
 - A component's styles, tests and code share its folder: `Name/Name.tsx`, `Name/Name.module.css`,
   `Name/Name.test.tsx`.
+- Keep `src/` copyable as it is (`IMPORTINGRAW.md`): it imports nothing but React and its own files, uses no build tool
+  features (`import.meta`, `?raw` or `?inline` imports, Vite plugins, generated files; tests excepted) and keeps its
+  styles in CSS modules.
 - No `useEffect` / `useLayoutEffect` anywhere (`check:components` fails on them). Use a callback ref, an event
   handler or `useSyncExternalStore`.
 - The scene shows no text, logos or brand marks. The one exception is the factory's lettering behind the opt-in
@@ -37,5 +41,8 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 - edit anything in `src/engine/` → `docs/engine.md`
 - change a route, zone, lot, walkway, or anything that moves → `docs/simulation.md`, then `npm run check:sim`
 - add or edit a component in `site/` → `docs/site.md` (and the react-component skill)
+- add, move or rename a file in `src/`, add a dependency, or change what `src/index.ts` exports → `IMPORTINGRAW.md`
+  (its file table, requirements and the steps an app follows), and copy `src/` into a fresh app to check it still
+  builds
 - change `<LivingCity>`'s props → update the props table in `README.md`, and bump the version if it breaks callers
 - change how the scene looks, or publish → `docs/release.md`, or the `scene-change` skill for the whole procedure
