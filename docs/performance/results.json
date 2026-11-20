@@ -95,5 +95,47 @@
       "frameP50": 5.8,
       "frameP95": 9
     }
+  ],
+  "sizes": [
+    {
+      "size": "1366×768",
+      "mainThreadPct": 69.8,
+      "scriptPct": 17.1,
+      "browserCpuPct": 78.6,
+      "heapMB": 10.5,
+      "fps": 30,
+      "frameP50": 5.1,
+      "frameP95": 7.7
+    },
+    {
+      "size": "1600×860",
+      "mainThreadPct": 75.9,
+      "scriptPct": 17,
+      "browserCpuPct": 85.2,
+      "heapMB": 15.3,
+      "fps": 30,
+      "frameP50": 5.1,
+      "frameP95": 7.3
+    },
+    {
+      "size": "1920×1080",
+      "mainThreadPct": 88.5,
+      "scriptPct": 16.7,
+      "browserCpuPct": 98.6,
+      "heapMB": 15.3,
+      "fps": 29.9,
+      "frameP50": 5.1,
+      "frameP95": 7.4
+    },
+    {
+      "size": "2560×1440",
+      "mainThreadPct": 99.5,
+      "scriptPct": 65.3,
+      "browserCpuPct": 111.4,
+      "heapMB": 22.8,
+      "fps": 27.2,
+      "frameP50": 23.4,
+      "frameP95": 29.2
+    }
   ]
 }
