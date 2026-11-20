@@ -44,6 +44,9 @@ export interface Palette {
   /** the opt-in lettering on the factory's front (world/lettering.ts), and its glow at night */
   sign: string;
   signGlow: string;
+  /** the glass halls over the compute platforms (world/glassHall.ts): the glass's tint, and daylight reflected in it */
+  hallGlass: string;
+  hallSheen: string;
   glow: string;
   led: string;
   ledBlue: string;
@@ -117,6 +120,8 @@ export function lightPalette(): Palette {
     dockDoor: '#5d5f68',
     sign: '#3a3c43',
     signGlow: 'rgba(0, 0, 0, 0)',
+    hallGlass: 'rgba(196, 218, 236, 0.22)',
+    hallSheen: 'rgba(255, 255, 255, 0.28)',
     glow: '#7fe3ff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',
@@ -184,6 +189,8 @@ export function darkPalette(): Palette {
     dockDoor: '#121317',
     sign: '#f2f5ff',
     signGlow: 'rgba(205, 225, 255, 0.9)',
+    hallGlass: 'rgba(110, 150, 190, 0.12)',
+    hallSheen: 'rgba(0, 0, 0, 0)',
     glow: '#6fdcff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',

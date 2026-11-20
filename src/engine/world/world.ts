@@ -29,6 +29,7 @@ import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
 import { roofWalks } from './plaza';
+import { glassHall } from './glassHall';
 import type { Branding } from './lettering';
 import { pocketParkBenches, streetFurniture, chat, staffBreak } from './streetLife';
 import { walkways } from './walkways';
@@ -77,6 +78,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // AI compute: a wide platform of server racks along the dock wing, four rows of six, reaching out into the yard as far as the
   // semis' turning room allows (they swing their trailers through x 54–62 when backing into the docks)
   rackPlatform(S, pal, edge, { x0: 30.6, y0: 26.6, x1: 54.0, y1: 37.0 }, 4, 6);
+  // under a glass extension of the dock wing, so the racks stay dry
+  S.push(...glassHall(pal, { x0: 30, y0: 26.4, x1: 54.0, y1: 37.0, h: 4.2, isAttached: true }));
   pocketParkBenches(env, edge);
   buildings(env, edge);
   constructionSite(env, edge, acts);

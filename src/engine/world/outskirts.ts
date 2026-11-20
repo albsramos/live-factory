@@ -14,6 +14,7 @@ import { groundPoly, groundRect, lineW } from '../ground';
 import type { Ctx } from '../draw';
 import { BoxItem, TreeItem } from '../statics';
 import { solarRows } from './solarRows';
+import { glassHall } from './glassHall';
 import type { Sprites } from '../sprites';
 import { StallLot, type Stall } from '../activities/stallLot';
 import { sameKind, type Zone } from '../traffic/zone';
@@ -132,6 +133,8 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // ----------------------------------------------------------------------------------------------- compute and grid storage
   // a second compute platform north of the hub, and a Megapack field behind it, with a robot doing its rounds
   rackPlatform(S, pal, edge, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4 }, 5, 5, 200);
+  // under a glass hall of its own, so the racks stay dry
+  S.push(...glassHall(pal, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4, h: 4.2 }));
   megapacks(S, pal, edge, [[79.6, 85.4], [87, 92.8], [94.4, 100.2]], [-19.4, -22.2, -25, -27.8, -30.6, -33.4], 300);
   // back the way it came: a straight line home from the far end would cut between the racks
   const rounds = new Looper(env, 'robot', () => [{ x: 80.6, y: -17.3, wait: 3 }, { x: 101.2, y: -17.3, wait: 2 }, { x: 101.4, y: -9, wait: 3 }, { x: 101.2, y: -17.3 }], 80.6, -17.3);
