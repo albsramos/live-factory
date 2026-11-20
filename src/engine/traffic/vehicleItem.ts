@@ -7,6 +7,7 @@ import { drawLampGlints } from '../lights';
 import type { Item } from '../sort';
 import { MESH } from './meshes';
 import type { Vehicle } from './vehicle';
+import { drawDoors } from './doors';
 import { drawJets } from './exhaust';
 import { ROLL_Z } from './hop';
 
@@ -82,8 +83,10 @@ export class VehicleItem implements Item {
         break;
       default: {
         const mesh = MESH[v.kind];
+        const isOpen = (v.kind === 'pod' || v.kind === 'van') && v.door > 0.01;
+        if (isOpen) drawDoors(r, v, false);
         drawMesh(r, mesh, v.x, v.y, 0, v.hx, v.hy, v.mats);
-        if ((v.kind === 'pod' || v.kind === 'van') && v.door > 0.01) drawDoors(r, v);
+        if (isOpen) drawDoors(r, v, true);
         if (r.night && v.isLit) drawLampGlints(r, v, 'both');
       }
     }
@@ -99,50 +102,6 @@ export class VehicleItem implements Item {
       ctx.arc((lx - ly) * C, (lx + ly) * 0.5 - 0.75, 0.12, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
-    }
-  }
-}
-
-function drawDoors(r: R, v: Vehicle) {
-  // gull-wing style doors: a panel on each side swinging up from the roof line
-  const ctx = r.ctx;
-  const k = v.door;
-  const isVan = v.kind === 'van';
-  for (const side of [1, -1]) {
-    // only the camera-facing side reads at this size
-    const nx = -v.hy * side, ny = v.hx * side;
-    if (nx + ny <= 0) continue;
-    // the van's door is its big glass panel mid-side (see its mesh); the pod's runs from the windscreen pillar back
-    // over its side glass (podMesh.ts)
-    const l0 = isVan ? -0.95 : -0.5, l1 = isVan ? 0.95 : 0.85;
-    const zb = isVan ? 0.42 : 0.42, zt = isVan ? 1.56 : 1.12;
-    const w = v.hw * 0.98;
-    const pts: number[] = [];
-    if (isVan) {
-      // sliding door: an opening that grows, the panel slides back
-      const open = k * (l1 - l0);
-      for (const [l, z] of [[l0, zb], [l0 + open, zb], [l0 + open, zt], [l0, zt]]) {
-        const x = v.x + v.hx * l + nx * w, y = v.y + v.hy * l + ny * w;
-        pts.push((x - y) * C, (x + y) * 0.5 - z);
-      }
-      fillQuad(r, '#1c1d22', pts[0], pts[1], pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
-    } else {
-      const lift = k * 1.1;
-      for (const [l, z, out] of [[l0, zb + lift, 0.1 + k * 0.4], [l1, zb + lift, 0.1 + k * 0.4], [l1, zt + lift * 0.8, 0], [l0, zt + lift * 0.8, 0]]) {
-        const x = v.x + v.hx * l + nx * (w + out), y = v.y + v.hy * l + ny * (w + out);
-        pts.push((x - y) * C, (x + y) * 0.5 - z);
-      }
-      // dark opening first, then the raised door
-      const op: number[] = [];
-      for (const [l, z] of [[l0, zb], [l1, zb], [l1, zt], [l0, zt]]) {
-        const x = v.x + v.hx * l + nx * w, y = v.y + v.hy * l + ny * w;
-        op.push((x - y) * C, (x + y) * 0.5 - z);
-      }
-      ctx.globalAlpha = Math.min(1, k * 2);
-      fillQuad(r, '#1c1d22', op[0], op[1], op[2], op[3], op[4], op[5], op[6], op[7]);
-      ctx.globalAlpha = 1;
-      const m = v.mats[0] as Mat;
-      fillQuad(r, m.at(0.55 + k * 0.3), pts[0], pts[1], pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]);
     }
   }
 }

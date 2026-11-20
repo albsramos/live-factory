@@ -35,12 +35,15 @@ function decorate(body: SlicedBody, band: number) {
   if (band === 4 || band === 5) {
     // the window's back edge at the foot and the top of each band: back nearly to the rear wheel, leaning forward
     const [back, backTop] = band === 4 ? [-0.95, -0.8] : [-0.8, -0.62];
+    // the upper band's glass (drawn after the lower band) reaches a little down over the lower one's, so no paint
+    // shows along the joint
+    const foot = band === 5 ? -0.06 : 0;
     for (const f of body.band(band)) {
-      if (f.place === 'front' || f.place === 'frontCorner') body.rect(f, 0, 1, 0.02, 0.98, 1);
+      if (f.place === 'front' || f.place === 'frontCorner') body.rect(f, 0, 1, foot, 1, 1);
       else if (f.place === 'side') {
         // the face runs front to back on one side of the car and back to front on the other
         const front = f.pts[0][0] > f.pts[1][0] ? 0 : 1;
-        body.poly(f, [[front, 0.02], [body.uAt(f, back), 0.02], [body.uAt(f, backTop, true), 0.98], [front, 0.98]], 1);
+        body.poly(f, [[front, foot], [body.uAt(f, back), foot], [body.uAt(f, backTop, true), 1], [front, 1]], 1);
       }
     }
   }
@@ -52,5 +55,6 @@ export function podMesh(): Mesh {
   // a small underbody tucked in under the sills, and the big wheels flush with the flanks, under covers in the paint
   const u = new MeshBuilder(), base = plan(1.6, -1.6, 0.6, 0.4, 0.4);
   u.frustum(base, 0.1, base, 0.22, 2, 2);
-  return { ...m.build(), under: u.build(), sides: wheelSides(AXLES, R, 0.6, 0.99, 0.26, 0) };
+  // the wheels are thin, just their outer face proud of the body, which hides the rest of them
+  return { ...m.build(), under: u.build(), sides: wheelSides(AXLES, R, 0.93, 0.99, 0.26, 0) };
 }
