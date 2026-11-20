@@ -76,7 +76,7 @@ export const MESH = {
   van: (() => {
     // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass arch along each
     // side that wraps round the corners at both ends and runs along the shoulder, a big glass door mid-side, and a
-    // bundle of thin light lines running all the way round it, white ahead and red at the tail
+    // bundle of five thin light lines running all the way round it, white ahead and red at the tail
     const m = new MeshBuilder();
     const L = 3.6, W = 1.22, END = L - 0.55;
     const fp = rounded(L, W, 0.55, 3);
@@ -124,8 +124,9 @@ export const MESH = {
     for (const f of body) if (isCorner(f)) on(f, 0, 1, up(0.42), 1, 1);
     for (const f of [...ring(1), ...ring(2)]) if (isCorner(f) || isSide(f)) on(f, 0, 1, 0, 1, 1);
     // the light lines, all the way round: red over the tail's corners and the last stretch of the sides, white elsewhere
-    for (let i = 0; i < 4; i++) {
-      const v0 = up(1.12 + i * 0.075), v1 = up(1.15 + i * 0.075);
+    // five thin lines, a hairline apart
+    for (let i = 0; i < 5; i++) {
+      const v0 = up(1.14 + i * 0.045), v1 = up(1.165 + i * 0.045);
       for (const f of body) {
         const l0 = f[0][0], l1 = f[1][0];
         if (isSide(f)) {
