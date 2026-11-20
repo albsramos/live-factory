@@ -32,6 +32,13 @@ export interface LivingCityProps {
   maxDpr?: number;
   /** Cap on frames drawn per second, to save CPU, GPU and battery; `0` draws on every screen refresh. Default 30. */
   maxFps?: number;
+  /**
+   * When frames run slow (a weak laptop, no graphics acceleration, a busy machine), step down on its own: to 20
+   * frames a second, then to a pixel ratio of 1, then to 15 frames a second. Needs a frame cap. Default true.
+   */
+  isAdaptive?: boolean;
+  /** Hold still after this many minutes without input on the page, until the next input; `0` never does. Default 5. */
+  idleMinutes?: number;
   /** Keep moving even when the visitor asks for reduced motion (by default the scene then holds still). */
   isReducedMotionIgnored?: boolean;
   /**
@@ -64,6 +71,8 @@ export function LivingCity({
   isPaused = false,
   maxDpr = DEFAULTS.maxDpr,
   maxFps = DEFAULTS.maxFps,
+  isAdaptive = true,
+  idleMinutes = 5,
   isReducedMotionIgnored = false,
   isBranded = false,
   label,
@@ -75,8 +84,8 @@ export function LivingCity({
   // runs in the commit phase whenever an option changes (see CityController)
   const attach = useCallback(
     (el: HTMLDivElement | null) =>
-      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isPaused, isReducedMotionIgnored, isBranded }),
-    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isPaused, isReducedMotionIgnored, isBranded],
+      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isAdaptive, idleMinutes, isPaused, isReducedMotionIgnored, isBranded }),
+    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isAdaptive, idleMinutes, isPaused, isReducedMotionIgnored, isBranded],
   );
 
   return (

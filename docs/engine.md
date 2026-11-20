@@ -66,7 +66,9 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   one facing the camera after it and the other before; drawn at a height, and optionally rolled about their length
   axis, which reorders their parts so a body upside down still stacks right), `ground.ts` shadows and ground shapes,
   `lights.ts` night road lighting.
-- `scene.ts` frame loop and baking; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`
+- `scene.ts` frame loop and baking (`groundShadows.ts` the blurred shadows in the cached ground layer); `pacer.ts`
+  which refreshes get a frame (the `maxFps` cap on any refresh rate) and the quality levels it steps down through
+  when frames run slow; `frame.ts` options and framing. `FRAME` is the classic 121.2 × 65 view; `WIDE`
   lets a box wider than that show up to 210 m across in `cover` mode. `contain` shows the whole height, so anything
   placed within about ±105 m (screen X) of the centre is seen in a 3.2 : 1 banner.
 

@@ -50,6 +50,14 @@ describe('LivingCity', () => {
     expect(box().dataset.ground).toBe('light');
   });
 
+  it('waits for the page to load before building the scene', async () => {
+    const getContext = vi.mocked(HTMLCanvasElement.prototype.getContext);
+    render(<LivingCity />);
+    expect(getContext).not.toHaveBeenCalled();
+    await act(() => new Promise((r) => setTimeout(r, 100)));
+    expect(getContext).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps the host's class and style alongside its own", () => {
     render(<LivingCity className="hero" style={{ height: 520 }} />);
     expect(box().classList).toContain('hero');

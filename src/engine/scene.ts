@@ -5,9 +5,11 @@ import type { R } from './draw';
 import { darkPalette, lightPalette, morphPalette, type Palette } from './palette';
 import { depthSort, type Item } from './sort';
 import { Sprites, makeCanvas } from './sprites';
-import { BoxItem, type Static } from './statics';
+import { type Static } from './statics';
+import { groundShadows } from './groundShadows';
 import { buildWorld, type World } from './world/world';
 import { DEFAULTS, fitView, type SceneOptions } from './frame';
+import { Pacer, qualityLevels, type Quality } from './pacer';
 
 /** seconds a theme change takes to dissolve */
 const FADE = 0.6;
@@ -39,6 +41,10 @@ export class Scene {
   /** the last frame of the previous theme, dissolving away */
   private fade: AnyCanvas | null = null;
   private fadeT = 0;
+  private pacer = new Pacer();
+  /** quality levels, best first (pacer.ts), and the one in use: it only goes down, when frames run slow */
+  private levels: Quality[] = [];
+  private level = 0;
 
   constructor(private canvas: HTMLCanvasElement, opts: Partial<SceneOptions> = {}) {
     this.opts = { ...DEFAULTS, ...opts };
@@ -79,6 +85,7 @@ export class Scene {
       this.sprites.clear();
       this.baked = new WeakMap();
       this.groundDirty = true;
+      this.pacer.settle(performance.now());
     }
     if (o.branded !== prev.branded) {
       // the lettering is part of the factory's baked front: flip it and bake again
@@ -86,7 +93,11 @@ export class Scene {
       this.baked = new WeakMap();
     }
     if (o.seed !== prev.seed || o.density !== prev.density) this.rebuild();
-    if (o.fit !== prev.fit || o.focusX !== prev.focusX || o.focusY !== prev.focusY || o.maxDpr !== prev.maxDpr || o.zoom !== prev.zoom) this.layout();
+    // new limits start again from the best quality they allow
+    const lowered = this.level > 0 && (o.maxFps !== prev.maxFps || o.maxDpr !== prev.maxDpr || o.adaptive !== prev.adaptive);
+    if (lowered) this.level = 0;
+    if (lowered || o.fit !== prev.fit || o.focusX !== prev.focusX || o.focusY !== prev.focusY || o.maxDpr !== prev.maxDpr || o.zoom !== prev.zoom) this.layout();
+    else this.levels = qualityLevels(o.maxFps, o.maxDpr, this.deviceDpr());
     this.sync();
   }
 
@@ -113,9 +124,28 @@ export class Scene {
     this.sync();
   }
 
+  private deviceDpr() {
+    return (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
+  }
+
+  /** The frame rate and pixel density in use. */
+  get quality(): Quality {
+    return this.levels[Math.min(this.level, this.levels.length - 1)];
+  }
+
+  /** Frames ran slow: step down to the next quality level, if there is one. */
+  private lower() {
+    if (this.level >= this.levels.length - 1) return;
+    const dpr = this.quality.dpr;
+    this.level++;
+    if (this.quality.dpr !== dpr) this.layout();
+    this.pacer.settle(performance.now());
+  }
+
   private layout() {
     const o = this.opts;
-    const dpr = Math.min(o.maxDpr, (typeof window !== 'undefined' && window.devicePixelRatio) || 1);
+    this.levels = qualityLevels(o.maxFps, o.maxDpr, this.deviceDpr());
+    const dpr = this.quality.dpr;
     const W = this.cssW, H = this.cssH;
     const pw = Math.max(1, Math.round(W * dpr)), ph = Math.max(1, Math.round(H * dpr));
     if (this.canvas.width !== pw || this.canvas.height !== ph) {
@@ -131,6 +161,7 @@ export class Scene {
     this.sprites.reset(this.pal, this.scale);
     this.baked = new WeakMap();
     this.groundDirty = true;
+    this.pacer.settle(performance.now());
   }
 
   private baked = new WeakMap<Item, Baked>();
@@ -157,9 +188,9 @@ export class Scene {
 
   private loop = (now: number) => {
     this.raf = requestAnimationFrame(this.loop);
-    const fps = this.opts.maxFps;
-    // skip refreshes until a frame is due; the slack keeps 30 fps on a 60 Hz screen from slipping to 20 on jitter
-    if (fps > 0 && this.last && now - this.last < 1000 / fps - 4) return;
+    const fps = this.quality.fps;
+    if (!this.pacer.tick(now, fps)) return;
+    const t0 = performance.now();
     const dt = this.last ? Math.min(Math.max(0.1, fps > 0 ? 2 / fps : 0), (now - this.last) / 1000) : 0;
     this.last = now;
     let rem = this.opts.paused ? 0 : dt * this.opts.speed;
@@ -169,6 +200,7 @@ export class Scene {
       rem -= h;
     }
     this.render();
+    if (this.opts.adaptive && this.pacer.record(now, performance.now() - t0, fps)) this.lower();
     if (this.fadeT > 0) {
       this.fadeT = Math.max(0, this.fadeT - dt);
       // a paused scene only kept running for the dissolve
@@ -192,42 +224,7 @@ export class Scene {
     g.setTransform(this.scale, 0, 0, this.scale, this.tx, this.ty);
     const r = this.r(g);
     this.world.ground(g, r);
-    // soft contact shadows around building bases, then cast shadows; both blurred via the offset-shadow trick
-    // the shapes themselves are drawn this far to the left, off the canvas, and only their blurred shadow is shifted
-    // back; it must clear every shape in the world, not just the view
-    let minX = Infinity, maxX = -Infinity;
-    for (const s of this.world.statics) {
-      minX = Math.min(minX, (s.x0 - s.y1) * 0.8660254);
-      maxX = Math.max(maxX, (s.x1 - s.y0) * 0.8660254);
-    }
-    const off = Math.max(maxX, this.view.x1) - Math.min(minX, this.view.x0) + 60;
-    const blurred = (color: string, blur: number, build: () => void) => {
-      g.save();
-      g.translate(-off, 0);
-      g.beginPath();
-      build();
-      g.shadowColor = color;
-      g.shadowBlur = blur * this.scale;
-      g.shadowOffsetX = off * this.scale;
-      g.fillStyle = '#000';
-      g.fill();
-      g.restore();
-    };
-    blurred(pal.ao, 1.6, () => {
-      for (const s of this.world.statics) {
-        if (!(s instanceof BoxItem) || s.z0 > 0.01 || s.z1 < 1.5) continue;
-        if ((s.x1 - s.x0) * (s.y1 - s.y0) < 3) continue;
-        const X = [s.x0 + 0.1, s.x1 - 0.1], Y = [s.y0 + 0.1, s.y1 - 0.1];
-        g.moveTo((X[0] - Y[0]) * 0.8660254, (X[0] + Y[0]) * 0.5);
-        g.lineTo((X[1] - Y[0]) * 0.8660254, (X[1] + Y[0]) * 0.5);
-        g.lineTo((X[1] - Y[1]) * 0.8660254, (X[1] + Y[1]) * 0.5);
-        g.lineTo((X[0] - Y[1]) * 0.8660254, (X[0] + Y[1]) * 0.5);
-        g.closePath();
-      }
-    });
-    blurred(pal.shadow, 0.35, () => {
-      for (const s of this.world.statics) s.shadow?.(g);
-    });
+    groundShadows(g, this.world.statics, pal, this.scale, this.view);
     this.groundDirty = false;
   }
 

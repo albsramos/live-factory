@@ -137,6 +137,8 @@ it a height, or put it in a sized box, and it fills that instead:
 | `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
 | `maxFps` | `30` | Cap on frames drawn per second, to save CPU, GPU and battery. `0` draws on every screen refresh (60, 120 or 144 Hz) |
+| `isAdaptive` | `true` | When frames run slow (a weak laptop, no graphics acceleration, a busy machine), step down on its own: to 20 fps, then a pixel ratio of 1, then 15 fps. Needs a frame cap |
+| `idleMinutes` | `5` | Hold still after this many minutes without input on the page, until the next input. `0` never does |
 | `isReducedMotionIgnored` | `false` | Keep moving even when the visitor has asked for reduced motion (by default the scene then holds still) |
 | `isBranded` | `false` | Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows no text or brand marks |
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
@@ -147,6 +149,9 @@ out to keep respecting the setting).
 
 In 0.3.0 the scene draws at most 30 frames a second (`maxFps`); pass `maxFps={0}` to draw on every screen refresh
 as before.
+
+In 0.4.0 the scene starts once the page has loaded, lowers its own quality when frames run slow (`isAdaptive`), and
+holds still after 5 minutes without input (`idleMinutes`; pass `0` for a screen saver or a wall display).
 
 ## Dark mode
 
@@ -167,7 +172,12 @@ yourself.
 
 ## Behaviour worth knowing
 
-- The animation stops while the component is scrolled out of view, and when the tab is hidden.
+- The animation stops while the component is scrolled out of view, when the tab is hidden, and after `idleMinutes`
+  without input on the page.
+- It starts once the page has loaded and the browser is idle, then fades in over the ground colour, so building the
+  world doesn't hold up the page's own content.
+- It draws at most `maxFps` frames a second and, when frames run slow, steps its quality down (`isAdaptive`). What
+  it costs a visitor's machine is measured in [`docs/performance.md`](docs/performance.md).
 - Static scenery is rendered once per size into cached bitmaps, so a frame mostly stamps images and draws the
   moving parts. Resizing re-renders those caches.
 - On mount, the scene runs about 40 simulated seconds in the background, so the first frame is already busy rather
