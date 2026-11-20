@@ -124,16 +124,3 @@ export function tractorMesh(): Mesh {
   return m.build();
 }
 
-/**
- * A camera mirror on one side (`s` = 1 or -1): a slim dark arm out of the A-pillar's foot and a pod at its end. Kept
- * apart from the cab so it can be drawn before or after it, as the cab hides it or not.
- */
-export function mirrorMesh(s: number): Mesh {
-  const m = new MeshBuilder();
-  const arm = [[2.3, 1.16], [2.48, 1.42], [2.58, 1.42], [2.4, 1.16]].map(([l, w]) => [l, s * w]);
-  const ccw = s > 0 ? arm : arm.slice().reverse();
-  m.frustum(ccw, 2.04, ccw, 2.12, 2, 2);
-  const pod = [[2.62, -0.07], [2.62, 0.07], [2.46, 0.07], [2.46, -0.07]].map(([l, w]) => [l, w + s * 1.47]);
-  m.frustum(pod, 1.74, pod, 2.36, 2, 2);
-  return m.build(true);
-}

@@ -44,7 +44,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
   `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look
-  (`tractorMesh.ts` the semi's cab and its mirrors), `hop.ts` the roadster's flight (a vehicle's `z` and `roll`),
+  (`tractorMesh.ts` the semi's cab), `hop.ts` the roadster's flight (a vehicle's `z` and `roll`),
   `exhaust.ts` its jets and the smoke puffs (each puff its own small sort item), `traffic.ts` all of it together.
 - `people/` `walker.ts` a person or robot following steps, `figure.ts` how they are drawn, `crowd.ts` the walkway
   graph and the crowd that wanders it.
