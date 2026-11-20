@@ -92,12 +92,15 @@ export class TruckYard implements Activity {
       // before the cab is on it; turning out from the lower row keeps the trailer on the paved exit
       { path: P(y > 10.5 ? [[44.6, y], [50, y], [56, 10.5], [58, 10.5]] : [[44.6, y], [58, y]], y > 10.5 ? [3, 3] : []), vmax: 2.4, ghost: true },
       // turn right onto the avenue's near lane, never crossing traffic
-      { path: P([[58, 10.5], [70, 10.5], [70, 22]], [6]), vmax: 4, done: (v) => {
+      { path: P([[58, 10.5], [70, 10.5], [70, 22]], [6]), vmax: 4 },
+      // the yard is free once the trailer has followed it out (the cab may have to wait in the avenue's queue, and
+      // until it has straightened up the trailer still reaches back across the yard lane)
+      { path: P([[70, 22], [70, 28]]), vmax: 5.5, done: (v) => {
         this.mutex.free(v);
         bay.taken = false;
       } },
       // straight before it waits for the crossing and the junction
-      { path: P([[70, 22], [70, 112]]), vmax: 5.5 },
+      { path: P([[70, 28], [70, 112]]), vmax: 5.5 },
     ];
   }
 
