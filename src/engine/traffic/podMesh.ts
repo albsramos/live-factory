@@ -55,6 +55,6 @@ export function podMesh(): Mesh {
   // a small underbody tucked in under the sills, and the big wheels flush with the flanks, under covers in the paint
   const u = new MeshBuilder(), base = plan(1.6, -1.6, 0.6, 0.4, 0.4);
   u.frustum(base, 0.1, base, 0.22, 2, 2);
-  // the wheels are thin, just their outer face proud of the body, which hides the rest of them
-  return { ...m.build(), under: u.build(), sides: wheelSides(AXLES, R, 0.93, 0.99, 0.26, 0) };
+  // the wheels are thin, their covers flush with the body's flanks (0.96), which hide the rest of them
+  return { ...m.build(), under: u.build(), sides: wheelSides(AXLES, R, 0.92, 0.965, 0.26, 0) };
 }

@@ -35,8 +35,8 @@ export interface Mesh {
   /** a mesh drawn first, at the same pose, that this one always stands in front of (a body's wheels) */
   under?: Mesh;
   /**
-   * Parts beside the body on its +w and -w flanks (wheels flush with its sides): the one on the side facing the
-   * camera is drawn after the body, the other before it.
+   * Parts beside the body on its +w and -w flanks (wheels flush with its sides): the one on a flank that clearly faces
+   * the camera is drawn after the body, the rest before it (seen end on, the body hides the far end's wheels).
    */
   sides?: readonly [Mesh, Mesh];
 }
@@ -174,9 +174,10 @@ const FACE: number[] = [];
  */
 export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
   if (m.under) drawMesh(r, m.under, px, py, pz, hx, hy, mats, roll, rollZ);
-  // the +w flank faces the camera when its outward normal (-hy, hx) points towards it
-  const sides = m.sides, nearSide = sides && (hx - hy > 0 ? sides[0] : sides[1]);
-  if (sides) drawMesh(r, nearSide === sides[0] ? sides[1] : sides[0], px, py, pz, hx, hy, mats, roll, rollZ);
+  // the +w flank faces the camera when its outward normal (-hy, hx) points towards it (hx - hy is at most √2)
+  const sides = m.sides, facing = hx - hy;
+  const nearSide = !sides ? undefined : facing > 0.5 ? sides[0] : facing < -0.5 ? sides[1] : undefined;
+  if (sides) for (const s of sides) if (s !== nearSide) drawMesh(r, s, px, py, pz, hx, hy, mats, roll, rollZ);
   const v = m.v;
   const n = v.length / 3;
   if (n > MAX_VERTS) throw new Error(`live-factory: a mesh has ${n} vertices, over ${MAX_VERTS}`);
