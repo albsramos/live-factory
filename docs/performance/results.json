@@ -137,5 +137,47 @@
       "frameP50": 23.4,
       "frameP95": 29.2
     }
+  ],
+  "throttle": [
+    {
+      "slowdown": 1,
+      "mainThreadPct": 67.8,
+      "scriptPct": 16.4,
+      "browserCpuPct": 75.9,
+      "heapMB": 17.1,
+      "fps": 30,
+      "frameP50": 5,
+      "frameP95": 7.4
+    },
+    {
+      "slowdown": 2,
+      "mainThreadPct": 99.8,
+      "scriptPct": 25.5,
+      "browserCpuPct": 114.8,
+      "heapMB": 11.5,
+      "fps": 20.3,
+      "frameP50": 11.4,
+      "frameP95": 16.9
+    },
+    {
+      "slowdown": 4,
+      "mainThreadPct": 99.8,
+      "scriptPct": 26.3,
+      "browserCpuPct": 111.4,
+      "heapMB": 11.6,
+      "fps": 9.1,
+      "frameP50": 25.8,
+      "frameP95": 36.8
+    },
+    {
+      "slowdown": 6,
+      "mainThreadPct": 99.8,
+      "scriptPct": 26.1,
+      "browserCpuPct": 110.3,
+      "heapMB": 10.4,
+      "fps": 5.9,
+      "frameP50": 40.6,
+      "frameP95": 60.5
+    }
   ]
 }
