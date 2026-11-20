@@ -79,7 +79,7 @@ function lineChart({ name, title, sub, xs, ys, xLabel, yMax, yTicks, yFmt, ref, 
   xs.forEach((x, i) => {
     if (xs.length <= 8) body += `<circle cx="${X(x)}" cy="${Y(ys[i])}" r="4.5" fill="${color}" stroke="var(--surface)" stroke-width="2"/><text class="val" x="${X(x)}" y="${Y(ys[i]) - 10}" text-anchor="middle">${yFmt(ys[i])}</text>`;
   });
-  if (xs.length > 8) body += `<circle cx="${X(xMax)}" cy="${Y(ys.at(-1))}" r="4.5" fill="${color}" stroke="var(--surface)" stroke-width="2"/><text class="val" x="${X(xMax) + 8}" y="${Y(ys.at(-1)) + 4}">${yFmt(ys.at(-1))}</text>`;
+  if (xs.length > 8) body += `<circle cx="${X(xMax)}" cy="${Y(ys.at(-1))}" r="4.5" fill="${color}" stroke="var(--surface)" stroke-width="2"/><text class="val" x="${X(xMax)}" y="${Y(ys.at(-1)) - 10}" text-anchor="end">${yFmt(ys.at(-1))}</text>`;
   const step = xs.length > 8 ? 5 : 1;
   xs.forEach((x, i) => { if (i % step === 0 || i === xs.length - 1) body += `<text class="tick" x="${X(x)}" y="${base + 18}" text-anchor="middle">${esc(xLabel(x))}</text>`; });
   svg(name, h, title, sub, body, alt);

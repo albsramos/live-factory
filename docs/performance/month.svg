@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" width="720" height="260" role="img" aria-label="Line chart of JavaScript memory over 30 scene days.">
+<style>
+  svg { --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781; --grid:#e1e0d9; --axis:#c3c2b7; --s1:#2a78d6; --s2:#eb6834; }
+  @media (prefers-color-scheme: dark) { svg { --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781; --grid:#2c2c2a; --axis:#383835; --s1:#3987e5; --s2:#d95926; } }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--ink2); font-size: 12px; }
+  .title { fill: var(--ink); font-size: 15px; font-weight: 600; }
+  .sub { fill: var(--ink2); font-size: 12px; }
+  .tick { fill: var(--muted); font-size: 11px; }
+  .val { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .axis { stroke: var(--axis); stroke-width: 1; }
+</style>
+<rect width="720" height="260" rx="12" fill="var(--surface)"/>
+<text class="title" x="24" y="34">A month left running: memory stays flat</text>
+<text class="sub" x="24" y="54">JavaScript memory after garbage collection, once per day over 30 days of scene time.</text>
+<line class="axis" x1="64" x2="680" y1="204" y2="204"/><text class="tick" x="56" y="208" text-anchor="end">0.0 MB</text><line class="grid" x1="64" x2="680" y1="174" y2="174"/><text class="tick" x="56" y="178" text-anchor="end">15.0 MB</text><line class="grid" x1="64" x2="680" y1="144" y2="144"/><text class="tick" x="56" y="148" text-anchor="end">30.0 MB</text><line class="grid" x1="64" x2="680" y1="114" y2="114"/><text class="tick" x="56" y="118" text-anchor="end">45.0 MB</text><line class="grid" x1="64" x2="680" y1="84" y2="84"/><text class="tick" x="56" y="88" text-anchor="end">60.0 MB</text><polyline fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64,170.2 84.53333333333333,117.6 105.06666666666666,149.2 125.6,139.8 146.13333333333333,141.8 166.66666666666669,139.6 187.2,150.6 207.73333333333332,132.6 228.26666666666668,143.6 248.8,138.6 269.33333333333337,136.4 289.8666666666667,148.4 310.4,146 330.93333333333334,147.2 351.46666666666664,147.6 372,151 392.53333333333336,148 413.06666666666666,154.2 433.6,147.2 454.1333333333333,136.8 474.6666666666667,146.4 495.2,147.4 515.7333333333333,146.2 536.2666666666667,139 556.8,152.6 577.3333333333334,146.2 597.8666666666667,145.2 618.4,150.2 638.9333333333333,147.4 659.4666666666667,146 680,153.2"/><circle cx="680" cy="153.2" r="4.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/><text class="val" x="680" y="143.2" text-anchor="end">25.4 MB</text><text class="tick" x="64" y="222" text-anchor="middle">day 0</text><text class="tick" x="166.66666666666669" y="222" text-anchor="middle">day 5</text><text class="tick" x="269.33333333333337" y="222" text-anchor="middle">day 10</text><text class="tick" x="372" y="222" text-anchor="middle">day 15</text><text class="tick" x="474.6666666666667" y="222" text-anchor="middle">day 20</text><text class="tick" x="577.3333333333334" y="222" text-anchor="middle">day 25</text><text class="tick" x="680" y="222" text-anchor="middle">day 30</text>
+</svg>
