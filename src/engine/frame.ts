@@ -16,6 +16,8 @@ export interface SceneOptions {
   focusX: number;
   focusY: number;
   maxDpr: number;
+  /** frames drawn per second at most; the scene moves slowly, so 30 looks the same as 60 for half the work. 0 = every screen refresh */
+  maxFps: number;
   paused: boolean;
   /** extra zoom on top of the fit (1 = fit exactly) */
   zoom: number;
@@ -32,6 +34,7 @@ export const DEFAULTS: SceneOptions = {
   focusX: 0.5,
   focusY: 0.5,
   maxDpr: 2,
+  maxFps: 30,
   paused: false,
   zoom: 1,
   branded: false,

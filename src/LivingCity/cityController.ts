@@ -20,6 +20,7 @@ export interface CityOptions {
   focusY: number;
   zoom: number;
   maxDpr: number;
+  maxFps: number;
   isPaused: boolean;
   isReducedMotionIgnored: boolean;
   isBranded: boolean;
@@ -114,6 +115,7 @@ export class CityController {
       focusY: o.focusY,
       zoom: o.zoom,
       maxDpr: o.maxDpr,
+      maxFps: o.maxFps,
       paused: o.isPaused || (this.isMotionReduced && !o.isReducedMotionIgnored),
       branded: o.isBranded,
     };

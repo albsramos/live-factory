@@ -157,7 +157,10 @@ export class Scene {
 
   private loop = (now: number) => {
     this.raf = requestAnimationFrame(this.loop);
-    const dt = this.last ? Math.min(0.1, (now - this.last) / 1000) : 0;
+    const fps = this.opts.maxFps;
+    // skip refreshes until a frame is due; the slack keeps 30 fps on a 60 Hz screen from slipping to 20 on jitter
+    if (fps > 0 && this.last && now - this.last < 1000 / fps - 4) return;
+    const dt = this.last ? Math.min(Math.max(0.1, fps > 0 ? 2 / fps : 0), (now - this.last) / 1000) : 0;
     this.last = now;
     let rem = this.opts.paused ? 0 : dt * this.opts.speed;
     while (rem > 1e-6) {

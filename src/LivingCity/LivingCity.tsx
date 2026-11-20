@@ -30,6 +30,8 @@ export interface LivingCityProps {
   isPaused?: boolean;
   /** Cap on device pixel ratio, to trade sharpness for speed. Default 2. */
   maxDpr?: number;
+  /** Cap on frames drawn per second, to save CPU, GPU and battery; `0` draws on every screen refresh. Default 30. */
+  maxFps?: number;
   /** Keep moving even when the visitor asks for reduced motion (by default the scene then holds still). */
   isReducedMotionIgnored?: boolean;
   /**
@@ -61,6 +63,7 @@ export function LivingCity({
   zoom = 1,
   isPaused = false,
   maxDpr = DEFAULTS.maxDpr,
+  maxFps = DEFAULTS.maxFps,
   isReducedMotionIgnored = false,
   isBranded = false,
   label,
@@ -72,8 +75,8 @@ export function LivingCity({
   // runs in the commit phase whenever an option changes (see CityController)
   const attach = useCallback(
     (el: HTMLDivElement | null) =>
-      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored, isBranded }),
-    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, isPaused, isReducedMotionIgnored, isBranded],
+      city.attach(el, { theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isPaused, isReducedMotionIgnored, isBranded }),
+    [city, theme, speed, density, seed, fit, focusX, focusY, zoom, maxDpr, maxFps, isPaused, isReducedMotionIgnored, isBranded],
   );
 
   return (

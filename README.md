@@ -136,6 +136,7 @@ it a height, or put it in a sized box, and it fills that instead:
 | `zoom` | `1` | Extra zoom on top of the fit |
 | `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
+| `maxFps` | `30` | Cap on frames drawn per second, to save CPU, GPU and battery. `0` draws on every screen refresh (60, 120 or 144 Hz) |
 | `isReducedMotionIgnored` | `false` | Keep moving even when the visitor has asked for reduced motion (by default the scene then holds still) |
 | `isBranded` | `false` | Letter the factory's front over its main entrance, as at Giga Berlin. Off by default: the scene otherwise shows no text or brand marks |
 | `label` | none | Accessible description. Without it the scene is treated as decorative (`aria-hidden`) |
