@@ -4,7 +4,7 @@
 
 import { type Rng, rr, smooth } from '../core';
 import type { Pose } from '../path';
-import type { LegState } from './legs';
+import { ACC, type LegState } from './legs';
 import type { Vehicle } from './vehicle';
 
 /** Cruising height: well clear of a semi's trailer roof (4.1 m). */
@@ -34,6 +34,7 @@ const JET_Z = 0.2;
 type Phase = 'road' | 'lift' | 'fly' | 'land' | 'boost' | 'done';
 
 const P: Pose = { x: 0, y: 0, hx: 1, hy: 0 };
+const Q: Pose = { x: 0, y: 0, hx: 1, hy: 0 };
 const W = [0, 0, 0];
 
 /** A point of the body in the world, with its height and roll: written to `out` as x, y, z. */
@@ -144,17 +145,32 @@ export class Hop {
     if (sTd > leg.path.len - 10) return false;
     const zones = leg.reqs.filter((q) => !q.done && q.sIn < sTd + v.hl + 10);
     for (const q of zones) if (!q.zone.wouldGrant(v, q.key)) return false;
-    for (const k of [0.15, 0.3, 0.45, 0.6, 0.8, 1]) {
+    for (let k = 0.1; k < 1.05; k += 0.1) {
       const tt = T_LAND * k;
       const zk = v.z * (1 - smooth(k));
       leg.path.at(v.s + (V_FLY + V_FLY + (vEnd - V_FLY) * k) * 0.5 * tt, P);
       for (const o of v.traffic.vehicles) {
         if (o === v || o.z > ALOFT_Z) continue;
         for (let i = 0; i < o.bodies.length; i++) {
-          if ((i === 1 ? 4.1 : o.h) + 0.4 < zk) continue;
+          if ((i === 1 ? 4.1 : o.h) + 0.8 < zk) continue;
           const b = o.bodies[i];
-          const dx = P.x - (b.x + o.hx * o.v * tt), dy = P.y - (b.y + o.hy * o.v * tt);
-          if (Math.abs(dx * b.hx + dy * b.hy) < b.hl + v.hl + 2.5 && Math.abs(-dx * b.hy + dy * b.hx) < b.hw + v.hw + 0.4) return false;
+          // where it will be, keeping its speed or pulling away (one waiting behind may set off as it flies over):
+          // along its own route (a car turning off keeps its tail on the lane a while), or for a trailer, carried
+          // on along its heading
+          const lg = o.leg;
+          const fast = Math.max(o.v * tt, Math.min(o.v * tt + 0.5 * ACC * tt * tt, (lg?.vmax ?? o.v) * tt));
+          for (const ds of [o.v * tt, fast]) {
+            let bx = b.x + o.hx * ds, by = b.y + o.hy * ds, hx = b.hx, hy = b.hy;
+            if (i === 0 && lg) {
+              lg.path.at(Math.min(lg.path.len, o.s + ds), Q);
+              bx = Q.x;
+              by = Q.y;
+              hx = Q.hx;
+              hy = Q.hy;
+            }
+            const dx = P.x - bx, dy = P.y - by;
+            if (Math.abs(dx * hx + dy * hy) < b.hl + v.hl + 2.5 && Math.abs(-dx * hy + dy * hx) < b.hw + v.hw + 0.4) return false;
+          }
         }
       }
     }

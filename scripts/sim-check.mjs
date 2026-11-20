@@ -113,7 +113,7 @@ try {
   console.log(`  traffic standing still     ${stoppedPct.toFixed(1)}%   (around 20% is normal: lights, crossings, queues)`);
   console.log(`  truck runs                 yard ${r.yard}, loading bay ${r.bay}   (about 7 and 6 per 15 minutes)`);
   console.log(`  longest stall              ${r.stall.toFixed(0)} s, ${r.stallAt || '-'}`);
-  console.log(`  roadster hops              ${r.hops}, ${r.landed} set down in view   (about one a minute; most set down)`);
+  console.log(`  roadster hops              ${r.hops}, ${r.landed} set down in view   (one every 30-45 s; most set down)`);
   const isBad = r.people.length > 0 || r.crashes.length > 0 || r.stall > 180 || stoppedPct > 35;
   console.log(isBad ? 'FAIL' : 'OK');
   process.exitCode = isBad ? 1 : 0;

@@ -1,6 +1,7 @@
 // Every so often a roadster comes along the avenue and hops: it lifts off on its thrusters, flies on over the
-// traffic with a roll, and sets down again where the lane is clear (traffic/hop.ts). One at a time, alternating
-// directions; it has its own random stream, so the rest of the scene plays out as it always did until it arrives.
+// traffic with a roll, and sets down again where the lane is clear (traffic/hop.ts). One every 30-45 s, one at a
+// time, alternating directions. It has its own random stream, so the rest of the scene plays out as it always did
+// until it arrives.
 
 import { type Rng, rr } from '../core';
 import { Path } from '../path';
@@ -32,9 +33,10 @@ export class Roadsters implements Activity {
 
   update(dt: number) {
     this.puffs.update(dt);
+    // counted from one setting off to the next; a trip takes about 20 s, so they never overlap
+    this.wait -= dt;
     if (this.car && !this.car.dead) return;
     this.car = null;
-    this.wait -= dt;
     if (this.wait > 0) return;
     const { traffic, pal } = this.env;
     const ln = LANES[this.lane];
@@ -45,7 +47,7 @@ export class Roadsters implements Activity {
     v.hop = new Hop(ln.takeoff, ln.land, this.rng, this.puffs.emit);
     this.car = v;
     this.lane = 1 - this.lane;
-    this.wait = rr(this.rng, 30, 55);
+    this.wait = rr(this.rng, 30, 45);
   }
 
   items(out: Item[]) {
