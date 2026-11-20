@@ -1,5 +1,6 @@
 // Runs the world on a canvas: camera fit, a cached ground layer (roads, markings, baked shadows), and the frame loop.
 
+import { bake, stamp, type Baked } from './bake';
 import type { R } from './draw';
 import { darkPalette, lightPalette, morphPalette, type Palette } from './palette';
 import { depthSort, type Item } from './sort';
@@ -12,14 +13,6 @@ import { DEFAULTS, fitView, type SceneOptions } from './frame';
 const FADE = 0.6;
 
 type AnyCanvas = HTMLCanvasElement | OffscreenCanvas;
-
-interface Baked {
-  img: AnyCanvas | null;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 export class Scene {
   private opts: SceneOptions;
@@ -55,8 +48,17 @@ export class Scene {
     this.pal = this.opts.theme === 'dark' ? darkPalette() : lightPalette();
     this.sprites = new Sprites(this.pal, 1);
     this.branding.isOn = this.opts.branded;
+    canvas.addEventListener('contextrestored', this.onRestored);
     this.rebuild();
   }
+
+  /** After the GPU drops the canvases (sleep, a driver reset), the cached bitmaps may be wiped too: bake them again. */
+  private onRestored = () => {
+    this.sprites.clear();
+    this.baked = new WeakMap();
+    this.groundDirty = true;
+    this.sync();
+  };
 
   /** Update options; rebuilds the world only when the seed or density change. A new theme recolours it as it stands. */
   set(opts: Partial<SceneOptions>) {
@@ -135,31 +137,9 @@ export class Scene {
   /** shared with the world, so the lettering can change without a rebuild */
   private readonly branding = { isOn: false };
 
-  /** Render an unchanging item once into a bitmap aligned to device pixels (cropped to the view), then stamp it. */
+  /** Render an unchanging item once into a bitmap aligned to device pixels (bake.ts), then stamp it. */
   private stamp(it: Static, r: R) {
-    let b = this.baked.get(it);
-    if (!b) {
-      b = this.bake(it);
-      this.baked.set(it, b);
-    }
-    if (b.img) r.ctx.drawImage(b.img as CanvasImageSource, b.x, b.y, b.w, b.h);
-  }
-
-  private bake(it: Static): Baked {
-    const k = this.scale, v = this.view;
-    const C = 0.8660254037844386;
-    // screen bounds of the box, with room for anti-aliasing and edge highlights
-    const sx0 = Math.max(v.x0, (it.x0 - it.y1) * C - 0.3), sx1 = Math.min(v.x1, (it.x1 - it.y0) * C + 0.3);
-    const sy0 = Math.max(v.y0, (it.x0 + it.y0) * 0.5 - it.z1 - 0.3), sy1 = Math.min(v.y1, (it.x1 + it.y1) * 0.5 - it.z0 + 0.3);
-    const px0 = Math.floor(sx0 * k + this.tx), px1 = Math.ceil(sx1 * k + this.tx);
-    const py0 = Math.floor(sy0 * k + this.ty), py1 = Math.ceil(sy1 * k + this.ty);
-    const W = px1 - px0, H = py1 - py0;
-    if (W <= 0 || H <= 0) return { img: null, x: 0, y: 0, w: 0, h: 0 };
-    const img = makeCanvas(W, H);
-    const g = img.getContext('2d') as CanvasRenderingContext2D;
-    g.setTransform(k, 0, 0, k, this.tx - px0, this.ty - py0);
-    it.draw({ ctx: g, t: 0, hair: 0.7 / k, scale: k, night: this.pal.night, casters: this.world.casters, faceShadow: this.pal.faceShadow });
-    return { img, x: (px0 - this.tx) / k, y: (py0 - this.ty) / k, w: W / k, h: H / k };
+    stamp(it, r, this.baked, () => bake(it, { k: this.scale, tx: this.tx, ty: this.ty, view: this.view }, this.pal, this.world.casters));
   }
 
   private sync() {
@@ -292,6 +272,7 @@ export class Scene {
 
   destroy() {
     this.destroyed = true;
+    this.canvas.removeEventListener('contextrestored', this.onRestored);
     if (this.raf) cancelAnimationFrame(this.raf);
     this.raf = 0;
   }
