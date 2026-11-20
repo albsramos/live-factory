@@ -243,42 +243,58 @@
     }
   ],
   "site": {
-    "firstPaintMs": 0,
-    "loadMs": 0,
+    "firstPaintMs": 364,
+    "loadMs": 328,
     "longTasks": [
       {
-        "start": 385,
-        "ms": 124
+        "start": 351,
+        "ms": 149
       },
       {
-        "start": 525,
-        "ms": 127
+        "start": 501,
+        "ms": 115
+      },
+      {
+        "start": 617,
+        "ms": 80
       }
     ],
-    "blockingMs": 151,
+    "blockingMs": 194,
     "steady": {
-      "mainThreadPct": 26.8,
-      "scriptPct": 24,
-      "browserCpuPct": 83.7,
-      "heapMB": 5
-    },
-    "idle": {
-      "mainThreadPct": 0.2,
-      "scriptPct": 0,
-      "browserCpuPct": 0.5,
-      "heapMB": 5.1
+      "mainThreadPct": 68.1,
+      "scriptPct": 21.6,
+      "browserCpuPct": 78.6,
+      "heapMB": 9.9
     },
     "offscreen": {
       "mainThreadPct": 0.1,
       "scriptPct": 0,
       "browserCpuPct": 0.2,
-      "heapMB": 5.3
+      "heapMB": 4.7
     },
     "emptyTab": {
-      "mainThreadPct": 0.1,
+      "mainThreadPct": 0,
       "scriptPct": 0,
-      "browserCpuPct": 0.2,
-      "heapMB": 5.9
+      "browserCpuPct": 0,
+      "heapMB": 5.1
+    },
+    "idle": {
+      "mainThreadPct": 0.2,
+      "scriptPct": 0,
+      "browserCpuPct": 0.4,
+      "heapMB": 4.8
+    },
+    "idleBefore": {
+      "mainThreadPct": 25.5,
+      "scriptPct": 22.7,
+      "browserCpuPct": 78.7,
+      "heapMB": 4.8
+    },
+    "idleWoken": {
+      "mainThreadPct": 24.2,
+      "scriptPct": 21.4,
+      "browserCpuPct": 74.5,
+      "heapMB": 13.4
     }
   },
   "size": {

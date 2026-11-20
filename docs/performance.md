@@ -1,144 +1,65 @@
-# Performance: CPU consumption and optimal scene settings
+# Performance
 
-What `<LivingCity>` costs the machine of someone who has it open: a second, an afternoon, or a month on a budget
-laptop. Every number here comes from `scripts/measure-perf.mjs` (raw results in
-[`performance/results.json`](performance/results.json)) and every chart from `scripts/perf-charts.mjs`, so they can
-be measured again after any change:
+What `<LivingCity>` costs the people who look at it, measured in a browser and reproducible with
+`scripts/measure-perf.mjs` (raw numbers: [`performance/results.json`](performance/results.json); 0.3.0's:
+[`results-0.3.0.json`](performance/results-0.3.0.json)).
 
-```sh
-npm run build && npm run build:site
-node scripts/measure-perf.mjs --month   # about 50 minutes; leave out --month for about 8
-node scripts/perf-charts.mjs
-```
+**Verdict: fit for a busy landing page.** It costs our servers nothing and a visitor's machine little. It costs
+nothing at all when nobody is looking, and backs off by itself on weak hardware.
 
-## The short version
+## At a glance
 
-| Question | Answer |
+| | |
 |---|---|
-| Does it put any load on our servers? | **No.** The scene runs entirely in the visitor's browser and makes no network requests. Serving it is serving static files: **55 KB** gzipped for the component, **117 KB** for the whole demo site's JavaScript including React. Thousands of active users, or millions of backend events a day, change nothing for it. |
-| What does a visitor's machine pay while it is on screen? | The page's own script: **17–22% of one CPU core** on the test machine. Drawing the pixels goes to the graphics chip on any normal laptop. Without a graphics chip (see *Weak spots*) the browser also draws in software, and the total reaches **70–100% of one core**. |
-| And when it is not on screen? | **Nothing** (0.2% of a core, the same as an empty tab). It stops when scrolled out of view, in a hidden tab or a minimised window, and holds still for visitors who ask for reduced motion. |
-| Left open for a month? | Memory, the number of things moving and the cost of a frame stay flat from the first day to the thirtieth (section 6). Nothing piles up and nothing slows down. What it does cost is the steady load above, for as long as the window is visible. |
-| Does a slow laptop break it? | No. On a CPU slowed down 4× the scene still runs and still looks right, at about 9 frames a second instead of 30, with the CPU core busy (section 3). |
-| Loading? | It blocks the page for about **190 ms** once, while it builds the world. On a slow laptop that becomes roughly half a second to a second (section 4). |
+| **Our servers** | Nothing. The scene runs in the visitor's browser and makes no network requests. Traffic, active users and backend events don't change its cost. |
+| **Download** | 56 KB gzipped for the component. The whole demo site, React included, is 118 KB. |
+| **On screen, normal laptop** | The page's script uses about **16% of one CPU core** at the default 30 fps. The graphics chip draws the pixels. |
+| **On screen, no graphics acceleration** | 65–100% of one core (the browser draws in software). Adaptive quality brings the dark theme from 100% to 66%. |
+| **Nobody looking** | **0%.** It stops when scrolled out of view, in a hidden tab or minimised window, and after 5 minutes without input. Any input wakes it. |
+| **Memory** | About 5–15 MB of JavaScript. Flat over a month of running (below). |
+| **Loading** | The page paints first (first paint 576 → **364 ms** since 0.3.0). The scene is built after the page has loaded. |
 
-**Verdict:** a reasonable choice for a landing page. Its server cost is zero and its download is small. It costs
-the visitor's machine nothing when out of view and a modest, steady amount when in view on ordinary hardware with a
-graphics chip. There are four weak spots, listed under *Weak spots and what to do about them* with fixes, and the
-biggest is machines without graphics acceleration.
+## Adaptive quality
+
+When frames run slow, the scene steps down on its own: to 20 fps, then a pixel ratio of 1, then 15 fps.
+
+![Main-thread time, quality fixed and adaptive](performance/adaptive.svg)
+
+## When nobody is looking
+
+![Browser CPU on screen, idle, scrolled out of view and for an empty tab](performance/at-rest.svg)
+
+## Loading
+
+![Long tasks while the page loads, 0.3.0 against 0.4.0](performance/startup.svg)
+
+Building the world and baking its bitmaps still takes about 340 ms of main-thread work, now after the page's first
+paint instead of before it.
+
+## A month
+
+MONTH_PLACEHOLDER
+
+## Remaining limits
+
+- **No graphics acceleration and a slow CPU together** (a remote desktop on an old laptop): even the lowest quality
+  level keeps one core busy, at about 9 fps on a CPU 4× slower than the test machine.
+- **Very large canvases:** at 2560×1440 the page's own script time jumps from 16% to 64% of a core, against a
+  steady 16% up to 1920×1080. Not yet explained: worth a look before showing the scene full-screen on big monitors.
+- **The dark theme costs more to draw** (window glow, light on the ground, headlights). Only a machine without
+  graphics acceleration notices.
+- **The first build** is about 340 ms of main-thread work in two or three tasks over 50 ms, roughly 1 s on a slow
+  laptop. It comes after first paint, but a click in that moment waits.
 
 ## How it was measured
 
-- **Machine:** a cloud container with a 4-core Intel Xeon at 2.1 GHz, headless Chromium, **no GPU**. The browser
-  therefore draws the canvas in software on the CPU. That makes these numbers a **worst case for drawing**: on a
-  laptop with integrated graphics (any Intel UHD/Iris, AMD Radeon or Apple chip) the drawing moves to the graphics
-  chip.
-- **Two numbers per measurement, to separate those cases:**
-  - *Page script* is the time the page's JavaScript runs: the simulation, plus issuing the drawing commands. On a
-    machine with a GPU that is roughly all the main thread does.
-  - *Main thread* adds the time the browser spends turning those commands into pixels in software. Only a machine
-    without graphics acceleration pays it.
-- **Percentages are of one CPU core.** A budget laptop has 4 cores, so 25% of one core is about 6% of the whole
-  CPU.
-- **A slower laptop** is stood in for by Chromium's CPU throttling, which slows the page down by a set factor.
-  Budget laptop chips (Celeron, Pentium Silver, Core i3 U-series, Ryzen 3) are roughly 1.5–3× slower per core than
-  the test machine.
-- Each steady-state figure is a 20-second average, taken after the scene had run for 2 seconds.
+Headless Chromium on a 4-core Intel Xeon (2.1 GHz) with **no GPU**, so drawing happens in software: a worst case.
+*Page script* is what a machine with a graphics chip pays; *main thread* adds software drawing. Percentages are of
+one CPU core (a 4-core laptop has 400%). Slow laptops are stood in for by Chromium's CPU throttling. To measure
+again:
 
-## 1. The frame cap
-
-Since 0.3.0 the scene draws at most 30 frames a second (`maxFps`, default 30). It moves slowly, so 30 looks the
-same as 60.
-
-![Main-thread time by frame cap, light and dark theme](performance/fps-cap.svg)
-
-| Frame cap | Light: page script | Light: main thread | Dark: page script | Dark: main thread | Frames drawn (light / dark) |
-|---|---|---|---|---|---|
-| every refresh | 23% | 100% | 15% | 100% | 43 / 24 |
-| 30 fps (default) | 17% | 75% | 15% | 100% | 30 / 25 |
-| 20 fps | 12% | 53% | 13% | 87% | 20 / 20 |
-| 15 fps | 11% | 45% | 10% | 65% | 15 / 15 |
-
-- Lowering the cap lowers the cost almost in proportion. In software drawing, `maxFps={15}` costs about **60% of
-  what 30 fps costs**.
-- *Every refresh* only reached about 43 frames a second here, because software drawing filled the core. On a
-  machine with a GPU it would reach 60, 120 or 144. That is where the cap saves the most: **half the work at 60 Hz
-  and almost five times less at 144 Hz**.
-- **The dark (night) theme costs more to draw:** window glow, light spilling onto the ground, and headlight beams. In
-  software it cannot reach 30 frames a second (about 24) and fills a core. With a GPU this is a matter of fill rate
-  the graphics chip handles easily.
-
-## 2. Screen size
-
-The canvas fills its box, so a bigger screen means more pixels.
-
-![Main-thread time by screen size](performance/screen-size.svg)
-
-| Canvas size | Page script | Main thread | Frames drawn | Frame time (median / 95th percentile) |
-|---|---|---|---|---|
-| 1366×768 | 17% | 70% | 30 | 5.1 / 7.7 ms |
-| 1600×860 | 17% | 76% | 30 | 5.1 / 7.3 ms |
-| 1920×1080 | 17% | 89% | 30 | 5.1 / 7.4 ms |
-| 2560×1440 | 65% | 100% | 27 | 23.4 / 29.2 ms |
-
-Up to 1920×1080 the page script stays the same (about 17%), and only the software drawing grows with the pixels. At
-2560×1440 the script cost jumps to about 65% and frames take about 23 ms instead of 5. That needs looking into
-(*Weak spots*, 4). `maxDpr={1}` keeps a high-density screen from drawing up to 4× the pixels.
-
-## 3. A slower laptop
-
-![Frames drawn per second as the CPU slows down](performance/slow-cpu.svg)
-
-| CPU | Frames drawn | Frame time (median / 95th percentile) | Page script | Main thread |
-|---|---|---|---|---|
-| test machine | 30 | 5.0 / 7.4 ms | 16% | 68% |
-| 2× slower | 20 | 11.4 / 16.9 ms | 26% | 100% |
-| 4× slower | 9 | 25.8 / 36.8 ms | 26% | 100% |
-| 6× slower | 6 | 40.6 / 60.5 ms | 26% | 100% |
-
-The scene keeps running at its own pace. When the CPU can't draw 30 frames a second, the simulation still advances
-in real time and the scene draws fewer frames. It never falls behind or speeds up to catch up. The cost is that the
-page's main thread is then fully busy, which can make the rest of the page respond slowly (*Weak spots*, 1).
-
-## 4. Loading the page
-
-![Long tasks while the website loads](performance/startup.svg)
-
-The built website at 1366×768: first paint at **576 ms** (served locally, so this is all page work, not network).
-When the component mounts it builds the world, runs about 40 simulated seconds so the first frame is already busy,
-and renders every building into a cached bitmap. That shows up as three long tasks of 128, 120 and 93 ms, a **total
-blocking time of 191 ms**. Lighthouse counts blocking time from 200 ms against a page, so this is at the edge on a
-fast machine. On a laptop 2–4× slower it becomes roughly 0.5–1 s during which a click on the page waits.
-
-It happens once per page load, and again only when the canvas changes size or theme (the bitmaps are re-rendered).
-*Weak spots*, 2, has the fix.
-
-## 5. Out of view
-
-![Browser CPU on screen, scrolled out of view and for an empty tab](performance/offscreen.svg)
-
-| Built website at 1366×768 | Whole browser CPU | Page script | JavaScript memory in use |
-|---|---|---|---|
-| On screen | 79.5% | 21.9% | 4.8 MB |
-| Scrolled out of view | **0.2%** | 0% | 4.7 MB |
-| Empty tab, for comparison | 0.0% | 0% | 5.0 MB |
-
-*Whole browser CPU* is every Chromium process together (the page, the graphics process, the browser), read from the
-operating system. Here it includes software drawing, so on screen it is the no-GPU worst case.
-
-The scene watches itself with an `IntersectionObserver` and stops its frame loop the moment it leaves the screen.
-Browsers also stop the loop on their own in a background tab or a minimised window, and Chrome on Windows and macOS
-does the same for a window that is completely covered by others. A landing page whose hero has been scrolled past
-costs nothing.
-
-## 6. A month
-
-MONTH_TEXT
-
-## Weak spots and what to do about them
-
-WEAK_TEXT
-
-## Recommended settings for a landing page
-
-SETTINGS_TEXT
+```sh
+npm run build && npm run build:site
+node scripts/measure-perf.mjs --month   # about 50 minutes; without --month about 12
+node scripts/perf-charts.mjs
+```
