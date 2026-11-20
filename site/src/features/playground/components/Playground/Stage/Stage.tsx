@@ -1,6 +1,8 @@
 import { LivingCity } from 'live-factory';
-import { setFull, useSettings } from '../../../model/settings';
-import { FullscreenButton } from '../FullscreenButton/FullscreenButton';
+import { useRef } from 'react';
+import { useMediaQuery } from '../../../../../shared/lib/useMediaQuery';
+import { setFull, setTheme, useSettings } from '../../../model/settings';
+import { StageButton } from '../StageButton/StageButton';
 import styles from './Stage.module.css';
 
 const LABEL =
@@ -31,24 +33,29 @@ function exitFullscreen() {
 /**
  * The scene itself: a 1630 × 520 banner showing the whole height, or the scene in its own 1.86 : 1 shape. On the whole
  * screen (`full=1` in the URL, so a link can open straight into it) it fills the window; pressing the button also
- * asks the browser for its full screen, which a page may only do on a click.
+ * asks the browser for its full screen, which a page may only do on a click. On the whole screen the theme tabs are out
+ * of reach, so a sun / moon button beside it switches day and night.
  */
 export function Stage() {
   const s = useSettings();
   const isBanner = s.shape === 'banner' && !s.isFull;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const isPageDark = useMediaQuery('(prefers-color-scheme: dark)');
+  // with no theme in the URL the scene follows the page
+  const isDark = s.theme === 'auto' ? isPageDark : s.theme === 'dark';
 
-  const handleToggle = (el: HTMLElement | null) => {
+  const handleToggle = () => {
     if (s.isFull) {
       exitFullscreen();
       setFull(false);
       return;
     }
     setFull(true);
-    if (el) requestFullscreen(el);
+    if (rootRef.current) requestFullscreen(rootRef.current);
   };
 
   return (
-    <div className={styles.root} data-shape={s.isFull ? undefined : s.shape} data-state={s.isFull ? 'full' : 'inline'}>
+    <div ref={rootRef} className={styles.root} data-shape={s.isFull ? undefined : s.shape} data-state={s.isFull ? 'full' : 'inline'}>
       <LivingCity
         className={styles.scene}
         theme={s.theme}
@@ -59,7 +66,12 @@ export function Stage() {
         isReducedMotionIgnored={s.isMotionForced}
         label={LABEL}
       />
-      <FullscreenButton className={styles.button} isFull={s.isFull} onClick={(e) => handleToggle(e.currentTarget.parentElement)} />
+      <div className={styles.tools}>
+        {s.isFull && (
+          <StageButton icon={isDark ? 'sun' : 'moon'} label={isDark ? 'Switch to day' : 'Switch to night'} onClick={() => setTheme(isDark ? 'light' : 'dark')} />
+        )}
+        <StageButton icon={s.isFull ? 'collapse' : 'expand'} label={s.isFull ? 'Exit full screen' : 'Full screen'} onClick={handleToggle} />
+      </div>
     </div>
   );
 }
