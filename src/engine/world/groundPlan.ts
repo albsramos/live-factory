@@ -3,7 +3,7 @@
 
 import { C } from '../core';
 import { arcPts, groundPoly, groundRect, lineW } from '../ground';
-import type { Ctx } from '../draw';
+import type { Ctx, R } from '../draw';
 import { windowSpill, type LitFace } from '../details';
 import type { Palette } from '../palette';
 import type { ChargingLot } from '../activities/chargingLot';
@@ -11,6 +11,65 @@ import type { Outskirts } from './outskirts';
 import { POCKET_LAWN, POCKET_PATH, TAXI_LAWN, TAXI_PATHS } from './streetLife';
 
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
+/** The parks' paths across their grass, edged like the plaza's planters: a pale stone kerb with an LED strip along it,
+ * a fine bright line by day and glowing warm at night; the grass's outer edges get the same. */
+function parkPaths(ctx: Ctx, pal: Palette, scale: number) {
+  const paths = () => {
+    ctx.beginPath();
+    for (const path of [POCKET_PATH, ...TAXI_PATHS]) {
+      for (let i = 1; i < path.length; i++) lineW(ctx, path[i - 1][0], path[i - 1][1], 0, path[i][0], path[i][1], 0);
+    }
+  };
+  const led = () => {
+    if (pal.night) {
+      ctx.strokeStyle = pal.ledWarm;
+      ctx.shadowColor = pal.ledWarm;
+      ctx.shadowBlur = scale * 0.45;
+    } else ctx.strokeStyle = 'rgba(255, 252, 240, 0.9)';
+  };
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  // the grass's outer edge: the kerb just inside it, the strip along the edge itself
+  ctx.save();
+  ctx.beginPath();
+  groundPoly(ctx, POCKET_LAWN);
+  groundPoly(ctx, TAXI_LAWN);
+  ctx.clip();
+  ctx.strokeStyle = pal.white.top;
+  ctx.lineWidth = 0.6;
+  ctx.stroke();
+  ctx.restore();
+  ctx.save();
+  led();
+  ctx.lineWidth = 0.07;
+  ctx.beginPath();
+  groundPoly(ctx, POCKET_LAWN);
+  groundPoly(ctx, TAXI_LAWN);
+  ctx.stroke();
+  ctx.restore();
+  // the paths: kerb, then the strip, then the paving over their middles, leaving each a band along both sides; the
+  // kerb and the strip only on the grass, so where a path meets the pavement it runs straight on
+  ctx.save();
+  ctx.beginPath();
+  groundPoly(ctx, POCKET_LAWN);
+  groundPoly(ctx, TAXI_LAWN);
+  ctx.clip();
+  paths();
+  ctx.strokeStyle = pal.white.top;
+  ctx.lineWidth = 1.7;
+  ctx.stroke();
+  led();
+  ctx.lineWidth = 1.24;
+  ctx.stroke();
+  ctx.restore();
+  paths();
+  ctx.strokeStyle = pal.plaza;
+  ctx.lineWidth = 1.1;
+  ctx.stroke();
+  ctx.restore();
+}
+
 export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts) {
   const roads = (ctx: Ctx) => {
     groundRect(ctx, 68, -100, 76, 260);
@@ -37,7 +96,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     [80, 38, 97, 38, 0, 1], [97, 26, 97, 38, 1, 0], [20.4, 84.2, 28.8, 84.2, 0, 1], [28.8, 75.6, 28.8, 84.2, 1, 0],
     ...outskirts.litFaces,
   ];
-  const ground = (ctx: Ctx) => {
+  const ground = (ctx: Ctx, r?: R) => {
     // paved pads
     ctx.fillStyle = pal.pad;
     ctx.beginPath();
@@ -100,14 +159,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     groundPoly(ctx, TAXI_LAWN);
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = pal.plaza;
-    ctx.lineWidth = 1.1;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    for (const path of [POCKET_PATH, ...TAXI_PATHS]) {
-      for (let i = 1; i < path.length; i++) lineW(ctx, path[i - 1][0], path[i - 1][1], 0, path[i][0], path[i][1], 0);
-    }
-    ctx.stroke();
+    parkPaths(ctx, pal, r?.scale ?? 1);
     ctx.lineCap = 'butt';
     // apron joints
     ctx.strokeStyle = pal.night ? 'rgba(255,255,255,0.03)' : 'rgba(120,122,136,0.10)';

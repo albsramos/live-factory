@@ -74,8 +74,10 @@ any other React setup.
   and a glass pavilion under a big pale roof plate that comes to a shallow point towards the front; across the rest
   of the roof, and on every other building's, the solar panels stand in rows tilted at 45°. Two angular planters on
   the plaza have LED strips that glow warm at night.
-- **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
-  east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
+- **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger
+  park east of the pavilion, with grass, paths, trees and benches (the two by the plaza and the robotaxi stop edged
+  like the plaza's planters, with a pale stone kerb and an LED strip that glows warm at night) where employees sit
+  or stand together on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
   thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
   junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear (or flies on out
