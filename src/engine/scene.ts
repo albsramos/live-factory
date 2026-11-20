@@ -3,7 +3,7 @@
 import type { R } from './draw';
 import { darkPalette, lightPalette, morphPalette, type Palette } from './palette';
 import { depthSort, type Item } from './sort';
-import { Sprites } from './sprites';
+import { Sprites, makeCanvas } from './sprites';
 import { BoxItem, type Static } from './statics';
 import { buildWorld, type World } from './world/world';
 import { DEFAULTS, fitView, type SceneOptions } from './frame';
@@ -19,14 +19,6 @@ interface Baked {
   y: number;
   w: number;
   h: number;
-}
-
-function makeCanvas(w: number, h: number): AnyCanvas {
-  if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
-  const c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
-  return c;
 }
 
 export class Scene {

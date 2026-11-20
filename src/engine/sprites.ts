@@ -84,7 +84,8 @@ const SPECS: Record<string, Spec> = {
 
 export type SpriteName = keyof typeof SPECS;
 
-function makeCanvas(w: number, h: number): HTMLCanvasElement | OffscreenCanvas {
+/** A canvas to draw into off screen: an OffscreenCanvas where there is one. */
+export function makeCanvas(w: number, h: number): HTMLCanvasElement | OffscreenCanvas {
   if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
   const c = document.createElement('canvas');
   c.width = w;
