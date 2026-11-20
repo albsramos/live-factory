@@ -11,8 +11,19 @@ import type { VehicleKind } from './traffic/meshes';
 
 /** Light bar position per kind, from the meshes in vehicles.ts: [distance along the body, half width, height]. */
 type Bar = readonly [number, number, number];
-const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number }>> = {
-  suv: { front: [2.42, 0.7, 0.78], rear: [-2.38, 0.72, 0.94], reach: 7 },
+/**
+ * A tail light that is one continuous bar wrapping round the back corners, glowing along its whole length: the
+ * plan it follows at height `z` (back at `l`, half width `w`, corners rounded by `r`).
+ */
+interface TailBar {
+  l: number;
+  w: number;
+  r: number;
+  z: number;
+}
+const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number; tail?: TailBar }>> = {
+  // the tail bar follows the body's slice at the tailgate (suvMesh.ts, the band from 0.88 to 1.0)
+  suv: { front: [2.42, 0.7, 0.78], rear: [-2.38, 0.72, 0.94], reach: 7, tail: { l: -2.36, w: 0.97, r: 0.54, z: 0.955 } },
   pickup: { front: [2.85, 0.98, 0.94], rear: [-2.85, 1.0, 1.18], reach: 7.5 },
   pod: { front: [1.9, 0.38, 0.58], rear: [-1.9, 0.4, 0.59], reach: 5.5 },
   van: { front: [3.6, 0.55, 1.22], rear: [-3.6, 0.55, 1.22], reach: 7.5 },
@@ -92,8 +103,15 @@ export function drawRoadLight(ctx: Ctx, vehicles: readonly Vehicle[]) {
     }
     pool(ctx, cx + f.fhx * bar.reach * 0.32, cy + f.fhy * bar.reach * 0.32, f.fhx, f.fhy, bar.reach * 0.34, fw + 0.9, BEAM, 0.16);
     const [rl, rw] = bar.rear;
-    const ex = f.rx + f.rhx * (rl - 0.7), ey = f.ry + f.rhy * (rl - 0.7);
-    pool(ctx, ex, ey, f.rhx, f.rhy, 1.5, rw + 0.6, TAIL, v.braking ? 0.3 : 0.14);
+    if (bar.tail) {
+      // a full-width bar throws a wide band of red on the road behind, broader than the car
+      const ex = f.rx + f.rhx * (rl - 1.1), ey = f.ry + f.rhy * (rl - 1.1);
+      pool(ctx, ex, ey, f.rhx, f.rhy, 1.7, rw + 1.7, TAIL, v.braking ? 0.46 : 0.3);
+      pool(ctx, ex, ey, f.rhx, f.rhy, 0.9, rw + 1.0, TAIL, v.braking ? 0.24 : 0.14);
+    } else {
+      const ex = f.rx + f.rhx * (rl - 0.7), ey = f.ry + f.rhy * (rl - 0.7);
+      pool(ctx, ex, ey, f.rhx, f.rhy, 1.5, rw + 0.6, TAIL, v.braking ? 0.3 : 0.14);
+    }
   }
   ctx.restore();
 }
@@ -128,7 +146,8 @@ export function drawLampGlints(r: R, v: Vehicle, part: 'front' | 'rear' | 'both'
       glint(ctx, x, y, z, 0.38, BEAM, 0.95);
     }
   }
-  if (part !== 'front' && f.rhx + f.rhy < 0) {
+  if (part !== 'front' && bar.tail && f.rhx + f.rhy < 0) tailGlow(ctx, f, bar.tail, v.braking);
+  else if (part !== 'front' && f.rhx + f.rhy < 0) {
     const [l, w, z] = bar.rear;
     for (const side of [1, -1]) {
       const x = f.rx + f.rhx * l - f.rhy * (w - 0.08) * side, y = f.ry + f.rhy * l + f.rhx * (w - 0.08) * side;
@@ -136,4 +155,34 @@ export function drawLampGlints(r: R, v: Vehicle, part: 'front' | 'rear' | 'both'
     }
   }
   ctx.restore();
+}
+
+/** A tail bar glowing along its whole length on the body: a soft red halo round a thin bright core. */
+function tailGlow(ctx: Ctx, f: ReturnType<typeof frame>, t: TailBar, isBraking: boolean) {
+  // the bar's path in the body's plan: round one back corner, across the tailgate, round the other
+  const pts: number[][] = [];
+  const cl = t.l + t.r;
+  for (const s of [1, -1]) {
+    const arc: number[][] = [];
+    for (let i = 0; i <= 6; i++) {
+      const a = (i / 6) * (Math.PI / 2);
+      arc.push([cl - Math.sin(a) * t.r, s * (t.w - t.r + Math.cos(a) * t.r)]);
+    }
+    pts.push(...(s > 0 ? arc : arc.reverse()));
+  }
+  ctx.beginPath();
+  pts.forEach(([l, w], i) => {
+    const x = f.rx + f.rhx * l - f.rhy * w, y = f.ry + f.rhy * l + f.rhx * w;
+    const X = (x - y) * C, Y = (x + y) * 0.5 - t.z;
+    if (i) ctx.lineTo(X, Y);
+    else ctx.moveTo(X, Y);
+  });
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const k = isBraking ? 1.35 : 1;
+  for (const [width, color, a] of [[0.5, TAIL, 0.16], [0.24, TAIL, 0.4], [0.07, [255, 170, 160], 0.9]] as const) {
+    ctx.lineWidth = width;
+    ctx.strokeStyle = rgba(color, Math.min(1, a * k));
+    ctx.stroke();
+  }
 }
