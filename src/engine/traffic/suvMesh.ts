@@ -37,12 +37,10 @@ function wheelsMesh(): Mesh {
   return m.build(true);
 }
 
-export function suvMesh(): Mesh {
-  const m = new MeshBuilder();
-  const body = new SlicedBody(m, SLICES.map(([z, lf, lr, w, rf, rr]) => ({ z, pts: plan(lf, lr, w, rf, rr) })), MATS);
-
+/** Each band's decals, laid right after the band (see `SlicedBody`). */
+function decorate(body: SlicedBody, band: number) {
   // the lower band: a dark intake low across the nose, and a dark arch over each wheel
-  for (const f of body.band(0)) {
+  if (band === 0) for (const f of body.band(0)) {
     if (f.place === 'front') body.rect(f, 0.04, 0.96, 0.18, 0.62, 2);
     else if (f.place === 'side')
       for (const L of AXLES) {
@@ -56,12 +54,17 @@ export function suvMesh(): Mesh {
       }
   }
   // the light bar right across the nose, a little thicker where it turns the corners as the headlamps
-  for (const f of body.band(1)) {
+  if (band === 1) for (const f of body.band(1)) {
     if (f.place === 'front') body.rect(f, 0, 1, 0.84, 0.93, 3);
     else if (f.place === 'frontCorner') body.rect(f, 0, 1, 0.78, 0.95, 3);
   }
   // the light bar across the tailgate, wrapping onto the back corners
-  for (const f of body.band(3)) if (f.place === 'rear' || f.place === 'rearCorner') body.rect(f, 0, 1, 0.45, 0.78, 4);
+  if (band === 3) for (const f of body.band(3)) if (f.place === 'rear' || f.place === 'rearCorner') body.rect(f, 0, 1, 0.45, 0.78, 4);
+}
+
+export function suvMesh(): Mesh {
+  const m = new MeshBuilder();
+  new SlicedBody(m, SLICES.map(([z, lf, lr, w, rf, rr]) => ({ z, pts: plan(lf, lr, w, rf, rr) })), MATS, decorate);
   // stacked bottom up, so drawn in the order built
   return { ...m.build(), under: wheelsMesh() };
 }

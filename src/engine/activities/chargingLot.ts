@@ -34,17 +34,16 @@ export class ChargingLot implements Activity {
         ).still(),
       );
     }
-    // a charger between the two rows for each pair of stalls: the parked car behind is plugged in and full, and the
-    // cable to the stall in front glows while a car charges there
+    // a charger between the two rows for each pair of stalls: the parked car behind is plugged in and charging, its
+    // cable glowing, and the cable to the stall in front glows too while a car charges there
     this.stalls.forEach((x, i) => {
       const px = x + 1.5, py = 67;
       statics.push(
         new FnItem(px - HW, py - HD, 0, px + HW, py + HD, H, (r) => {
-          const on = !!this.cars[i]?.charging;
-          drawChargerPost(r, pal, px, py, on ? 'charging' : 'full');
+          drawChargerPost(r, pal, px, py, 'charging');
           // from the post's right side to a port on the charging car's right flank, where the camera sees it
-          if (on) drawChargeCable(r, pal, [px + HW, py, 1.2], [x + 0.96, 65.3, 0.8], true);
-          drawChargeCable(r, pal, [px - HW, py + HD, 1.2], [x + 0.75, 67.9, 0.75], false);
+          if (this.cars[i]?.charging) drawChargeCable(r, pal, [px + HW, py, 1.2], [x + 0.96, 65.3, 0.8]);
+          drawChargeCable(r, pal, [px - HW, py + HD, 1.2], [x + 0.75, 67.9, 0.75]);
         }, (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H)),
       );
     });

@@ -22,24 +22,12 @@ const SLICES: [number, number, number, number][] = [
   [3.95, -0.32, 0.9, 0.3], // the roof, level with the trailer's front edge
 ];
 
-export function tractorMesh(): Mesh {
-  const m = new MeshBuilder();
-  const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
-  // the front wheels and the frame under the cab (the rest is `chassisMesh`), and the black bumper wrapping the nose
-  m.frustum(box(LR, 2.7, 0.92), 0, box(LR, 2.7, 0.92), 0.8, 2, 2);
-  // the dark fairing in the gap between the cab and the trailer: built before the cab and a little narrower, so
-  // the body always stands in front of it and it only shows in that gap
-  m.frustum(box(-1.0, LR + 0.05, 1.14), 1.0, box(-1.0, LR + 0.05, 0.84), 3.88, 2, 2);
-  const bumper = plan(3.08, LR, 1.2, 0.5, RB);
-  m.frustum(bumper, 0.36, bumper, 0.8, 2, 2);
-
-  // the cab: each slice to the next is one convex part
-  const body = new SlicedBody(m, SLICES.map(([z, lf, w, rf]) => ({ z, pts: plan(lf, LR, w, rf, RB) })), SLICES.map(() => 0));
-
+/** Each band's decals, laid right after the band (see `SlicedBody`). */
+function decorate(body: SlicedBody, band: number) {
   // the windscreen wraps round the nose's corners and runs back along the sides as the door glass; its back edge
   // leans forward and its top corner is rounded
   const SCREEN = 3, WIN_BACK_LOW = 0.35, WIN_BACK_TOP = 0.7;
-  for (const f of body.band(SCREEN)) {
+  if (band === SCREEN) for (const f of body.band(SCREEN)) {
     if (f.place === 'front' || f.place === 'frontCorner') body.rect(f, 0, 1, 0.02, 0.98, 1);
     else if (f.place === 'side') {
       // the face runs front to back on one side of the cab and back to front on the other: measure from its front
@@ -54,10 +42,25 @@ export function tractorMesh(): Mesh {
   }
   // the thin light bar right across the nose at its widest, and a brighter lamp where it turns the corner
   const BAR = 0;
-  for (const f of body.band(BAR)) {
+  if (band === BAR) for (const f of body.band(BAR)) {
     if (f.place === 'front') body.rect(f, 0, 1, 0.86, 0.93, 3);
     else if (f.place === 'frontCorner') body.rect(f, 0, 1, 0.82, 0.95, 3);
   }
+}
+
+export function tractorMesh(): Mesh {
+  const m = new MeshBuilder();
+  const box = (l0: number, l1: number, w: number) => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
+  // the front wheels and the frame under the cab (the rest is `chassisMesh`), and the black bumper wrapping the nose
+  m.frustum(box(LR, 2.7, 0.92), 0, box(LR, 2.7, 0.92), 0.8, 2, 2);
+  // the dark fairing in the gap between the cab and the trailer: built before the cab and a little narrower, so
+  // the body always stands in front of it and it only shows in that gap
+  m.frustum(box(-1.0, LR + 0.05, 1.14), 1.0, box(-1.0, LR + 0.05, 0.84), 3.88, 2, 2);
+  const bumper = plan(3.08, LR, 1.2, 0.5, RB);
+  m.frustum(bumper, 0.36, bumper, 0.8, 2, 2);
+
+  // the cab: each slice to the next is one convex part
+  new SlicedBody(m, SLICES.map(([z, lf, w, rf]) => ({ z, pts: plan(lf, LR, w, rf, RB) })), SLICES.map(() => 0), decorate);
   // stacked bottom up, so drawn in the order built
   return m.build();
 }

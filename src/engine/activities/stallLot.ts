@@ -76,7 +76,7 @@ export class StallLot implements Activity {
   }
 
   /**
-   * A charger at the head of a stall. A car that stays is plugged in and full; at a live stall the cable is hung on
+   * A charger at the head of a stall. A car that stays is plugged in and charging; at a live stall the cable is hung on
    * the post until a car pulls in, then runs to its charge port and glows while it charges.
    */
   private charger(s: Stall) {
@@ -87,9 +87,9 @@ export class StallLot implements Activity {
     const from = [px + HW, py, 1.2], port = [s.x + 0.96, s.y + s.dir * 1.2, 0.8];
     return new FnItem(px - HW, py - HD, 0, px + HW, py + HD, H, (r) => {
       const car = this.cars.get(s);
-      const state = !s.isLive ? 'full' : car?.charging ? 'charging' : 'idle';
+      const state = !s.isLive || car?.charging ? 'charging' : 'idle';
       drawChargerPost(r, pal, px, py, state);
-      if (state !== 'idle') drawChargeCable(r, pal, from, port, state === 'charging');
+      if (state === 'charging') drawChargeCable(r, pal, from, port);
     }, (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H));
   }
 

@@ -9,8 +9,8 @@ import type { Palette } from './palette';
 /** half width, half depth and height of a post */
 export const HW = 0.46, HD = 0.11, H = 2.3;
 
-/** `idle`: nothing plugged in, cable hung on the post; `charging`: plugged in and charging; `full`: plugged in, done. */
-export type ChargerState = 'idle' | 'charging' | 'full';
+/** `idle`: nothing plugged in, cable hung on the post; `charging`: plugged in and charging. */
+export type ChargerState = 'idle' | 'charging';
 
 /** One post at (px, py), its face towards +y (the camera). */
 export function drawChargerPost(r: R, pal: Palette, px: number, py: number, state: ChargerState) {
@@ -29,7 +29,7 @@ export function drawChargerPost(r: R, pal: Palette, px: number, py: number, stat
     ctx.quadraticCurveTo(w / 2, bot + 0.22, m, bot);
     ctx.closePath();
     ctx.fill();
-    // the light near the top: breathing green while charging, a dim strip otherwise
+    // the light near the top: breathing green while charging, a dim strip while idle
     const a = isLive ? 0.55 + 0.45 * Math.sin(r.t * 2.6) : 1;
     ctx.globalAlpha = a;
     ctx.fillStyle = state === 'idle' ? (pal.night ? '#3a3c44' : '#dcdde3') : pal.led;
@@ -48,10 +48,10 @@ export function drawChargerPost(r: R, pal: Palette, px: number, py: number, stat
 }
 
 /**
- * A cable from the post's side to a vehicle's charge port, sagging towards the ground. While charging, the whole
- * cable glows green, breathing gently, with a glow at the port; otherwise it is just the black cable.
+ * A cable from the post's side to a vehicle's charge port, sagging towards the ground. A plugged-in vehicle is
+ * always charging, so the whole cable glows green, breathing gently, with a glow at the port.
  */
-export function drawChargeCable(r: R, pal: Palette, from: readonly number[], to: readonly number[], isCharging: boolean) {
+export function drawChargeCable(r: R, pal: Palette, from: readonly number[], to: readonly number[]) {
   const ctx = r.ctx;
   const S = (p: readonly number[]) => [(p[0] - p[1]) * C, (p[0] + p[1]) * 0.5 - p[2]] as const;
   const [ax, ay] = S(from), [bx, by] = S(to);
@@ -63,12 +63,6 @@ export function drawChargeCable(r: R, pal: Palette, from: readonly number[], to:
   };
   ctx.lineCap = 'round';
   trace();
-  if (!isCharging) {
-    ctx.strokeStyle = '#141519';
-    ctx.lineWidth = 0.08;
-    ctx.stroke();
-    return;
-  }
   const glow = (r.night ? 1 : 0.75) * (0.75 + 0.25 * Math.sin(r.t * 2.2 + from[0]));
   // a soft halo, then the cable itself lit green along its whole length
   ctx.strokeStyle = pal.led;

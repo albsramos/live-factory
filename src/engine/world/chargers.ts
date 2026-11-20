@@ -18,7 +18,7 @@ export function charger(pal: Palette, px: number, py: number, port: [number, num
     Math.min(port[0], px - HW) - 0.1, port[1], 0, Math.max(port[0], px + HW) + 0.1, py + HD + 0.05, H,
     (r) => {
       drawChargerPost(r, pal, px, py, spot.loading ? 'charging' : 'idle');
-      if (spot.loading) drawChargeCable(r, pal, [px + HW, py, 1.2], port, true);
+      if (spot.loading) drawChargeCable(r, pal, [px + HW, py, 1.2], port);
     },
     (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H),
   );

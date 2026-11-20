@@ -1,6 +1,7 @@
 // Building a smooth vehicle body as a stack of horizontal slices: each slice is a rounded plan, each slice to the
 // next is one convex part, and the side profile comes from how far forward and back, how wide and how rounded each
-// slice is. Decals (glass, light bars, wheel arches) then go onto the faces of the bands between slices.
+// slice is. Decals (glass, light bars, wheel arches) go onto the faces of the bands between slices, each band's
+// right after that band, so a mesh drawn in the order built (bottom up) lets the bands above cover them.
 
 import type { MeshBuilder } from '../mesh';
 
@@ -50,12 +51,18 @@ export class SlicedBody {
   /** the middle of the body, which decals face away from */
   private c: number[];
 
-  /** Build the bands between consecutive slices, `mats[i]` colouring band i's sides and its top. */
-  constructor(private m: MeshBuilder, slices: { z: number; pts: number[][] }[], mats: number[]) {
+  /**
+   * Build the bands between consecutive slices, `mats[i]` colouring band i's sides and its top, and after each band
+   * call `decorate` to lay that band's decals.
+   */
+  constructor(private m: MeshBuilder, slices: { z: number; pts: number[][] }[], mats: number[], decorate: (body: SlicedBody, band: number) => void) {
     this.rings = slices;
-    for (let i = 1; i < slices.length; i++) m.frustum(slices[i - 1].pts, slices[i - 1].z, slices[i].pts, slices[i].z, mats[i - 1], mats[i - 1]);
     const all = slices.flatMap((s) => s.pts.map(([l, w]) => [l, w, s.z]));
     this.c = [0, 1, 2].map((i) => all.reduce((a, p) => a + p[i], 0) / all.length);
+    for (let i = 1; i < slices.length; i++) {
+      m.frustum(slices[i - 1].pts, slices[i - 1].z, slices[i].pts, slices[i].z, mats[i - 1], mats[i - 1]);
+      decorate(this, i - 1);
+    }
   }
 
   /** The faces of the band between slice i and slice i + 1. */

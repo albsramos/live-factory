@@ -73,7 +73,8 @@ any other React setup.
   junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear (or flies on out
   of view if it never is).
 - **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
-  charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and full.
+  charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and charging
+  too.
 - **Robotaxi stop**: pods and the robovan pull into the bay, open their doors, let people off, pick people up and
   go. The robovan is a long champagne loaf on a dark skirt, with a dark glass arch along each side that wraps round
   its corners, a big glass door mid-side, and five thin light lines running all the way round it, white ahead and
