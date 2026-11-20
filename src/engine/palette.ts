@@ -47,6 +47,8 @@ export interface Palette {
   /** the glass halls over the compute platforms (world/glassHall.ts): the glass's tint, and daylight reflected in it */
   hallGlass: string;
   hallSheen: string;
+  /** the halls' roof glass: frosted, so a hall reads as a closed volume over what lies behind it */
+  hallRoof: string;
   glow: string;
   led: string;
   ledBlue: string;
@@ -122,6 +124,7 @@ export function lightPalette(): Palette {
     signGlow: 'rgba(0, 0, 0, 0)',
     hallGlass: 'rgba(196, 218, 236, 0.22)',
     hallSheen: 'rgba(255, 255, 255, 0.28)',
+    hallRoof: 'rgba(228, 236, 244, 0.62)',
     glow: '#7fe3ff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',
@@ -191,6 +194,7 @@ export function darkPalette(): Palette {
     signGlow: 'rgba(205, 225, 255, 0.9)',
     hallGlass: 'rgba(110, 150, 190, 0.12)',
     hallSheen: 'rgba(0, 0, 0, 0)',
+    hallRoof: 'rgba(52, 60, 74, 0.62)',
     glow: '#6fdcff',
     led: '#59e08f',
     ledBlue: '#6ab8ff',
