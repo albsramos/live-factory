@@ -74,9 +74,9 @@ export const MESH = {
     return m.build();
   })(),
   van: (() => {
-    // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass band wrapping up
-    // and over it near each end (leaning back), a big glass door mid-side, and a bundle of thin light lines running
-    // round it, white ahead and red behind
+    // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass arch along each
+    // side (up near each end, leaning back, and along the shoulder between), a big glass door mid-side, and a bundle
+    // of thin light lines running round it, white ahead and red behind
     const m = new MeshBuilder();
     const L = 3.6, W = 1.22;
     const fp = rounded(L, W, 0.55, 3);
@@ -92,19 +92,22 @@ export const MESH = {
       const side = (pts: number[][], mat: number) => m.decal(pts.map(([l, z]) => [l, sd * (W + 0.005), z]), mat, ...n(1));
       // the door's glass, its top corners rounded
       side([[-1.0, 0.42], [1.0, 0.42], [0.8, 1.44], [0.64, 1.58], [-0.64, 1.58], [-0.8, 1.44]], 1);
-      // the glass bands near the ends: up the side, over the shoulder (two slopes) and across the roof
+      // a dark glass arch on each side: up from the skirt near each end, leaning back, joined along the shoulder
+      const at = (e: number, z: number) => e * 2.35 - e * 0.17 * (z - 0.42);
       for (const e of [1, -1]) {
-        const at = (z: number) => e * 2.35 - e * 0.17 * (z - 0.42);
-        const band = (z0: number, w0: number, z1: number, w1: number) => {
-          const pts = [[at(z0), w0, z0], [at(z0) + e * 0.45, w0, z0], [at(z1) + e * 0.45, w1, z1], [at(z1), w1, z1]];
-          m.decal(pts.map(([l, w, z]) => [l, sd * (w + 0.005), z]), 1, 0, sd * (z1 - z0), w0 - w1);
-        };
-        band(0.42, W, 1.64, W);
-        band(1.64, W, 1.88, W * 0.955);
-        band(1.88, W * 0.955, 2.02, W * 0.85);
-        const t = 2.025, rw = W * 0.85;
-        if (sd === 1) m.decal([[at(t), -rw, t], [at(t) + e * 0.45, -rw, t], [at(t) + e * 0.45, rw, t], [at(t), rw, t]], 1, 0, 0, 1);
+        side([[at(e, 0.42), 0.42], [at(e, 0.42) + e * 0.45, 0.42], [at(e, 1.64) + e * 0.45, 1.64], [at(e, 1.64), 1.64]], 1);
+        // its inside corners rounded, so the legs curve into the shoulder
+        const R = 0.32, cl = at(e, 1.64) - e * R, cz = 1.64 - R;
+        const arc = [0, 1, 2, 3, 4].map((i) => [cl + e * R * Math.cos((i / 4) * Math.PI * 0.5), cz + R * Math.sin((i / 4) * Math.PI * 0.5)]);
+        side([[at(e, 1.64), 1.64], ...arc], 1);
       }
+      const rim = (z0: number, w0: number, z1: number, w1: number) => {
+        const out = (e: number, z: number) => at(e, z) + e * 0.45;
+        const pts = [[out(-1, z0), w0, z0], [out(1, z0), w0, z0], [out(1, z1), w1, z1], [out(-1, z1), w1, z1]];
+        m.decal(pts.map(([l, w, z]) => [l, sd * (w + 0.005), z]), 1, 0, sd * (z1 - z0), w0 - w1);
+      };
+      rim(1.64, W, 1.88, W * 0.955);
+      rim(1.88, W * 0.955, 2.02, W * 0.85);
       // the light lines along the side: red over the last stretch to the tail, white the rest of the way
       for (let i = 0; i < 4; i++) {
         const z0 = 1.12 + i * 0.075, z1 = z0 + 0.03;
