@@ -241,5 +241,49 @@
       "frameP50": 24.1,
       "frameP95": 35.6
     }
-  ]
+  ],
+  "site": {
+    "firstPaintMs": 0,
+    "loadMs": 0,
+    "longTasks": [
+      {
+        "start": 385,
+        "ms": 124
+      },
+      {
+        "start": 525,
+        "ms": 127
+      }
+    ],
+    "blockingMs": 151,
+    "steady": {
+      "mainThreadPct": 26.8,
+      "scriptPct": 24,
+      "browserCpuPct": 83.7,
+      "heapMB": 5
+    },
+    "idle": {
+      "mainThreadPct": 0.2,
+      "scriptPct": 0,
+      "browserCpuPct": 0.5,
+      "heapMB": 5.1
+    },
+    "offscreen": {
+      "mainThreadPct": 0.1,
+      "scriptPct": 0,
+      "browserCpuPct": 0.2,
+      "heapMB": 5.3
+    },
+    "emptyTab": {
+      "mainThreadPct": 0.1,
+      "scriptPct": 0,
+      "browserCpuPct": 0.2,
+      "heapMB": 5.9
+    }
+  },
+  "size": {
+    "libraryKB": 186.5,
+    "libraryGzipKB": 55.9,
+    "siteJsGzipKB": 117.6
+  }
 }
