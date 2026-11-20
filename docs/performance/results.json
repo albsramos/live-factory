@@ -1,0 +1,99 @@
+{
+  "machine": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cores": 4,
+    "browser": "headless Chromium (software rendering, no GPU)",
+    "date": "2026-11-20",
+    "secondsPerRun": 20
+  },
+  "fpsCap": [
+    {
+      "theme": "light",
+      "maxFps": 0,
+      "mainThreadPct": 99.7,
+      "scriptPct": 22.8,
+      "browserCpuPct": 110.1,
+      "heapMB": 17.7,
+      "fps": 43.1,
+      "frameP50": 4.8,
+      "frameP95": 7
+    },
+    {
+      "theme": "light",
+      "maxFps": 30,
+      "mainThreadPct": 75,
+      "scriptPct": 16.9,
+      "browserCpuPct": 84.3,
+      "heapMB": 13.6,
+      "fps": 30,
+      "frameP50": 5,
+      "frameP95": 7.7
+    },
+    {
+      "theme": "light",
+      "maxFps": 20,
+      "mainThreadPct": 52.8,
+      "scriptPct": 12,
+      "browserCpuPct": 60.9,
+      "heapMB": 8.8,
+      "fps": 20,
+      "frameP50": 5.4,
+      "frameP95": 8.2
+    },
+    {
+      "theme": "light",
+      "maxFps": 15,
+      "mainThreadPct": 44.7,
+      "scriptPct": 10.5,
+      "browserCpuPct": 51.5,
+      "heapMB": 8.7,
+      "fps": 15,
+      "frameP50": 5.9,
+      "frameP95": 9.7
+    },
+    {
+      "theme": "dark",
+      "maxFps": 0,
+      "mainThreadPct": 99.9,
+      "scriptPct": 15.3,
+      "browserCpuPct": 108.6,
+      "heapMB": 16.3,
+      "fps": 24.3,
+      "frameP50": 5.8,
+      "frameP95": 8.6
+    },
+    {
+      "theme": "dark",
+      "maxFps": 30,
+      "mainThreadPct": 99.6,
+      "scriptPct": 15.1,
+      "browserCpuPct": 107.8,
+      "heapMB": 13.4,
+      "fps": 24.5,
+      "frameP50": 5.6,
+      "frameP95": 8.2
+    },
+    {
+      "theme": "dark",
+      "maxFps": 20,
+      "mainThreadPct": 86.5,
+      "scriptPct": 12.7,
+      "browserCpuPct": 94.1,
+      "heapMB": 10.9,
+      "fps": 19.8,
+      "frameP50": 5.8,
+      "frameP95": 8.8
+    },
+    {
+      "theme": "dark",
+      "maxFps": 15,
+      "mainThreadPct": 65.2,
+      "scriptPct": 9.9,
+      "browserCpuPct": 71.7,
+      "heapMB": 12.6,
+      "fps": 15,
+      "frameP50": 5.8,
+      "frameP95": 9
+    }
+  ]
+}
