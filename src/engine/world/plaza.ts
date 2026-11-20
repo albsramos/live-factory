@@ -1,17 +1,20 @@
-// The factory's front, after Giga Berlin's: a thin bronze roof canopy along the top of the facade,
-// flaring out to a sharp point at the plaza's corner, and two angular planters on the plaza with LED strips along
-// their top edges that glow warm at night. The planters stand clear of every walkway (and the walkers' offset), the
+// The factory's front, after Giga Berlin's: a glass rooftop bar along the front edge of the roof, under a thin bronze
+// roof that overhangs the facade and flares out to a sharp point at the plaza's corner, and two angular planters on
+// the plaza with LED strips along their top edges that glow warm at night. The planters stand clear of every walkway (and the walkers' offset), the
 // chatting group and the bench (walkways.ts, streetLife.ts).
 
 import { C } from '../core';
 import type { R } from '../draw';
+import { windowsX, windowsY } from '../details';
 import { MeshBuilder, drawMesh } from '../mesh';
 import type { Palette } from '../palette';
-import { FnItem } from '../statics';
+import { BoxItem, FnItem, type Static } from '../statics';
 
-/** the canopy's plan, counter-clockwise (x, y): over the roof's edge, out past the facade (x 26), widening to a point */
-const CANOPY = [[25.2, 37], [27.6, 37], [28.8, 74.4], [25.2, 72.6]];
-const CANOPY_Z = [13.0, 13.25];
+/** the rooftop bar on the factory's roof (z 13), set back a little from its facade (x 26): [x0, y0, x1, y1, height] */
+const BAR = [21.5, 40, 25.8, 70, 3.4];
+/** the bar's roof, counter-clockwise (x, y): over the whole bar, out past the facade, widening to a point at the corner */
+const CANOPY = [[21.2, 39.2], [26.6, 39.2], [28.2, 74], [21.2, 71.2]];
+const CANOPY_Z = [16.4, 16.65];
 /** the planters' plans, counter-clockwise (x, y), and their height */
 const PLANTERS = [
   [[33.0, 57.0], [35.0, 52.2], [39.5, 53.5], [39.5, 57.0]],
@@ -28,12 +31,19 @@ function prism(plan: number[][], z0: number, z1: number) {
   return m.build();
 }
 
-/** The canopy and the planters, as static items. */
-export function factoryFront(pal: Palette) {
+/** The rooftop bar and its roof, and the planters, as static items. */
+export function factoryFront(pal: Palette, edge: string) {
   const canopy = prism(CANOPY, CANOPY_Z[0], CANOPY_Z[1]);
   const [cx0, cy0, cx1, cy1] = bounds(CANOPY);
-  const items = [
-    // bronze all over, as at Giga Berlin
+  const [bx0, by0, bx1, by1, bh] = BAR;
+  // glass all round, lit at night; it stands on the roof, so it casts no shadow on the ground
+  const glass = [{ top: 0.15, bot: bh - 0.15, every: 1.5 }];
+  const items: Static[] = [
+    new BoxItem(bx0, by0, 13, bx1, by1, 13 + bh, pal.factory, { edge }, (r) => {
+      windowsX(r, pal, bx1, by0, by1, 13 + bh, glass);
+      windowsY(r, pal, bx0, bx1, by1, 13 + bh, glass);
+    }, false),
+    // the roof: bronze all over, as at Giga Berlin
     new FnItem(cx0, cy0, CANOPY_Z[0], cx1, cy1, CANOPY_Z[1], (r) => drawMesh(r, canopy, 0, 0, 0, 1, 0, [pal.gold, pal.gold])).still(),
   ];
   for (const plan of PLANTERS) {
