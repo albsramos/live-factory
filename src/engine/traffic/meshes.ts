@@ -2,6 +2,7 @@
 // paint, 6 and 7 dark trim.
 
 import { MeshBuilder } from '../mesh';
+import { suvMesh } from './suvMesh';
 import { chassisMesh, tractorMesh } from './tractorMesh';
 
 const box = (l0: number, l1: number, w: number): number[][] => [[l1, -w], [l1, w], [l0, w], [l0, -w]];
@@ -43,16 +44,7 @@ export const MESH = {
     lights(m, -2.351, 0.66, 0.64, 0.72, 4);
     return m.build();
   })(),
-  suv: (() => {
-    const m = new MeshBuilder();
-    m.frustum(box(-2.1, 2.1, 0.9), 0, box(-2.1, 2.1, 0.9), 0.5, 2, 2);
-    const body = rounded(2.4, 1.0, 0.4, 2);
-    m.frustum(body, 0.36, body.map(([l, w]) => [l * 0.97 - 0.02, w * 0.95]), 1.0, 0, 0);
-    m.frustum(box(-1.95, 1.0, 0.9), 1.0, box(-1.75, 0.3, 0.66), 1.65, 1, 1);
-    lights(m, 2.401, 0.64, 0.72, 0.8, 3);
-    lights(m, -2.401, 0.68, 0.78, 0.86, 4);
-    return m.build();
-  })(),
+  suv: suvMesh(),
   pickup: (() => {
     const m = new MeshBuilder();
     m.frustum(box(-2.5, 2.5, 0.95), 0, box(-2.5, 2.5, 0.95), 0.5, 2, 2);
