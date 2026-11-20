@@ -28,6 +28,7 @@ import type { Activity, Env } from '../activities/activity';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
+import { roofWalks } from './plaza';
 import type { Branding } from './lettering';
 import { pocketParkBenches, streetFurniture, chat, staffBreak } from './streetLife';
 import { walkways } from './walkways';
@@ -97,6 +98,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(new DogWalk(env));
   // the roadster that now and then hops over the avenue's traffic, on a random stream of its own
   acts.push(new Roadsters(env, makeRng(opts.seed * 7919 + 17)));
+  // two Optimus robots on the factory's roof terrace, also on a stream of their own
+  acts.push(...roofWalks({ ...env, rng: makeRng(opts.seed * 6271 + 29) }));
   // the factory wing, car park, compute, Megapacks, charging hub and staff park out on the sides
   const outskirts = buildOutskirts(env, sprites, edge);
   acts.push(...outskirts.acts);

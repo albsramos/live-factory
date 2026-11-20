@@ -12,7 +12,8 @@ import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
 import { drawEntrance, entrancePillars } from './entrance';
 import { drawLettering, type Branding } from './lettering';
-import { drawRoofTerrace, factoryFront } from './plaza';
+import { TERRACE_AREA, drawRoofTerrace, factoryFront } from './plaza';
+import { solarRows } from './solarRows';
 import { Crane } from '../activities/crane';
 import { Looper } from '../activities/looper';
 import type { TruckYard } from '../activities/truckYard';
@@ -28,16 +29,9 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
   // the ground floor, either side of the recessed entrance (entrance.ts)
   const groundFloor: Band = { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 7.6], [20.4, 35.5]] };
   const factoryBandsX: Band[] = [{ top: 1.2, bot: 3.8, every: 1.5 }, { top: 5.2, bot: 7.8, every: 1.5 }, groundFloor];
-  // with the lettering on, the panel band it sits on widens along the lettered stretch (u 5 to 24.5, on the mullion
-  // grid): the window ribbons above and below it step back 0.4 m there, so the letters have room above and below
-  const sides = [[0.5, 5], [24.5, 35.5]], lettered = [[5, 24.5]];
-  const letteredBandsX: Band[] = [
-    { top: 1.2, bot: 3.8, every: 1.5, spans: sides },
-    { top: 1.2, bot: 3.4, every: 1.5, spans: lettered },
-    { top: 5.2, bot: 7.8, every: 1.5, spans: sides },
-    { top: 5.6, bot: 7.8, every: 1.5, spans: lettered },
-    groundFloor,
-  ];
+  // with the lettering on, the panel band it sits on is wider all along this face: the window ribbons above and below
+  // it step back 0.4 m, so the letters have room above and below
+  const letteredBandsX: Band[] = [{ top: 1.2, bot: 3.4, every: 1.5 }, { top: 5.6, bot: 7.8, every: 1.5 }, groundFloor];
   const factoryBandsY: Band[] = [
     { top: 1.2, bot: 3.8, every: 1.5, spans: [[0.5, 65.5]] },
     { top: 5.2, bot: 7.8, every: 1.5, spans: [[0.5, 65.5]] },
@@ -47,7 +41,6 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
     new BoxItem(-40, 36, 0, 26, 72, 13, pal.factory, { edge }, (r) => {
       windowsX(r, pal, 26, 36, 72, 13, branding.isOn ? letteredBandsX : factoryBandsX);
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
-      solarRoof(r, pal, -40, 36, 26, 72, 13, 1.2, 2.6);
       drawRoofTerrace(r, pal);
       drawEntrance(r, pal, edge);
       // the opt-in lettering, centred on the entrance (u 8 to 20 on this face) and in its widened panel band (3.4 to 5.6)
@@ -55,6 +48,8 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
     }),
   );
   S.push(...entrancePillars(pal, edge), ...factoryFront(pal, edge));
+  // the roof's solar panels, in rows tilted at 45° that stop short of the roof terrace
+  S.push(...solarRows(pal, { x0: -40, y0: 36, x1: 26, y1: 72, z: 13, inset: 1.2, skip: TERRACE_AREA }));
 
   // dock wing with roll-up doors and a tall atrium window above the compute platform
   const dockDoors = [...yard.docks.map((d) => d.y), yard.bay.y];

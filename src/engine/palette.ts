@@ -10,8 +10,6 @@ export interface Palette {
   ground: string;
   pad: string;
   plaza: string;
-  /** the reflecting pool on the factory's roof terrace (world/plaza.ts) */
-  pool: string;
   /** the small park's grass, a breath greener than the plaza */
   lawn: string;
   road: string;
@@ -89,7 +87,6 @@ export function lightPalette(): Palette {
     ground: '#ebebef',
     pad: '#e4e4e9',
     plaza: '#efeff2',
-    pool: '#a9c6da',
     lawn: '#d5e2cf',
     road: '#dcdce2',
     roadLine: '#f6f6f8',
@@ -158,7 +155,6 @@ export function darkPalette(): Palette {
     ground: '#1b1c21',
     pad: '#1f2026',
     plaza: '#1d1e23',
-    pool: '#1f3346',
     lawn: '#1e2c22',
     road: '#141519',
     roadLine: '#3a3c44',

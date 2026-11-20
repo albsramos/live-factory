@@ -66,9 +66,10 @@ any other React setup.
   it, a tall glass atrium in the dock wing glows warm at night.
 - **The factory's front**: the ground floor steps back in a V under the storeys above, its glass walls angling in to
   a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it. On the roof over
-  the entrance, a terrace: a green roof round paving with tables under umbrellas and a reflecting pool, and a glass
-  pavilion under a big pale roof plate that comes to a point towards the front. Two angular planters on the plaza
-  have LED strips that glow warm at night.
+  the entrance, a terrace: a green roof round paving with tables and benches where two Optimus robots walk about,
+  and a glass pavilion under a big pale roof plate that comes to a shallow point towards the front; across the rest
+  of the roof the solar panels stand in rows tilted at 45°. Two angular planters on the plaza have LED strips that
+  glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
   east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
