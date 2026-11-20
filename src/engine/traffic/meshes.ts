@@ -75,51 +75,65 @@ export const MESH = {
   })(),
   van: (() => {
     // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass arch along each
-    // side from end to end (up at the ends and along the shoulder), a big glass door mid-side, and a bundle of thin
-    // light lines running round it, white ahead and red behind
+    // side that wraps round the corners at both ends and runs along the shoulder, a big glass door mid-side, and a
+    // bundle of thin light lines running all the way round it, white ahead and red at the tail
     const m = new MeshBuilder();
-    const L = 3.6, W = 1.22;
+    const L = 3.6, W = 1.22, END = L - 0.55;
     const fp = rounded(L, W, 0.55, 3);
     m.frustum(inset(fp, 0.97), 0.04, inset(fp, 0.985), 0.4, 2, 2);
-    // body, then its rounded shoulder up to the roof
+    // body, then its rounded shoulder up to the roof: [height, length scale, width scale]
     const steps: [number, number, number][] = [[0.38, 1, 1], [1.64, 1, 1], [1.88, 0.985, 0.955], [2.02, 0.94, 0.85]];
     for (let i = 1; i < steps.length; i++) {
       const [z0, l0, w0] = steps[i - 1], [z1, l1, w1] = steps[i];
       m.frustum(fp.map(([l, w]) => [l * l0, w * w0]), z0, fp.map(([l, w]) => [l * l1, w * w1]), z1, 0, 0);
     }
+    // the faces round the body between two steps, each as its four corners (bottom edge, then top edge back)
+    const ring = (a: number) =>
+      fp.map((p, i) => {
+        const q = fp[(i + 1) % fp.length], [z0, l0, w0] = steps[a], [z1, l1, w1] = steps[a + 1];
+        return [[p[0] * l0, p[1] * w0, z0], [q[0] * l0, q[1] * w0, z0], [q[0] * l1, q[1] * w1, z1], [p[0] * l1, p[1] * w1, z1]];
+      });
+    const mix3 = (a: number[], b: number[], t: number) => a.map((v, i) => v + (b[i] - v) * t);
+    /** A decal on a face: the part from u0 to u1 along it and v0 to v1 up it, lifted just off it. */
+    const on = (f: number[][], u0: number, u1: number, v0: number, v1: number, mat: number) => {
+      const at = (u: number, v: number) => mix3(mix3(f[0], f[1], u), mix3(f[3], f[2], u), v);
+      const a = f[1].map((v, i) => v - f[0][i]), b = f[3].map((v, i) => v - f[0][i]);
+      let n = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+      const c = at(0.5, 0.5);
+      if (n[0] * c[0] + n[1] * c[1] + n[2] * (c[2] - 1) < 0) n = n.map((v) => -v);
+      const k = 0.005 / (Math.hypot(n[0], n[1], n[2]) || 1);
+      m.decal([at(u0, v0), at(u1, v0), at(u1, v1), at(u0, v1)].map(([l, w, z]) => [l + n[0] * k, w + n[1] * k, z + n[2] * k]), mat, n[0], n[1], n[2]);
+    };
+    const plan = (f: number[][]) => [f[1][0] - f[0][0], f[1][1] - f[0][1]];
+    const isCorner = (f: number[][]) => Math.hypot(...plan(f)) < 0.5;
+    const isSide = (f: number[][]) => Math.abs(plan(f)[0]) > 3;
+    const body = ring(0), up = (z: number) => (z - 0.38) / 1.26;
     for (const sd of [1, -1]) {
-      const n = (z: number) => [0, sd * z, 0] as const;
-      const side = (pts: number[][], mat: number) => m.decal(pts.map(([l, z]) => [l, sd * (W + 0.005), z]), mat, ...n(1));
+      const side = (pts: number[][], mat: number) => m.decal(pts.map(([l, z]) => [l, sd * (W + 0.005), z]), mat, 0, sd, 0);
       // the door's glass, its top corners rounded
       side([[-1.0, 0.42], [1.0, 0.42], [0.8, 1.44], [0.64, 1.58], [-0.64, 1.58], [-0.8, 1.44]], 1);
-      // a dark glass arch on each side, from end to end: its legs stand at the ends, where the body starts to round
-      // off, and its top runs along the shoulder; the inside corners curve
-      const end = L - 0.55;
+      // the arch's legs: the last stretch of the side before each corner, their inside corners curved
       for (const e of [1, -1]) {
-        side([[e * (end - 0.42), 0.42], [e * end, 0.42], [e * end, 1.64], [e * (end - 0.42), 1.64]], 1);
-        const R = 0.32, cl = e * (end - 0.42 - R), cz = 1.64 - R;
+        side([[e * (END - 0.25), 0.42], [e * END, 0.42], [e * END, 1.64], [e * (END - 0.25), 1.64]], 1);
+        const R = 0.32, cl = e * (END - 0.25 - R), cz = 1.64 - R;
         const arc = [0, 1, 2, 3, 4].map((i) => [cl + e * R * Math.cos((i / 4) * Math.PI * 0.5), cz + R * Math.sin((i / 4) * Math.PI * 0.5)]);
-        side([[e * (end - 0.42), 1.64], ...arc], 1);
-      }
-      // along the shoulder's two slopes, as far as each is flat
-      const rim = (z0: number, w0: number, l0: number, z1: number, w1: number, l1: number) => {
-        const pts = [[-end * l0, w0, z0], [end * l0, w0, z0], [end * l1, w1, z1], [-end * l1, w1, z1]];
-        m.decal(pts.map(([l, w, z]) => [l, sd * (w + 0.005), z]), 1, 0, sd * (z1 - z0), w0 - w1);
-      };
-      rim(1.64, W, 1, 1.88, W * 0.955, 0.985);
-      rim(1.88, W * 0.955, 0.985, 2.02, W * 0.85, 0.94);
-      // the light lines along the side: red over the last stretch to the tail, white the rest of the way
-      for (let i = 0; i < 4; i++) {
-        const z0 = 1.12 + i * 0.075, z1 = z0 + 0.03;
-        side([[-3.02, z0], [-2.2, z0], [-2.2, z1], [-3.02, z1]], 4);
-        side([[-2.2, z0], [3.02, z0], [3.02, z1], [-2.2, z1]], 3);
+        side([[e * (END - 0.25), 1.64], ...arc], 1);
       }
     }
-    // and across each end
+    // the arch wraps round every corner of the body, and runs along the shoulder over the sides and the corners
+    for (const f of body) if (isCorner(f)) on(f, 0, 1, up(0.42), 1, 1);
+    for (const f of [...ring(1), ...ring(2)]) if (isCorner(f) || isSide(f)) on(f, 0, 1, 0, 1, 1);
+    // the light lines, all the way round: red over the tail's corners and the last stretch of the sides, white elsewhere
     for (let i = 0; i < 4; i++) {
-      const z0 = 1.12 + i * 0.075, z1 = z0 + 0.03;
-      lights(m, L + 0.001, 0.6, z0, z1, 3);
-      lights(m, -L - 0.001, 0.6, z0, z1, 4);
+      const v0 = up(1.12 + i * 0.075), v1 = up(1.15 + i * 0.075);
+      for (const f of body) {
+        const l0 = f[0][0], l1 = f[1][0];
+        if (isSide(f)) {
+          const t = (-2.2 - l0) / (l1 - l0);
+          on(f, 0, t, v0, v1, l0 < l1 ? 4 : 3);
+          on(f, t, 1, v0, v1, l0 < l1 ? 3 : 4);
+        } else on(f, 0, 1, v0, v1, l0 + l1 < 0 ? 4 : 3);
+      }
     }
     return m.build();
   })(),

@@ -152,8 +152,10 @@ export class MeshBuilder {
 
 export type MatSlot = Mat | Glaze | string;
 
-const SCR = new Float64Array(3 * 256);
-const WLD = new Float64Array(3 * 256);
+// scratch for a mesh's vertices on screen and in the world; a mesh may have up to MAX_VERTS of them
+const MAX_VERTS = 2048;
+const SCR = new Float64Array(2 * MAX_VERTS);
+const WLD = new Float64Array(3 * MAX_VERTS);
 const FACE: number[] = [];
 
 /**
@@ -166,6 +168,7 @@ const FACE: number[] = [];
 export function drawMesh(r: R, m: Mesh, px: number, py: number, pz: number, hx: number, hy: number, mats: MatSlot[], roll?: number, rollZ = 0) {
   const v = m.v;
   const n = v.length / 3;
+  if (n > MAX_VERTS) throw new Error(`live-factory: a mesh has ${n} vertices, over ${MAX_VERTS}`);
   POSE[0] = px;
   POSE[1] = py;
   POSE[2] = pz;
