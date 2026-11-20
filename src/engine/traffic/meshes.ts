@@ -74,14 +74,50 @@ export const MESH = {
     return m.build();
   })(),
   van: (() => {
+    // the robovan: a long champagne loaf on a dark ribbed skirt that hides the wheels, a dark glass band wrapping up
+    // and over it near each end (leaning back), a big glass door mid-side, and a bundle of thin light lines running
+    // round it, white ahead and red behind
     const m = new MeshBuilder();
-    m.frustum(box(-3.1, 3.1, 1.05), 0, box(-3.1, 3.1, 1.05), 0.36, 2, 2);
-    const fp = rounded(3.6, 1.22, 1.0, 3);
-    m.frustum(fp, 0.28, inset(fp, 0.99), 0.95, 0, 0);
-    m.frustum(inset(fp, 0.985), 0.95, inset(fp, 0.96), 1.72, 1, 1);
-    m.frustum(inset(fp, 0.96), 1.72, inset(rounded(3.3, 1.0, 0.95, 3), 1), 2.02, 0, 0);
-    lights(m, 3.601, 0.2, 0.62, 0.68, 3);
-    lights(m, -3.601, 0.22, 0.62, 0.68, 4);
+    const L = 3.6, W = 1.22;
+    const fp = rounded(L, W, 0.55, 3);
+    m.frustum(inset(fp, 0.97), 0.04, inset(fp, 0.985), 0.4, 2, 2);
+    // body, then its rounded shoulder up to the roof
+    const steps: [number, number, number][] = [[0.38, 1, 1], [1.64, 1, 1], [1.88, 0.985, 0.955], [2.02, 0.94, 0.85]];
+    for (let i = 1; i < steps.length; i++) {
+      const [z0, l0, w0] = steps[i - 1], [z1, l1, w1] = steps[i];
+      m.frustum(fp.map(([l, w]) => [l * l0, w * w0]), z0, fp.map(([l, w]) => [l * l1, w * w1]), z1, 0, 0);
+    }
+    for (const sd of [1, -1]) {
+      const n = (z: number) => [0, sd * z, 0] as const;
+      const side = (pts: number[][], mat: number) => m.decal(pts.map(([l, z]) => [l, sd * (W + 0.005), z]), mat, ...n(1));
+      // the door's glass, its top corners rounded
+      side([[-1.0, 0.42], [1.0, 0.42], [0.8, 1.44], [0.64, 1.58], [-0.64, 1.58], [-0.8, 1.44]], 1);
+      // the glass bands near the ends: up the side, over the shoulder (two slopes) and across the roof
+      for (const e of [1, -1]) {
+        const at = (z: number) => e * 2.35 - e * 0.17 * (z - 0.42);
+        const band = (z0: number, w0: number, z1: number, w1: number) => {
+          const pts = [[at(z0), w0, z0], [at(z0) + e * 0.45, w0, z0], [at(z1) + e * 0.45, w1, z1], [at(z1), w1, z1]];
+          m.decal(pts.map(([l, w, z]) => [l, sd * (w + 0.005), z]), 1, 0, sd * (z1 - z0), w0 - w1);
+        };
+        band(0.42, W, 1.64, W);
+        band(1.64, W, 1.88, W * 0.955);
+        band(1.88, W * 0.955, 2.02, W * 0.85);
+        const t = 2.025, rw = W * 0.85;
+        if (sd === 1) m.decal([[at(t), -rw, t], [at(t) + e * 0.45, -rw, t], [at(t) + e * 0.45, rw, t], [at(t), rw, t]], 1, 0, 0, 1);
+      }
+      // the light lines along the side: red over the last stretch to the tail, white the rest of the way
+      for (let i = 0; i < 4; i++) {
+        const z0 = 1.12 + i * 0.075, z1 = z0 + 0.03;
+        side([[-3.02, z0], [-2.2, z0], [-2.2, z1], [-3.02, z1]], 4);
+        side([[-2.2, z0], [3.02, z0], [3.02, z1], [-2.2, z1]], 3);
+      }
+    }
+    // and across each end
+    for (let i = 0; i < 4; i++) {
+      const z0 = 1.12 + i * 0.075, z1 = z0 + 0.03;
+      lights(m, L + 0.001, 0.6, z0, z1, 3);
+      lights(m, -L - 0.001, 0.6, z0, z1, 4);
+    }
     return m.build();
   })(),
   tractor: (() => {

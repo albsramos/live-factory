@@ -16,7 +16,7 @@ const BARS: Partial<Record<VehicleKind, { front: Bar; rear: Bar; reach: number }
   suv: { front: [2.4, 0.64, 0.76], rear: [-2.4, 0.68, 0.82], reach: 7 },
   pickup: { front: [2.85, 0.98, 0.94], rear: [-2.85, 1.0, 1.18], reach: 7.5 },
   pod: { front: [1.9, 0.38, 0.58], rear: [-1.9, 0.4, 0.59], reach: 5.5 },
-  van: { front: [3.6, 0.55, 0.65], rear: [-3.6, 0.55, 0.65], reach: 7.5 },
+  van: { front: [3.6, 0.55, 1.22], rear: [-3.6, 0.55, 1.22], reach: 7.5 },
   roadster: { front: [2.3, 0.6, 0.51], rear: [-2.3, 0.62, 0.49], reach: 7.5 },
   semi: { front: [3.17, 0.95, 1.04], rear: [-12.8, 1.0, 1.38], reach: 9.5 },
 };
