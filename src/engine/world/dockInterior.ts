@@ -1,6 +1,7 @@
 // Inside the dock wing, seen in two places. Where the wing grows out in glass over the compute, its +x face is open
-// to the extension (no wall or window between them): a storeroom, its far wall lined with shelves of boxes, where two
-// Optimus robots carry boxes in from the dock side and put them away. And through an open garage between the second
+// to the extension (no wall or window between them): a storeroom, its far wall lined with shelves of boxes, where three
+// Optimus robots come in from the dock side with boxes, put them away, take others off the shelves and carry them
+// out the other way. And through an open garage between the second
 // dock and the bay, the boxes the yard robots take out to the pallets. Both are drawn on the wing's face, clipped to
 // their openings, like the main entrance's recess: the robots inside are within the wing's box, so as items of their
 // own they couldn't be sorted.
@@ -22,26 +23,50 @@ const SHELF = { x0: 26.1, x1: 27.3, top: 4.4, levels: [0.9, 1.8, 2.7, 3.6] };
 /** The open garage between the second dock (y 10.5) and the bay (16.5): its sides along the face, and its height. */
 export const GARAGE = { y0: 12.3, y1: 14.7, h: 3.4 };
 
+/** Where the storeroom's robots come in, from the dock side out of view to the north, and leave, out of view to the
+ * south: past the ends of the open face (y 26.4 to 36), the wing's wall hides them. */
+const ENTER_Y = 23.5, LEAVE_Y = 38.8;
+
 export class DockInterior implements Activity {
   private bots: Walker[];
-  private loops: Step[][];
+  private rounds: Step[][];
+  private rng: () => number;
 
   constructor(private pal: Palette, seed: number) {
     // on a random stream of their own, so the rest of the seeded scene stays as it was
-    const rng = makeRng(seed);
+    this.rng = makeRng(seed);
     const carry = (on: boolean) => (w: Walker) => (w.carry = on);
-    // pick up from the boxes come in from the docks, at the north end; put away on the shelves, turned to face them
-    this.loops = [28.4, 29.2].map((x, i) => [
-      { x, y: 28.1, wait: 0.9 + i * 0.4, face: [0, -1], then: carry(true) },
-      { x, y: 31.4 + i * 1.6, wait: 1.0 + i * 0.3, face: [-1, 0], then: carry(false) },
+    // three robots, each on a lane of its own: in from the north with a box, put it on the shelves, take another box
+    // off them further along, and out to the south with it
+    this.rounds = [
+      [28.2, 29.2, 33.4],
+      [28.9, 31.0, 34.2],
+      [29.6, 30.0, 32.4],
+    ].map(([x, drop, pick]) => [
+      { x, y: drop, wait: 1.0, face: [-1, 0], then: carry(false) },
+      { x, y: pick, wait: 0.9, face: [-1, 0], then: carry(true) },
+      { x, y: LEAVE_Y },
     ]);
-    this.bots = this.loops.map((loop, i) => new Walker('robot', pal, rng, loop[0].x, i ? 31.5 : 29.5));
+    // spread out along their rounds for the opening frame
+    this.bots = this.rounds.map((round, i) => {
+      const w = new Walker('robot', pal, this.rng, round[0].x, [ENTER_Y + 2, 32, 26][i]);
+      w.carry = i !== 1;
+      w.go(i === 1 ? round.slice(1) : [...round]);
+      return w;
+    });
   }
 
   update(dt: number) {
     this.bots.forEach((w, i) => {
-      // a fresh copy each round: the walker uses its steps up as it goes
-      if (!w.steps.length && w.waitT <= 0) w.go([...this.loops[i]]);
+      if (!w.steps.length && w.waitT <= 0) {
+        // out of view to the south: back in at the north with a fresh box, after a while
+        w.x = this.rounds[i][0].x;
+        w.y = ENTER_Y;
+        w.carry = true;
+        w.waitT = 1 + this.rng() * 3;
+        // a fresh copy each round: the walker uses its steps up as it goes
+        w.go([...this.rounds[i]]);
+      }
       w.update(dt);
     });
   }
@@ -58,8 +83,6 @@ export class DockInterior implements Activity {
         }
         box(r, SHELF.x0, y + 2.4, 0, SHELF.x1, y + 2.48, SHELF.top, pal.steel);
       }
-      // the boxes come in from the docks, waiting to be put away
-      for (let i = 0; i < 3; i++) box(r, 27.9, 26.7, i * 0.5, 29.7, 27.5, (i + 1) * 0.5, pal.crate);
       // the robots, back to front
       for (const w of [...this.bots].sort((a, b) => a.x + a.y - (b.x + b.y))) w.draw(r);
     });
