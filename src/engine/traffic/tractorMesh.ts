@@ -51,6 +51,9 @@ export function tractorMesh(): Mesh {
   // wheels and frame, the fifth-wheel plate, and the black bumper wrapping the nose
   m.frustum(box(-3.0, 2.7, 0.92), 0, box(-3.0, 2.7, 0.92), 0.8, 2, 2);
   m.frustum(box(-2.5, -0.9, 0.7), 0.8, box(-2.5, -0.9, 0.7), 1.0, 2, 2);
+  // the dark fairing in the gap between the cab and the trailer: built before the cab and a little narrower, so
+  // the body always stands in front of it and it only shows in that gap
+  m.frustum(box(-1.0, LR + 0.05, 1.14), 1.0, box(-1.0, LR + 0.05, 0.84), 3.88, 2, 2);
   const bumper = plan(3.08, 1.2, 0.5);
   m.frustum(bumper, 0.36, bumper, 0.8, 2, 2);
 
@@ -112,14 +115,6 @@ export function tractorMesh(): Mesh {
     if (isFront(f)) on(f, 0, 1, 0.86, 0.93, 3);
     else if (isNoseCorner(f)) on(f, 0, 1, 0.82, 0.95, 3);
   }
-  // a dark seam down the cab's trailing edge, where it meets the trailer
-  for (let i = 1; i < rings.length - 1; i++)
-    for (const f of band(i))
-      if (isSide(f)) {
-        const fwd = f[0][0] > f[1][0];
-        on(f, fwd ? 0.93 : 0, fwd ? 1 : 0.07, 0, 1, 2);
-      }
-
   // stacked bottom up, so drawn in the order built
   return m.build();
 }
