@@ -1,6 +1,6 @@
 {
   "name": "live-factory",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A self-running isometric city scene for React: cars drive, trucks get loaded, humanoid robots walk around. One component, no text, no dependencies besides React.",
   "type": "module",
   "main": "./dist/index.cjs",

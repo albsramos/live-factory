@@ -145,6 +145,9 @@ it a height, or put it in a sized box, and it fills that instead:
 In 0.2.0 `paused` became `isPaused` and `respectReducedMotion` became `isReducedMotionIgnored` (inverted: leave it
 out to keep respecting the setting).
 
+In 0.3.0 the scene draws at most 30 frames a second (`maxFps`); pass `maxFps={0}` to draw on every screen refresh
+as before.
+
 ## Dark mode
 
 With `theme="auto"` (the default) the scene takes the theme of the page around it, checking these in order:
