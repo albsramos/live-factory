@@ -66,9 +66,10 @@ any other React setup.
   angling in to a dark door at the tip, with two pillars in the mouth. Staff and robots come and go through it.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
   east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
-- **The roadster**: every minute or so a low roadster with gold-tinted glass comes along the avenue and hops. Four
+- **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
   thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
-  junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear.
+  junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear (or flies on out
+  of view if it never is).
 - **Charging**: in the charging lot, the staff car park and the charging hub, cars nose up to slim white chargers,
   charge with the cable to the car glowing green, back out and leave; the cars that stay are plugged in and full.
 - **Robotaxi stop**: pods and the van pull into the bay, open their doors, let people off, pick people up and go.
@@ -138,7 +139,8 @@ With `theme="auto"` (the default) the scene takes the theme of the page around i
 3. The visitor's system setting (`prefers-color-scheme`).
 
 It watches those attributes, classes and the system setting, so a theme toggle on your site switches the scene as
-well. The outgoing frame dissolves into the new one over about half a second. Before the first frame, the box shows
+well. The scene carries on exactly where it was, every car and person in place, and only its colours change: the
+outgoing frame dissolves into the new one over about half a second. Before the first frame, the box shows
 the theme's ground colour, so it doesn't flash white in a dark layout.
 
 The same logic is exported as `resolveTheme(element)` and `watchTheme(element, onChange)` if you drive the engine
@@ -181,7 +183,8 @@ scene.resize(canvas.clientWidth, canvas.clientHeight); // CSS pixels; call again
 
 ```sh
 npm install
-npm run dev                # the demo website (site/), with theme, shape, speed and crowd controls
+npm run dev                # the demo website (site/): theme, shape, speed and crowd controls, and full screen
+                           # (?full=1 in the URL opens straight into it)
 npm run dev:lab            # the dev lab: ?gallery shows every vehicle, ?debug exposes window.scene
 npm run build              # library build into dist/
 npm run typecheck
