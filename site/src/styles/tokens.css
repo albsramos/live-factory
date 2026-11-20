@@ -7,8 +7,11 @@
   --color-fg: #1e1f24;
   --color-muted: #686a75;
   --color-line: #e1e1e7;
-  --color-accent: #9a7234;
-  --color-accent-soft: #f4ead8;
+  /* controls, in the plain neutral style of shadcn/ui: a near-black primary, grey tracks and tabs */
+  --color-primary: #18181b;
+  --color-primary-fg: #fafafa;
+  --color-secondary: #f1f1f4;
+  --color-ring: #a1a1aa;
   --shadow-card: 0 1px 2px rgb(30 31 40 / 0.06), 0 12px 40px rgb(30 31 40 / 0.08);
   --shadow-raised: 0 1px 3px rgb(0 0 0 / 0.12);
 
@@ -29,6 +32,7 @@
   --space-6: 28px;
   --space-7: 56px;
 
+  --radius-xs: 6px;
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 16px;
@@ -48,8 +52,10 @@
     --color-fg: #e8e8ed;
     --color-muted: #9c9ea9;
     --color-line: #2a2c33;
-    --color-accent: #e2bd7e;
-    --color-accent-soft: #2e2719;
+    --color-primary: #fafafa;
+    --color-primary-fg: #18181b;
+    --color-secondary: #27282e;
+    --color-ring: #71717a;
     --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 40px rgb(0 0 0 / 0.35);
   }
 }
@@ -62,7 +68,9 @@
   --color-fg: #e8e8ed;
   --color-muted: #9c9ea9;
   --color-line: #2a2c33;
-  --color-accent: #e2bd7e;
-  --color-accent-soft: #2e2719;
+  --color-primary: #fafafa;
+  --color-primary-fg: #18181b;
+  --color-secondary: #27282e;
+  --color-ring: #71717a;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 40px rgb(0 0 0 / 0.35);
 }

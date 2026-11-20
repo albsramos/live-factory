@@ -14,6 +14,8 @@ export interface Settings {
   isPaused: boolean;
   /** run even though the visitor asked for reduced motion (they pressed Play) */
   isMotionForced: boolean;
+  /** the scene on the whole screen, so a link can open straight into it */
+  isFull: boolean;
 }
 
 export const SPEED = { min: 0.25, max: 3, step: 0.25 } as const;
@@ -35,6 +37,7 @@ export function readSettings(search: string): Settings {
     shape: pick(p.get('shape'), ['banner', 'classic'], 'banner'),
     isPaused: p.get('paused') === '1',
     isMotionForced: p.get('motion') === '1',
+    isFull: p.get('full') === '1',
   };
 }
 
@@ -48,6 +51,7 @@ export const setTheme = (theme: ThemeChoice) => patchSearch({ theme: theme === '
 export const setSpeed = (speed: number) => patchSearch({ speed: speed === 1 ? null : String(speed) });
 export const setCrowd = (crowd: number) => patchSearch({ crowd: crowd === 1 ? null : crowd.toFixed(1) });
 export const setShape = (shape: Shape) => patchSearch({ shape: shape === 'banner' ? null : shape });
+export const setFull = (isFull: boolean) => patchSearch({ full: isFull ? '1' : null });
 export const pause = () => patchSearch({ paused: '1' });
 /** Run the scene; `isOverridingMotion` when the visitor's reduced-motion setting is what holds it still. */
 export const play = (isOverridingMotion: boolean) => patchSearch({ paused: null, motion: isOverridingMotion ? '1' : null });

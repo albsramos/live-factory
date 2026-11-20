@@ -10,11 +10,13 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   README).
 - `src/features/playground/` the live scene and its controls. Settings live in the URL (`model/settings.ts`), read
   with `useSyncExternalStore` (`shared/lib/searchParams.ts`), so a configured view can be shared. The button in the
-  scene's corner shows it on the whole screen: the browser's full screen where a page may have it, otherwise (an
-  iPhone, which keeps full screen for video) the stage is `position: fixed` over the window. No ancestor of the
-  stage may set `container-type` or other containment, which would trap it.
-- `src/shared/ui/` domain-free primitives (Button, Segmented, Slider); `src/shared/lib/` hooks and helpers. Tokens
-  are in `src/styles/tokens.css` (light and dark).
+  scene's corner shows it on the whole screen, `full=1` in the URL, so a link can open straight into it: the stage is
+  `position: fixed` over the window, and on the click the browser is also asked for its full screen (a page may only
+  ask on a click; an iPhone keeps it for video). No ancestor of the stage may set `container-type` or other
+  containment, which would trap it.
+- `src/shared/ui/` domain-free primitives (Button, Segmented, Slider) in the plain neutral look of shadcn/ui: a
+  near-black primary (near-white at night), grey tabs and tracks, no accent colour. `src/shared/lib/` hooks and
+  helpers. Tokens are in `src/styles/tokens.css` (light and dark).
 
 ## Rules (the react-component skill, albsramos/skills)
 

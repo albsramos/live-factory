@@ -1,23 +1,60 @@
 .root {
   display: flex;
   align-items: center;
-  gap: var(--space-2) 10px;
+  gap: var(--space-2) var(--space-3);
 }
 
 .label {
-  font: 500 var(--text-xs) / 1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-muted);
+  font: 500 var(--text-s) / 1 var(--font-body);
+  color: var(--color-fg);
 }
 
+/* shadcn/ui's slider: a thin grey track filled up to the thumb (`--fill`, set inline), and a plain round thumb */
 .input {
-  inline-size: 120px;
-  accent-color: var(--color-accent);
+  --track: linear-gradient(var(--color-primary), var(--color-primary)) 0 / var(--fill) 100% no-repeat, var(--color-secondary);
+  inline-size: 128px;
+  block-size: 16px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.input::-webkit-slider-runnable-track {
+  block-size: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--track);
+}
+
+.input::-moz-range-track {
+  block-size: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--track);
+}
+
+.input::-webkit-slider-thumb {
+  inline-size: 16px;
+  block-size: 16px;
+  margin-block-start: -5px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  appearance: none;
+}
+
+.input::-moz-range-thumb {
+  inline-size: 16px;
+  block-size: 16px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
 }
 
 .value {
-  font: 500 var(--text-s) / 1 var(--font-mono);
+  font: 500 var(--text-s) / 1 var(--font-body);
   font-variant-numeric: tabular-nums;
-  min-inline-size: 3.2em;
+  color: var(--color-muted);
+  min-inline-size: 2.6em;
 }

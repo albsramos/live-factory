@@ -1,8 +1,9 @@
+import type { MouseEvent } from 'react';
 import styles from './FullscreenButton.module.css';
 
 interface FullscreenButtonProps {
   isFull: boolean;
-  onClick: () => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
   /** only for placing it */
   className?: string;
 }

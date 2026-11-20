@@ -1,4 +1,4 @@
-import { useId, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useId, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
 import styles from './Slider.module.css';
 
 type SliderProps = {
@@ -44,6 +44,7 @@ export function Slider({ label, min, max, step, value, format, onChange, commit 
         max={max}
         step={step}
         value={shown}
+        style={{ '--fill': `${((shown - min) / (max - min)) * 100}%` } as CSSProperties}
         onChange={(e) => handleInput(Number(e.target.value))}
         onPointerUp={handleRelease}
         onKeyUp={handleRelease}

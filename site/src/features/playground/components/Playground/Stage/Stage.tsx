@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { LivingCity } from 'live-factory';
-import { useFullscreenElement } from '../../../../../shared/lib/useFullscreenElement';
-import { useSettings } from '../../../model/settings';
+import { setFull, useSettings } from '../../../model/settings';
 import { FullscreenButton } from '../FullscreenButton/FullscreenButton';
 import styles from './Stage.module.css';
 
@@ -10,40 +8,47 @@ const LABEL =
 
 // Safari before 16.4 only has the prefixed names
 type Fullscreenable = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
-type Doc = Document & { webkitFullscreenEnabled?: boolean; webkitExitFullscreen?: () => Promise<void> | void };
+type Doc = Document & {
+  webkitFullscreenEnabled?: boolean;
+  webkitFullscreenElement?: Element | null;
+  webkitExitFullscreen?: () => Promise<void> | void;
+};
+
+/** Ask the browser for full screen where a page may have it; where it can't (an iPhone keeps it for video), or says no, filling the window is enough. */
+function requestFullscreen(el: Fullscreenable) {
+  const doc = document as Doc;
+  const request = el.requestFullscreen ?? el.webkitRequestFullscreen;
+  if (!request || !(document.fullscreenEnabled || doc.webkitFullscreenEnabled)) return;
+  Promise.resolve(request.call(el)).catch(() => undefined);
+}
+
+function exitFullscreen() {
+  const doc = document as Doc;
+  const exit = document.exitFullscreen ?? doc.webkitExitFullscreen;
+  if ((document.fullscreenElement ?? doc.webkitFullscreenElement) && exit) Promise.resolve(exit.call(document)).catch(() => undefined);
+}
 
 /**
- * The scene itself: a 1630 × 520 banner showing the whole height, or the scene in its own 1.86 : 1 shape. Its button
- * shows it on the whole screen: the browser's full screen where a page may have it, otherwise (an iPhone, which
- * keeps full screen for video) the scene simply fills the window.
+ * The scene itself: a 1630 × 520 banner showing the whole height, or the scene in its own 1.86 : 1 shape. On the whole
+ * screen (`full=1` in the URL, so a link can open straight into it) it fills the window; pressing the button also
+ * asks the browser for its full screen, which a page may only do on a click.
  */
 export function Stage() {
   const s = useSettings();
-  const [root, setRoot] = useState<HTMLDivElement | null>(null);
-  const [isFillingWindow, setFillingWindow] = useState(false);
-  const fullscreenElement = useFullscreenElement();
-  const isFull = isFillingWindow || (root !== null && fullscreenElement === root);
-  const isBanner = s.shape === 'banner' && !isFull;
+  const isBanner = s.shape === 'banner' && !s.isFull;
 
-  const handleToggle = () => {
-    const doc = document as Doc;
-    if (isFull) {
-      setFillingWindow(false);
-      const exit = document.exitFullscreen ?? doc.webkitExitFullscreen;
-      if (fullscreenElement && exit) Promise.resolve(exit.call(document)).catch(() => undefined);
+  const handleToggle = (el: HTMLElement | null) => {
+    if (s.isFull) {
+      exitFullscreen();
+      setFull(false);
       return;
     }
-    const el = root as Fullscreenable | null;
-    const request = el?.requestFullscreen ?? el?.webkitRequestFullscreen;
-    if (!el || !request || !(document.fullscreenEnabled || doc.webkitFullscreenEnabled)) {
-      setFillingWindow(true);
-      return;
-    }
-    Promise.resolve(request.call(el)).catch(() => setFillingWindow(true));
+    setFull(true);
+    if (el) requestFullscreen(el);
   };
 
   return (
-    <div ref={setRoot} className={styles.root} data-shape={isFull ? undefined : s.shape} data-state={isFull ? 'full' : 'inline'}>
+    <div className={styles.root} data-shape={s.isFull ? undefined : s.shape} data-state={s.isFull ? 'full' : 'inline'}>
       <LivingCity
         className={styles.scene}
         theme={s.theme}
@@ -54,7 +59,7 @@ export function Stage() {
         isReducedMotionIgnored={s.isMotionForced}
         label={LABEL}
       />
-      <FullscreenButton className={styles.button} isFull={isFull} onClick={handleToggle} />
+      <FullscreenButton className={styles.button} isFull={s.isFull} onClick={(e) => handleToggle(e.currentTarget.parentElement)} />
     </div>
   );
 }

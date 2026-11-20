@@ -1,9 +1,9 @@
+/* shadcn/ui's tabs: a grey tray, the chosen option a raised white tab */
 .root {
   display: inline-flex;
   padding: 3px;
-  border-radius: var(--radius-pill);
-  background: var(--color-bg);
-  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+  background: var(--color-secondary);
 }
 
 .option {
@@ -11,10 +11,15 @@
   color: var(--color-muted);
   background: transparent;
   border: 0;
-  border-radius: var(--radius-pill);
-  padding: 7px 13px;
+  border-radius: var(--radius-xs);
+  padding: 7px 12px;
   cursor: pointer;
   white-space: nowrap;
+  transition: color var(--motion-fast);
+}
+
+.option:hover {
+  color: var(--color-fg);
 }
 
 .option[aria-pressed="true"] {
