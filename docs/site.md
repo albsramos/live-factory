@@ -19,12 +19,15 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
 - `src/features/saver/` the bare scene for a screen saver, `?saver` in the URL (see the README): the scene alone on the
   whole window, no page, controls or cursor, branded, and moving even when the computer asks for reduced motion.
 - `src/features/look/` a possible landing page built round the scene, `?look` in the URL, linked from the header's
-  "Possible look" button: the scene as the header (`cover`, branded), faded towards the title on its left and into the
-  page at the bottom, then stat cards that overlap that faded edge, an output chart and an on-site list. The figures
-  are samples (`model/sample.ts`) and the page says so; the title and place are left as `[Factory name]` and
-  `[City, Country]`. Its palette is its own (`--look-*` in `Look.module.css`, night and day), switched by the theme
-  in the URL (`auto` follows the computer). The content stops at 2000 px wide; the scene stays edge to edge. The
-  title's warm glow is drawn on the title block, so it stays behind the title at any width.
+  "Possible look" button: the scene as the header (branded), faded towards the title on its left and into the page at
+  the bottom, then stat cards that overlap that faded edge. The scene ends where the cards begin, and from 900px wide
+  it is `contain` (its whole height, outskirts filling the sides) so the bottom of the frame, the robotaxi stop and
+  the crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Then an
+  output chart and an on-site list. The figures are samples (`model/sample.ts`) and the page says so; the title and
+  place are left as `[Factory name]` and `[City, Country]`. Its palette is its own (`--look-*` in `Look.module.css`,
+  night and day), switched by the theme in the URL (`auto` follows the computer). The content stops at 2000 px wide;
+  the scene stays edge to edge. The title's warm glow is drawn on the title block, so it stays behind the title at any
+  width.
 - `src/shared/ui/` domain-free primitives (Button, LinkButton, Segmented, Slider) in the plain neutral look of shadcn/ui: a
   near-black primary (near-white at night), grey tabs and tracks, no accent colour. `src/shared/lib/` hooks and
   helpers. Tokens are in `src/styles/tokens.css` (light and dark).
