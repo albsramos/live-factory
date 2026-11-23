@@ -21,7 +21,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
 - `src/features/look/` a possible landing page built round the scene, `?look` in the URL, linked from the header's
   "Possible look" button: the scene as the header (branded), seen through a soft oval (a CSS mask: two linear fades
   and an ellipse that rounds their lower corners) that melts into the page at the sides and the bottom and only
-  barely at the top, under the navigation, the same either side, centred and at most 1700 px wide, its clear middle the central third (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is half the window's height (`max(380px, 50vh)`, 500 px on a 16" MacBook at
+  barely at the top, under the navigation, the same either side, centred and at most 1800 px wide, clear across its middle half (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is half the window's height (`max(380px, 50vh)`, 500 px on a 16" MacBook at
   100%), its title on one line; the navigation bar sits on a band of its own in the page's colour (`--look-bg`), a hairline
   under it, and the scene starts below it; from 900px wide the scene's box runs past both edges (clipped), its middle a
   tenth of the width left of the window's, so the busiest part of the town (the avenue, the junction, the charging
@@ -30,8 +30,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   `contain` (its whole height, outskirts filling the sides), so the bottom of the frame, the robotaxi stop and the
   crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Either way the
   camera sits a little further back than the fit (`zoom` 0.67) for more of the town; the world goes on past the frame,
-  so no empty edges show. Then an output chart and an on-site list. The figures are samples (`model/sample.ts`) and
-  the page says so; the title is an example, `Factory`, under an eyebrow line naming the site, `GFBB Berlin`. Its palette is its own, a bright blue
+  so no empty edges show. Then an output chart and an on-site list. The figures are samples (`model/sample.ts`); the title is an example, `Factory`, under an eyebrow line naming the site, `GFBB Berlin`. Its palette is its own, a bright blue
   accent (`--look-accent`, no gold), with 8 px corners on the cards and buttons (`--look-radius`)
   (`--look-*` in `Look.module.css`, night and day), switched by the theme in the URL (`auto` follows the computer).
   The content (the bar, the title and the cards) stops at 1200 px wide (`--look-max`), with a gutter either side that

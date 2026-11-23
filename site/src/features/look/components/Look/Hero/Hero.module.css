@@ -28,7 +28,7 @@
   inset: 0 0 56px;
   /* centred, and no wider than a 16" MacBook's window, so a wider screen keeps that framing rather than showing the
      town's west end past the title */
-  max-inline-size: 1700px;
+  max-inline-size: 1800px;
   margin-inline: auto;
   pointer-events: none;
   /* an oval window onto the scene: clear across most of it, melting into the page at the sides and the bottom, so
@@ -36,11 +36,11 @@
      ellipse hung from the top edge rounds the lower corners of two linear fades (across and down), the three
      multiplied together, so the clear middle stays wide. Each fade eases in over several stops, with no visible line
      where it starts. */
-  --oval-x: linear-gradient(90deg, transparent 12%, rgb(0 0 0 / 0.12) 16%, rgb(0 0 0 / 0.42) 21%, rgb(0 0 0 / 0.78) 27%, #000 34%,
-    #000 66%, rgb(0 0 0 / 0.78) 73%, rgb(0 0 0 / 0.42) 79%, rgb(0 0 0 / 0.12) 84%, transparent 88%);
+  --oval-x: linear-gradient(90deg, transparent 6%, rgb(0 0 0 / 0.12) 10%, rgb(0 0 0 / 0.42) 15%, rgb(0 0 0 / 0.78) 20%, #000 26%,
+    #000 74%, rgb(0 0 0 / 0.78) 80%, rgb(0 0 0 / 0.42) 85%, rgb(0 0 0 / 0.12) 90%, transparent 94%);
   --oval-y: linear-gradient(180deg, rgb(0 0 0 / 0.85) 0%, #000 4%,
     #000 72%, rgb(0 0 0 / 0.78) 81%, rgb(0 0 0 / 0.42) 89%, rgb(0 0 0 / 0.12) 95%, transparent 100%);
-  --oval-round: radial-gradient(ellipse 46% 140% at 50% 0%, #000 55%, rgb(0 0 0 / 0.75) 72%, rgb(0 0 0 / 0.35) 86%, transparent 100%);
+  --oval-round: radial-gradient(ellipse 54% 140% at 50% 0%, #000 55%, rgb(0 0 0 / 0.75) 72%, rgb(0 0 0 / 0.35) 86%, transparent 100%);
   mask-image: var(--oval-x), var(--oval-y), var(--oval-round);
   mask-composite: intersect;
   -webkit-mask-image: var(--oval-x), var(--oval-y), var(--oval-round);

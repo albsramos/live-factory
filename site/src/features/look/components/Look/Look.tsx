@@ -23,7 +23,6 @@ export function Look({ theme }: LookProps) {
       <main id="numbers" className={styles.body}>
         <div className={styles.overlap}>
           <Kpis />
-          <p className={styles.note}>Sample data</p>
         </div>
         <Today />
       </main>
