@@ -15,14 +15,15 @@ interface HeroProps {
  */
 export function Hero({ isDark }: HeroProps) {
   // wider than the scene's own shape (from about 900px), show its whole height, outskirts filling the sides; on a
-  // narrower, taller screen that would leave empty ground above and below, so fill the box instead
+  // narrower, taller screen that would leave empty ground above and below, so fill the box instead. Either way the
+  // camera sits a little further back than the fit, for more of the town (the world goes on past the frame).
   const isWide = useMediaQuery('(min-width: 900px)');
   const handleTheme = () => patchSearch({ theme: isDark ? 'light' : 'dark' });
   return (
     <header className={styles.root}>
       {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
       <div className={styles.stage}>
-        <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} isBranded />
+        <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={isWide ? 0.8 : 0.85} isBranded />
         <div className={styles.fadeEnds} />
       </div>
       <div className={styles.fadeSide} />

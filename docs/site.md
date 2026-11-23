@@ -23,11 +23,13 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   width) and into the page at the bottom, then stat cards that rise 64px into that faded edge. The scene runs the
   header's height down to just under the cards' top, and from 900px wide it is `contain` (its whole height, outskirts
   filling the sides), so the bottom of the frame, the robotaxi stop and the crossing, stays in view; narrower,
-  `cover`, which would otherwise leave empty ground above and below. Then an output chart and an on-site list. The
-  figures are samples (`model/sample.ts`) and the page says so; the title and place are left as `[Factory name]` and
-  `[City, Country]`. Its palette is its own (`--look-*` in `Look.module.css`, night and day), switched by the theme in
-  the URL (`auto` follows the computer). The content stops at 2000 px wide; the scene stays edge to edge. The title's
-  warm glow is drawn on the title block, so it stays behind the title at any width.
+  `cover`, which would otherwise leave empty ground above and below. Either way the camera sits a little further back
+  than the fit (`zoom` 0.8, 0.85 on a phone) for more of the town; the world goes on past the frame, so no empty edges
+  show. Then an output chart and an on-site list. The figures are samples (`model/sample.ts`) and the page says so;
+  the title and place are left as `[Factory name]` and `[City, Country]`. Its palette is its own (`--look-*` in
+  `Look.module.css`, night and day), switched by the theme in the URL (`auto` follows the computer). The content stops
+  at 2000 px wide; the scene stays edge to edge. The title's warm glow is drawn on the title block, so it stays behind
+  the title at any width.
 - `src/shared/ui/` domain-free primitives (Button, LinkButton, Segmented, Slider) in the plain neutral look of shadcn/ui: a
   near-black primary (near-white at night), grey tabs and tracks, no accent colour. `src/shared/lib/` hooks and
   helpers. Tokens are in `src/styles/tokens.css` (light and dark).
