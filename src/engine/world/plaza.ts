@@ -2,7 +2,8 @@
 // after Giga Texas's: a green roof round a paved terrace with tables and benches where two Optimus robots walk about,
 // and a glass pavilion under a big pale roof plate that comes to a point towards the front. The
 // planters have LED strips along their top edges that glow warm at night, and stand clear of every walkway (and the
-// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts).
+// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts). Two more stand in the pocket park
+// beside the plaza, either side of its path and clear of its benches, its trees and the staff on their break there.
 
 import { C } from '../core';
 import { onTop, type R } from '../draw';
@@ -35,6 +36,10 @@ const PLATE_Z = [16.0, 16.25];
 const PLANTERS = [
   [[33.0, 57.0], [35.0, 52.2], [39.5, 53.5], [39.5, 57.0]],
   [[34.0, 63.4], [40.0, 63.4], [40.0, 66.6], [36.5, 67.2]],
+  // the pocket park (streetLife.ts `POCKET_LAWN`): north of its path, east of the bench, and south of it, in the corner
+  // by the plaza walk
+  [[40.4, 40.3], [41.2, 38.6], [44.2, 38.6], [44.2, 40.3]],
+  [[38.6, 47.5], [39.2, 45.4], [41.4, 46.4], [41.4, 47.5]],
 ];
 const PLANTER_H = 0.45;
 
