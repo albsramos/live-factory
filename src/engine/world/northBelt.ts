@@ -15,8 +15,11 @@ import { BoxItem, TreeItem } from '../statics';
 
 export interface NorthBelt {
   ground(ctx: Ctx): void;
-  /** the path: `west` and `east` are the avenue's pavement nodes at y −47, `eastRoad` the east road's */
-  walks(g: WalkGraph, ends: { west: number; east: number; eastRoad: number }): void;
+  /**
+   * The path: `west` and `east` are the avenue's pavement nodes at y −47, `eastRoad` the east road's. Returns the
+   * node at x 133 where the staff park's path comes up from the south.
+   */
+  walks(g: WalkGraph, ends: { west: number; east: number; eastRoad: number }): number;
 }
 
 export const BELT_Y = -47;
@@ -40,6 +43,8 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     if (x + y < -18) continue;
     // keep the south row clear of the yard's fence line and the Megapacks' pad
     if (y > -44.5 && x > 77 && x < 103) continue;
+    // and clear of the staff park's path, which comes up from the south at x 133
+    if (y > -50 && Math.abs(x - 133) < 2.4) continue;
     S.push(new TreeItem(sprites, x, y, kind, s, 120 + i++ * 1.3));
   }
 
@@ -78,7 +83,9 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
   const walks = (g: WalkGraph, ends: { west: number; east: number; eastRoad: number }) => {
     // west: out past the top-left edge of every view (frame.ts `WORLD`)
     g.chain([ends.west, g.node(52, BELT_Y), g.node(36, BELT_Y), g.node(-40, BELT_Y, true)]);
-    g.chain([ends.east, g.node(96, BELT_Y), g.node(120, BELT_Y), ends.eastRoad]);
+    const park = g.node(133, BELT_Y);
+    g.chain([ends.east, g.node(96, BELT_Y), g.node(120, BELT_Y), park, ends.eastRoad]);
+    return park;
   };
 
   return { ground, walks };
