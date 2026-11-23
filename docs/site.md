@@ -21,8 +21,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
 - `src/features/look/` a possible landing page built round the scene, `?look` in the URL, linked from the header's
   "Possible look" button: the scene as the header (branded), seen through a soft oval (a CSS mask: two linear fades
   and an ellipse that rounds their lower corners) that melts into the page at the sides and the bottom and only
-  barely at the top, under the navigation, a little darker behind
-  the title on its left (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is compact, about two fifths of the window's height (`max(380px, 40vh)`, 400 px on a 16" MacBook at
+  barely at the top, under the navigation, the same either side (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is compact, about two fifths of the window's height (`max(380px, 40vh)`, 400 px on a 16" MacBook at
   100%), its title on one line; the navigation bar sits on a band of its own in the page's colour (`--look-bg`), a hairline
   under it, and the scene starts below it; from 900px wide the scene's box runs 40% past the right edge (clipped), so
   the town's middle sits to the right and the factory's lettering clears the title; the title block sits on a soft pool of the page's colour. The

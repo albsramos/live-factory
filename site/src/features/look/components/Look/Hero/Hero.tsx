@@ -9,7 +9,7 @@ interface HeroProps {
 
 /**
  * The header: the navigation on a solid band of its own, then the live scene, seen through a soft oval that melts into the page at the sides and bottom,
- * a little darker behind the title on the left. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
+ * the same either side; the town inside it sits to the right, clear of the title. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
  * happens at the bottom of the frame (the robotaxi stop, the crossing) stays in view. The shade behind the title is drawn on the title
  * block itself, so it stays behind it at any width.
  */
@@ -39,7 +39,6 @@ export function Hero({ isDark }: HeroProps) {
         <div className={styles.stage}>
           <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} isBranded />
         </div>
-        <div className={styles.fadeSide} />
 
         <div className={styles.inner}>
           <div className={styles.copy}>
