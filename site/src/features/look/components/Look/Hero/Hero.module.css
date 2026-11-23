@@ -34,7 +34,7 @@
 
 /* a little shade under the bar; the scene melts into the page at its lower edge */
 .fadeEnds {
-  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 18%, rgb(var(--look-fade) / 0) 84%, rgb(var(--look-fade)) 100%);
+  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 18%, rgb(var(--look-fade) / 0) 88%, rgb(var(--look-fade)) 100%);
 }
 
 .bar,

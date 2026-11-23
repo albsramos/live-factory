@@ -25,7 +25,16 @@ export function junctionCorners(ctx: Ctx, x0: number, y0: number, x1: number, y1
 }
 
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
-export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts, east: EastSide, more: ((ctx: Ctx) => void)[] = []) {
+export function groundPainter(
+  pal: Palette,
+  lot: ChargingLot,
+  outskirts: Outskirts,
+  east: EastSide,
+  /** painted with the paved pads, before the town's lawns */
+  more: ((ctx: Ctx) => void)[] = [],
+  /** painted on top of the town's lawns and their paths */
+  onLawns: ((ctx: Ctx) => void)[] = [],
+) {
   const roads = (ctx: Ctx) => {
     groundRect(ctx, 68, -180, 76, 260);
     groundRect(ctx, 56, 42, 260, 50);
@@ -119,6 +128,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     }
     ctx.stroke();
     ctx.lineCap = 'butt';
+    for (const paint of onLawns) paint(ctx);
     // apron joints
     ctx.strokeStyle = pal.night ? 'rgba(255,255,255,0.03)' : 'rgba(120,122,136,0.10)';
     ctx.lineWidth = 0.06;

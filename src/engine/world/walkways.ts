@@ -3,12 +3,13 @@
 import type { WalkGraph } from '../people/crowd';
 import type { EastSide } from './eastSide';
 import type { Outskirts } from './outskirts';
+import type { SouthLawn } from './southLawn';
 import type { RoadZones } from './roads';
 import { POCKET_PATH } from './streetLife';
 import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
-export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide) {
+export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide, south: SouthLawn) {
   const { CW1, CW3, CW4, CW5, YE, YG, LD, LE } = z;
   const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
@@ -85,6 +86,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(112, 65.6), g.node(128, 66), g.node(128, 125, true)];
   g.link(sse[0], pk[0]);
   g.link(pk[0], pk[1]);
-  g.chain(pk.slice(1));
+  // the garden walk forks off to the café kiosk's door on the way
+  south.walks(g, pk[1], pk[2]);
+  g.chain(pk.slice(2));
   g.link(pk[1], ae[5]);
 }
