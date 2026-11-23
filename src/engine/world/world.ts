@@ -29,6 +29,8 @@ import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
 import { buildLake } from './lake';
+import { buildStuntPad } from './stuntPad';
+import { buildParkLamps } from './parkLamps';
 import { buildSouthLawn } from './southLawn';
 import { buildNorthBelt } from './northBelt';
 import { buildFarWest } from './farWest';
@@ -133,6 +135,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // a second staff car park and lawns with trees out west, on a stream of its own
   const west = buildFarWest({ ...env, rng: makeRng(opts.seed * 4789 + 83) }, sprites, edge);
   acts.push(...west.acts);
+  // an Easter egg in the north belt: roadsters doing tricks for a ring of Optimus, on a stream of its own
+  const pad = buildStuntPad({ ...env, rng: makeRng(opts.seed * 3449 + 97) });
+  acts.push(pad.act);
+  // lamps along the park paths, lit at night
+  const lamps = buildParkLamps(env);
   staffBreak(env);
   // dock and yard robots
   // two take boxes from inside the factory, through the open garage between the second dock and the bay
@@ -153,7 +160,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, west.ground], [south.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, pad.ground, west.ground], [south.ground, lamps.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

@@ -12,6 +12,7 @@ import type { WalkGraph } from '../people/crowd';
 import { Walker } from '../people/walker';
 import type { Sprites } from '../sprites';
 import { BoxItem, TreeItem } from '../statics';
+import { PAD } from './stuntPad';
 
 export interface NorthBelt {
   ground(ctx: Ctx): void;
@@ -46,14 +47,16 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     // and clear of the staff park's path, which comes up from the south at x 137.5, and of the lake (lake.ts)
     if (y > -50 && Math.abs(x - 137.5) < 2.4) continue;
     if (y > -42 && x > 103 && x < 137) continue;
+    // and of the stunt pad's clearing (stuntPad.ts)
+    if (x > PAD.x0 - 2.5 && x < PAD.x1 + 2.5 && y > PAD.y0 - 2.5 && y < PAD.y1 + 1.5) continue;
     S.push(new TreeItem(sprites, x, y, kind, s, 120 + i++ * 1.3));
   }
 
   // benches on the path's north side, with staff sitting on them facing south
-  for (const x0 of [48, 92, 117]) {
+  for (const x0 of [48, 108, 124]) {
     S.push(new BoxItem(x0, BELT_Y - 2.6, 0, x0 + 1.8, BELT_Y - 2.1, 0.45, pal.white, { edge }));
     for (const dx of [0.5, 1.3]) {
-      if (x0 === 117 && dx > 1) continue;
+      if (x0 === 124 && dx > 1) continue;
       const w = new Walker('person', pal, rng, x0 + dx, BELT_Y - 1.75);
       w.stance = 'sit';
       w.face(0, 1);
