@@ -48,8 +48,6 @@ export function buildEastSide(env: Env, sprites: Sprites, edge: string, density:
   J2.phases = ['NS', 'EW'];
   const north = traffic.zone(X0, 33, X1, 36, sameKind);
   const south = traffic.zone(X0, 56, X1, 59, sameKind);
-  // the west pavement where carriers for the carrier depot turn off into its service road (activities/carrierDepot.ts)
-  const depotCrossing = traffic.zone(WEST - 1.6, -66, X0 + 0.2, -49, sameKind);
 
   // through traffic, on routes that start and end outside the world box
   const routes: Route[] = [
@@ -173,12 +171,7 @@ export function buildEastSide(env: Env, sprites: Sprites, edge: string, density:
     // west pavement: from beyond the north edge down past the staff park's path to the street corner, and on south
     // of the street past the bottom edge; people cross the road at the zebras
     const w = [g.node(WEST, -120, true), g.node(WEST, -47), g.node(WEST, 18), g.node(WEST, 34.5), g.node(WEST, 40.5)];
-    // across where the carrier depot's carriers turn off into their service road (activities/carrierDepot.ts),
-    // their trailers sweeping the pavement north of it
-    const depot = g.node(WEST, -67.4);
-    g.link(w[0], depot);
-    g.link(depot, w[1], depotCrossing);
-    g.chain(w.slice(1));
+    g.chain(w);
     g.link(ends.park, w[2]);
     g.link(ends.north, w[4]);
     const ws = [g.node(WEST, 51.5), g.node(WEST, 57.5), g.node(WEST, 175, true)];

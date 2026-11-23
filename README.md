@@ -60,8 +60,8 @@ any other React setup.
   behind the factory and up its ramp, the upper deck first. Full, it drives on and back north up a second road,
   with walkers on the north belt's path waiting at the zebras. Seven more full carriers stand parked in rows beside the
   lanes and north of the factory, waiting to go. East of the avenue, in a depot of their own, four more stand
-  nose-in at chargers, ready to go; about every two minutes another comes in from the east road along a service road
-  north of the lake, charges in a lane along the depot's edge, and turns right up the avenue.
+  nose-in at chargers, ready to go; about every two minutes another comes down the avenue, backs into a lane along
+  the depot's edge, charges, and turns right up the avenue.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots in a white or champagne shell, with a black glass head ringed by a thin light line and
@@ -83,7 +83,7 @@ any other React setup.
   the plaza have LED strips that glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop with a café
   kiosk, its tables and a queue at the counter, and a bigger park east of the pavilion with a
-  pond and fountain, a lake with rocks at its north end, a pergola where staff have lunch and three triangular planters lit like the plaza's, with grass, paths, trees and benches where
+  pond and fountain, a lake with rocks at its north end, a pergola where staff have lunch, with grass, paths, trees and benches where
   employees sit, chat or stroll on their break; low lamps light the paths at night.
 - **An Easter egg**: somewhere in the trees at the top right of a wide view, three roadsters take turns showing off
   for a ring of Optimus, one every 20 seconds, each with its own trick: a spin, a barrel roll or a corkscrew.

@@ -1,6 +1,6 @@
 // More life in the staff park east of the pavilion (its lawn, path and first benches are in outskirts.ts): a pond
-// with a fountain, a pergola where staff have lunch, a bench by the water, two people strolling round the pond, three
-// LED-edged planters, broad triangles, and more trees. Staff only, sitting, chatting or strolling (docs/simulation.md,
+// with a fountain, a pergola where staff have lunch, a bench by the water, two people strolling round the pond, and
+// more trees. Staff only, sitting, chatting or strolling (docs/simulation.md,
 // the parks). It draws from a random stream of its own, so the rest of the town plays out as before.
 
 import type { Activity, Env } from '../activities/activity';
@@ -12,7 +12,6 @@ import type { WalkGraph } from '../people/crowd';
 import { Walker } from '../people/walker';
 import type { Sprites } from '../sprites';
 import { BoxItem, FnItem, TreeItem } from '../statics';
-import { ledPlanters } from './plaza';
 
 export interface StaffPark {
   acts: Activity[];
@@ -134,17 +133,6 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
     const cx = group.reduce((a, p) => a + p[0], 0) / group.length, cy = group.reduce((a, p) => a + p[1], 0) / group.length;
     for (const [x, y] of group) person(x, y, 'chat', cx - x, cy - y);
   }
-
-  // ------------------------------------------------------------------------------------------- planters
-  // three broad triangles round the pond, after the gardens at the real factory, their LED strips glowing at night:
-  // west of it, between the pergola and the path in; north of it, past the bench and the people chatting, short of
-  // the path up to the lake; and south of it, on the open lawn before the park's main path. Each keeps about 2 m or
-  // more from the paths and the strollers' ring round the pond, and clear of the lamps, the trees and the staff.
-  S.push(...ledPlanters(pal, [
-    [[110.0, 6.0], [109.1, -0.7], [115.3, 1.0]],
-    [[119.8, -6.2], [123.2, -14.6], [124.4, -10.4]],
-    [[123.3, 11.2], [128.5, 18.4], [130.8, 13.1]],
-  ]));
 
   // ------------------------------------------------------------------------------------------- trees
   const trees: [number, number, 'tree' | 'tree2' | 'poplar' | 'small', number][] = [

@@ -2,8 +2,7 @@
 // after Giga Texas's: a green roof round a paved terrace with tables and benches where two Optimus robots walk about,
 // and a glass pavilion under a big pale roof plate that comes to a point towards the front. The
 // planters have LED strips along their top edges that glow warm at night, and stand clear of every walkway (and the
-// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts). The staff park has two more like
-// them (`ledPlanters`, staffPark.ts).
+// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts).
 
 import { C } from '../core';
 import { onTop, type R } from '../draw';
@@ -68,7 +67,7 @@ export function factoryFront(pal: Palette, edge: string) {
 }
 
 /** Low angular planters over the plans given, grass on top and an LED strip round the top edge. */
-export function ledPlanters(pal: Palette, plans: number[][][]): Static[] {
+function ledPlanters(pal: Palette, plans: number[][][]): Static[] {
   return plans.map((given) => {
     // the mesh wants its plan counter-clockwise; take either way round
     let area = 0;

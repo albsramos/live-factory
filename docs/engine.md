@@ -38,7 +38,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   moving a call changes the scene): `roads.ts` zones and through traffic, `buildings.ts` the factory (with
   `plaza.ts`, its front: the roof terrace over the entrance, spanning 80% of the factory's front, with a green roof,
   tables and benches, two Optimus robots walking about (on a random stream of their own) and a glass pavilion under
-  a pale pointed roof plate, and the plaza's LED-edged planters (`ledPlanters`, which the staff park uses too), `solarRows.ts`, the solar panels on every building
+  a pale pointed roof plate, and the plaza's LED-edged planters (`ledPlanters`), `solarRows.ts`, the solar panels on every building
   roof in rows tilted at 45°, stopping short of the terrace on the factory's, and `lettering.ts`, its opt-in
   lettering), dock wing, pavilion, home and construction site, `streetLife.ts` trees, lamps, benches, the pocket
   park and people standing about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer,
@@ -48,7 +48,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   wing, staff car park, second compute platform, carrier depot's ground, charging hub, staff park), `eastSide.ts` the east road
   past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
   traffic on a random stream of its own) and the office and second charging hub beyond it, `staffPark.ts` more life in the staff park (a pond whose
-  fountain and ripples are redrawn every frame, a pergola with staff at lunch, three LED-edged triangular planters, people
+  fountain and ripples are redrawn every frame, a pergola with staff at lunch, people
   strolling round the pond, more trees), also on a random stream of its own, `lake.ts` the lake at the park's
   north end with rocks on its shores and in the water (`pal.rock`), the park's path going round its east side, and `southLawn.ts` the café south of
   the street (a kiosk whose door is a walkway portal, tables with staff at them), with benches and

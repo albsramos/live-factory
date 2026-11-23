@@ -1,22 +1,24 @@
 // The carrier depot east of the avenue, north of the second compute hall (where a Megapack field stood): four full
 // car carriers stand there ready to go, nose-in at chargers that keep them topped up. Along the depot's north edge
-// runs a charging lane: about every two minutes a carrier comes in from the right, off the east road's southbound
-// lane (a right turn, beyond the edge of every view) and along a service road north of the lake, charges at the
-// lane's charger, then turns right onto the avenue's northbound lane and drives off north. No carrier comes up the
-// avenue or crosses a lane, so the depot never holds up the junction.
-// The service road crosses the north belt's path at a zebra and the east road's west pavement; pulling out onto the
-// avenue, a trailer sweeps the east pavement north of the lane, which walkers cross as one crossing, and cars on the
-// northbound lane leave a stretch to the carrier turning out (world/roads.ts, eastSide.ts).
+// runs a charging lane: about every two minutes a carrier comes down the avenue's southbound lane from off the top
+// edge, drives on past the lane and backs straight into it (across the northbound lane and the east pavement, its
+// trailer leading), charges at the lane's charger, then turns right onto the avenue's northbound lane and drives
+// off north. The depot never reaches the junction, and nothing else comes or goes behind it: north of the lane
+// lies the north belt's lawn.
+// Backing in, the carrier holds the stretch of the southbound lane it reverses up and the northbound lane and
+// pavement its trailer swings across; pulling out, its trailer sweeps the east pavement north of the lane. Walkers
+// cross that whole stretch of pavement as one crossing, and cars leave the lanes to the carrier (world/roads.ts).
 
 import { type Mat, pick, rr, type Rng } from '../core';
 import type { Ctx } from '../draw';
 import { groundPoly } from '../ground';
 import { Path } from '../path';
 import { LOADS, SLOTS } from '../traffic/carrierMesh';
-import type { Leg } from '../traffic/legs';
+import { backingTrack, type Leg } from '../traffic/legs';
 import { Vehicle } from '../traffic/vehicle';
 import type { VehicleItem } from '../traffic/vehicleItem';
 import type { Item } from '../sort';
+import type { Zone } from '../traffic/zone';
 import type { Activity, Env } from './activity';
 
 const P = Path.poly;
@@ -26,12 +28,26 @@ export const DEPOT_ROWS = [-36, -31.6, -27.2, -22.8] as const;
 /** the charging lane along the depot's north edge, and the charging carrier's reference point there */
 export const LANE_Y = -41.8;
 export const LANE_REF = 85;
-/** the service road from the east road (x 144, southbound) along y −52.5, and the bend down to the lane */
-export const ROAD_Y = -52.5;
-export const ROAD_BEND: readonly (readonly [number, number])[] = [[120, ROAD_Y], [104, LANE_Y]];
+/** the avenue's southbound and northbound lanes */
+const SB = 70;
 const AVENUE = 74;
 /** a carrier is out on the avenue, clear of the pavement and the lane, this far up it */
 const CLEAR = 24;
+/** how far past the lane a carrier coming down the avenue drives before it backs in */
+export const PAST = 20;
+/** the pull-out the back-in replays: from the lane's charger, left onto the southbound lane and down it */
+const OUT = Path.poly([[LANE_REF, LANE_Y], [SB, LANE_Y], [SB, LANE_Y + PAST]], [6]);
+// (stopping 0.1 m short, so the charge is a leg of its own: a reversing carrier's zones are only let go on a later
+// leg, since its trailer leads)
+const BACK = Path.poly([[SB, LANE_Y + PAST], [SB, LANE_Y], [LANE_REF + 0.1, LANE_Y]], [6]);
+
+/** The zones a carrier backing in swings its trailer across, which it takes before it sets off backwards. */
+export interface DepotZones {
+  /** the stretch of the northbound lane by the depot that its trailer swings across */
+  lane: Zone;
+  /** the east pavement by the depot */
+  pavement: Zone;
+}
 
 export interface DepotSpot {
   y: number;
@@ -48,7 +64,7 @@ export class CarrierDepot implements Activity {
   private busy = false;
   private timer = 20;
 
-  constructor(private env: Env, private rng: Rng) {
+  constructor(private env: Env, private rng: Rng, private zones: DepotZones) {
     const { pal, traffic } = env;
     // the parked carriers: scenery, not traffic (nothing that moves comes near them)
     for (const y of DEPOT_ROWS) {
@@ -66,13 +82,26 @@ export class CarrierDepot implements Activity {
     return this.rng() < 0.55 ? pal.paints[0] : pick(this.rng, pal.paints);
   }
 
-  /** In off the east road and along the service road to the lane's charger; charge; out onto the avenue, north. */
+  /** Down the avenue past the lane, back into it; charge; out onto the avenue, north. */
   private arrive() {
     const { traffic, pal } = this.env;
     const y = LANE_Y;
+    const { lane, pavement } = this.zones;
     const legs: Leg[] = [
-      { path: P([[144, -120], [144, -64]]), vmax: 5.5 },
-      { path: P([[144, -64], [144, ROAD_Y], ...ROAD_BEND, [LANE_REF, y]], [7, 9, 9]), vmax: 4.5, dwell: rr(this.rng, 50, 90), arrive: (v) => {
+      // down the southbound lane (holding the stretch it will back up) and on past the lane; it backs in once the
+      // northbound lane and the pavement its trailer swings across are its own
+      { path: P([[SB, -120], [SB, y + PAST]]), tag: 'depot', vmax: 5.5, until: (v) => {
+        // both asked every time, so it keeps its place in each queue
+        const free = [lane.ask(v, 'semi'), pavement.ask(v, 'car')];
+        if (!free[0] || !free[1]) return false;
+        for (const [z, key] of [[lane, 'semi'], [pavement, 'car']] as const) {
+          z.enter(v, key);
+          v.held.add(z);
+        }
+        return true;
+      } },
+      { path: BACK, rev: true, tag: 'depot', vmax: 1.6, ghost: true, trailerAngle: backingTrack(OUT, Math.PI / 2) },
+      { path: P([[LANE_REF + 0.1, y], [LANE_REF, y]]), vmax: 1, ghost: true, dwell: rr(this.rng, 50, 90), arrive: (v) => {
         this.lane.loading = true;
         v.charging = true;
       }, until: (v) => {
@@ -93,7 +122,7 @@ export class CarrierDepot implements Activity {
   update(dt: number) {
     this.timer -= dt;
     if (this.timer > 0 || this.busy) return;
-    if (this.env.traffic.clear(144, -120, 18)) {
+    if (this.env.traffic.clear(SB, -120, 18)) {
       this.arrive();
       this.timer = rr(this.rng, 100, 140);
     } else this.timer = 3;
@@ -110,16 +139,11 @@ export class CarrierDepot implements Activity {
     for (const v of this.parked) v.shadow(ctx);
   }
 
-  /** The charging lane, the service road and its bend, and the corner the trailers cut pulling out onto the avenue. */
+  /** The charging lane, and the corner the trailers cut pulling out onto the avenue. */
   ground(ctx: Ctx) {
     ctx.fillStyle = this.env.pal.pad;
     ctx.beginPath();
-    groundPoly(ctx, [78.8, -38.4, 78.8, -47.5, 81.2, -46.4, 84, -43.6, 101, -43.6, 104.6, -44.9, 117.6, -54.1, 146, -54.1, 146, -50.9, 121, -50.9, 107, -41.5, 103, -39.9, 101, -38.4]);
-    ctx.fill();
-    // a zebra where the north belt's path crosses the bend
-    ctx.fillStyle = this.env.pal.plaza;
-    ctx.beginPath();
-    for (let x = 108.4; x < 115.6; x += 0.9) groundPoly(ctx, [x, -48.1, x + 0.45, -48.1, x + 0.45, -45.9, x, -45.9]);
+    groundPoly(ctx, [78.8, -38.4, 78.8, -47.5, 81.2, -46.4, 84, -43.6, 102.9, -43.6, 102.9, -38.4]);
     ctx.fill();
   }
 }

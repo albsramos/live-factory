@@ -76,16 +76,20 @@
 
 - The carrier depot (`activities/carrierDepot.ts`), east of the avenue north of the second compute hall: four full
   carriers parked nose-in facing the avenue (noses at x 81, y −36 to −22.8), scenery rather than traffic, and a
-  charging lane along the depot's north edge (y −41.8). About every two minutes a carrier comes in from the right:
-  down the east road's southbound lane from off the top edge, right onto a service road along y −52.5 (that turn is
-  beyond the edge of every view), down a bend north of the lake to the lane, where it charges; then right onto the
-  avenue's northbound lane and off north. Nothing comes up the avenue or crosses a lane, and one carrier is in the
-  depot at a time. Turning out, the trailer sweeps the avenue's east pavement from y −64.6 to −39.9 (crossed as one,
-  `DC`, nodes at y −67.4 and −38) and reaches x 81.1 at the north belt's path, which starts east of that (x 86);
-  the bend crosses the path at a zebra (`NB3`, swept from x 105.9 to 118.1); turning off the east road, the trailer
-  sweeps its west pavement from y −61.4 to −50.9 (`depotCrossing` in eastSide.ts) and the lawn inside the corner,
-  where the north belt keeps no trees. Cars on the northbound lane leave a 28 m stretch to the carrier turning out
-  (a `truckZone` keyed `semi` only for legs tagged `depot`).
+  charging lane along the depot's north edge (y −41.8). About every two minutes a carrier comes down the avenue's
+  southbound lane from off the top edge, drives 20 m past the lane and backs straight into it (the back-in replays a
+  forward pull-out from the lane, left onto the southbound lane, with `backingTrack`; it stops 0.1 m short and charges on a leg of its own, since a reversing vehicle's
+  zones are only let go on a later leg, its trailer leading), charges, then turns right onto
+  the northbound lane and off north. Nothing reaches the depot from behind (north of it is the north belt's lawn),
+  and one carrier is in the depot at a time. Before it backs up, it holds the southbound lane from y −44.8 to −20.3
+  (taken by the leg down the avenue) and, taken together in that leg's `until`, the stretch of the northbound lane by the
+  depot (y −45.3 to −34.3, a zone of its own, short so that a gap in the traffic comes soon) and the east pavement
+  (`DC`) its trailer swings across: backing in sweeps the northbound lane from y −43.7 to −35.2 and
+  the pavement from −43.7 to −36.2, and stays 4 m clear of the parked row's noses and 0.7 m of the lane's charger.
+  Turning out, the trailer sweeps the pavement from y −64.6 to −39.9 and reaches x 81.1 at the north belt's path,
+  which starts east of that (x 86). Walkers cross the whole stretch as one (`DC`, nodes at y −67.4 and −34.4). The
+  lanes' stretches are `truckZone`s keyed `semi` only for legs tagged `depot`, so cars leave them to the carrier and
+  any other semi passes as a car.
 
 - The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one every 30-45 s and one at a time, on the avenue's
   straight lanes, with a random stream of its own so the rest of the scene runs as before until it shows up. In its

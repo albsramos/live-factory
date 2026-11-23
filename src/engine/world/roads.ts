@@ -8,7 +8,7 @@ import type { Traffic } from '../traffic/traffic';
 import type { Vehicle } from '../traffic/vehicle';
 import { junction, sameKind } from '../traffic/zone';
 import type { Env } from '../activities/activity';
-import { LANE_Y } from '../activities/carrierDepot';
+import { LANE_Y, PAST } from '../activities/carrierDepot';
 
 /** Zones the traffic reserves: the junction, the crosswalks, the stretches semis need to themselves, the pavements they cross. */
 export function roadZones(traffic: Traffic) {
@@ -50,16 +50,17 @@ export function roadZones(traffic: Traffic) {
   // where the north belt's path crosses the car carriers' two service roads (activities/carrierYard.ts)
   const NB = traffic.zone(30.6, -48.6, 37.4, -45.4, sameKind);
   const NB2 = traffic.zone(56.2, -48.6, 65.6, -45.4, sameKind);
-  // the carrier depot (activities/carrierDepot.ts): the stretch of the northbound lane a carrier turns out onto, which
-  // cars leave to it (any other semi passes as a car), the stretch of pavement its trailer sweeps, which walkers
-  // cross as one, and the zebra where its service road crosses the north belt's path
-  const out = truckZone(72, LANE_Y - 24, 76.2, LANE_Y + 4);
-  out.keyOf = (v, leg) => (leg.tag === 'depot' ? 'semi' : 'car');
-  const DC = traffic.zone(75.6, -66, 79.4, -39.4, sameKind);
-  // (reaching 2 m further north than the path's crossing, since a carrier coming down the bend at a slant has its
-  // front corner over the crossing before its nose)
-  const NB3 = traffic.zone(104.9, -50.6, 119.2, -45.4, sameKind);
-  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2, DC, NB3 };
+  // the carrier depot (activities/carrierDepot.ts): the stretch of the southbound lane a carrier drives on past the
+  // charging lane and backs up, the stretch of the northbound lane its trailer swings across backing in (which it
+  // also crosses turning out), and the stretch north of that it turns out onto (cars leave them to it; any other semi
+  // passes as a car), and the stretch of the east pavement its trailer sweeps, which walkers cross as one
+  const depotKey = (_v: Vehicle, leg: { tag?: string }) => (leg.tag === 'depot' ? 'semi' : 'car');
+  truckZone(66, LANE_Y - 3, 72, LANE_Y + PAST + 1.5).keyOf = depotKey;
+  const lane = truckZone(72, LANE_Y - 3.5, 76.2, LANE_Y + 7.5);
+  lane.keyOf = depotKey;
+  truckZone(72, LANE_Y - 24, 76.2, LANE_Y - 3.5).keyOf = depotKey;
+  const DC = traffic.zone(75.6, -66, 79.4, -35.4, sameKind);
+  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2, DC, depot: { lane, pavement: DC } };
 }
 export type RoadZones = ReturnType<typeof roadZones>;
 /** A through route: its points, fillet radii and how often it is picked relative to the others. */
