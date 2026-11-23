@@ -124,7 +124,8 @@ try {
       for (const v of vs) {
         if (v.kind === 'semi') {
           alive.add(v.id);
-          if (!semis.has(v.id)) semis.set(v.id, v.y < 10 && v.x > 60 ? 'yard' : v.y > 100 ? 'bay' : 'seed');
+          // car carriers (the north yard's and the depot's) are neither yard nor bay runs
+          if (!semis.has(v.id)) semis.set(v.id, v.role === 'carrier' ? 'carrier' : v.y < 10 && v.x > 60 ? 'yard' : v.y > 100 ? 'bay' : 'seed');
         }
         const isHolding = v.keep || (v.leg && (v.leg.dwell !== undefined || v.leg.until));
         // only traffic inside the world box counts: the long runs to and from its edges would water the share down
