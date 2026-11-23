@@ -30,6 +30,21 @@ function ellipse(cx: number, cy: number, rx: number, ry: number, n = 28) {
   return pts;
 }
 
+/** A smooth curve through the points (Catmull–Rom, a few points per stretch), for paths that wind. */
+function curve(pts: number[][], steps = 6) {
+  const out: number[][] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let k = 0; k < steps; k++) {
+      const t = k / steps, t2 = t * t, t3 = t2 * t;
+      const f = (a: number, b: number, c: number, d: number) => 0.5 * (2 * b + (c - a) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (3 * b - a - 3 * c + d) * t3);
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]);
+    }
+  }
+  out.push(pts[pts.length - 1]);
+  return out;
+}
+
 export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffPark {
   const { pal, statics: S } = env;
   const person = (x: number, y: number, stance: 'sit' | 'chat', fx: number, fy: number) => {
@@ -129,9 +144,12 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
 
   // the path: off the main path, onto the ring round the pond (the strollers' ring) on its south-west side, off it
   // on the north-east and on north to the north belt's path
-  const IN = [[119, 27.5], [120, 19], [ring[4].x, ring[4].y]];
+  const IN = curve([[119, 27.5], [119.9, 21.5], [119.6, 13], [ring[4].x, ring[4].y]]);
   // north: up to the lake's south shore (lake.ts), round its east side and on to the belt's path
-  const OUT = [[ring[9].x, ring[9].y], [127.5, -8], [124, -19.5], [137.5, -21.5], [137.5, -47]];
+  const OUT = curve([
+    [ring[9].x, ring[9].y], [128.4, -5.5], [126.3, -12], [125.6, -17.4], [128.4, -20.6], [133, -21.6], [136.9, -24],
+    [137.9, -30], [137.6, -40], [137.5, -47],
+  ]);
   const ground = (ctx: Ctx) => {
     ctx.strokeStyle = pal.plaza;
     ctx.lineWidth = 1.1;
@@ -156,8 +174,10 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   const walks = (g: WalkGraph, from: number, to: number) => {
     const ids = ring.map((p) => g.node(p.x, p.y, false, 0.5));
     for (let i = 0; i < ids.length; i++) g.link(ids[i], ids[(i + 1) % ids.length]);
-    g.chain([from, g.node(120, 19), ids[4]]);
-    g.chain([ids[9], g.node(127.5, -8), g.node(124, -19.5), g.node(137.5, -21.5), to]);
+    // nodes every few points along the curves, so people follow them closely
+    const along = (line: number[][]) => line.filter((_, i) => i > 0 && i < line.length - 1 && i % 3 === 0).map(([x, y]) => g.node(x, y, false, 0.5));
+    g.chain([from, ...along(IN), ids[4]]);
+    g.chain([ids[9], ...along(OUT), to]);
   };
 
   return { acts, ground, walks };

@@ -139,7 +139,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   rackPlatform(S, pal, edge, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4 }, 5, 5, 200);
   // under a glass hall of its own, so the racks stay dry
   S.push(...glassHall(pal, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4, h: 4.2 }));
-  megapacks(S, pal, edge, [[79.6, 85.4], [87, 92.8], [94.4, 100.2]], [-19.4, -22.2, -25, -27.8, -30.6, -33.4], 300);
+  megapacks(S, pal, edge, [[79.6, 85.4], [87, 92.8], [94.4, 100.2]], [-19.4, -22.2, -25, -27.8, -30.6, -33.4, -36.2], 300);
   // back the way it came: a straight line home from the far end would cut between the racks
   const rounds = new Looper(env, 'robot', () => [{ x: 80.6, y: -17.3, wait: 3 }, { x: 101.2, y: -17.3, wait: 2 }, { x: 101.4, y: -9, wait: 3 }, { x: 101.2, y: -17.3 }], 80.6, -17.3);
   trees.push([78.9, 1.0, 'tree2', 1], [79.0, -12, 'poplar', 1], [79.0, -24, 'poplar', 1]);
@@ -176,7 +176,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     ctx.beginPath();
     groundRect(ctx, 79.4, 1.6, 101, 22.4);
     groundRect(ctx, 76, 9.4, 79.4, 16.2);
-    groundRect(ctx, 78.8, -35.6, 101, -18.6);
+    groundRect(ctx, 78.8, -38.4, 101, -18.6);
     groundRect(ctx, -6, 75.4, 19.2, 126);
     ctx.fill();
     // the car park's service road
