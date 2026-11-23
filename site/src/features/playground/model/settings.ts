@@ -18,6 +18,8 @@ export interface Settings {
   isFull: boolean;
   /** the bare scene for a screen saver (`?saver`): no page round it, no controls, no cursor */
   isSaver: boolean;
+  /** a possible landing page built round the scene (`?look`) */
+  isLook: boolean;
 }
 
 export const SPEED = { min: 0.25, max: 3, step: 0.25 } as const;
@@ -41,6 +43,7 @@ export function readSettings(search: string): Settings {
     isMotionForced: p.get('motion') === '1',
     isFull: p.get('full') === '1',
     isSaver: p.has('saver'),
+    isLook: p.has('look'),
   };
 }
 

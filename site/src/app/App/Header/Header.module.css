@@ -1,3 +1,11 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .title {
   margin: 0;
   font: 600 var(--text-xl) / 1.05 var(--font-display);

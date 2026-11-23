@@ -1,0 +1,78 @@
+/* The look's own palette, night and day: the scene's lit-window gold over near-black, or over the site's pale grey.
+   Its parts read these properties, so the theme switches in one place. */
+.root {
+  --look-bg: #0e0f12;
+  --look-fade: 14 15 18;
+  --look-fg: #e8e9ee;
+  --look-sub: #c6c8d0;
+  --look-muted: #9a9ca6;
+  --look-card: #17181d;
+  --look-glass: rgb(23 24 29 / 0.82);
+  --look-line: #24252c;
+  --look-glass-line: rgb(255 255 255 / 0.08);
+  --look-bar: #3a3c47;
+  --look-gold: #f2c76b;
+  --look-gold-deep: #e0a526;
+  --look-built: linear-gradient(180deg, #f6d68e, #d9a440);
+  --look-title: linear-gradient(180deg, #ffffff 30%, #f6dca0 100%);
+  --look-eyebrow: #f2c76b;
+  --look-glow: rgb(242 199 107 / 0.16);
+  --look-cta: #f2c76b;
+  --look-cta-fg: #1a1409;
+  --look-ghost: rgb(232 233 238 / 0.28);
+  --look-chip: rgb(232 233 238 / 0.12);
+  --look-good: #7fd1a4;
+  --look-warn: #f0a07a;
+  --look-blue: #6aa7ff;
+  --look-shadow: none;
+
+  min-block-size: 100vh;
+  background: var(--look-bg);
+  color: var(--look-fg);
+  font-family: var(--font-body);
+}
+
+.root[data-theme="light"] {
+  --look-bg: #f4f4f6;
+  --look-fade: 244 244 246;
+  --look-fg: #1d1e23;
+  --look-sub: #3f414a;
+  --look-muted: #5f616b;
+  --look-card: #ffffff;
+  --look-glass: rgb(255 255 255 / 0.8);
+  --look-line: #e4e5ea;
+  --look-glass-line: rgb(20 20 30 / 0.08);
+  --look-bar: #d6d7dd;
+  --look-built: linear-gradient(180deg, #e9b949, #c98f1c);
+  --look-title: linear-gradient(180deg, #1d1e23 35%, #7a5a12 100%);
+  --look-eyebrow: #8a6410;
+  --look-glow: rgb(224 165 38 / 0.18);
+  --look-cta: #1d1e23;
+  --look-cta-fg: #ffffff;
+  --look-ghost: rgb(29 30 35 / 0.25);
+  --look-chip: rgb(255 255 255 / 0.7);
+  --look-good: #1f7a4c;
+  --look-warn: #b4532a;
+  --look-blue: #3d5fc4;
+  --look-shadow: 0 12px 32px -16px rgb(20 20 40 / 0.25);
+}
+
+.body {
+  max-inline-size: 2000px;
+  margin-inline: auto;
+  padding: 0 var(--space-5) var(--space-7);
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* the stat cards rise into the scene's faded lower edge */
+.overlap {
+  position: relative;
+  margin-block-start: -120px;
+}
+
+.note {
+  margin: var(--space-3) var(--space-1) 0;
+  font-size: var(--text-xs);
+  color: var(--look-muted);
+}
