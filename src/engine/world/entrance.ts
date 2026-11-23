@@ -1,5 +1,5 @@
 // The factory's main entrance on the plaza: the ground floor steps back in a V under the flush facade above, its
-// glass walls angling in like an arrowhead to a dark door at the tip, and two pillars stand in its mouth, in line with
+// glass walls angling in like an arrowhead to a door at the tip, standing open onto the lit lobby, and two pillars stand in its mouth, in line with
 // the door's jambs.
 //
 // The recess is drawn as part of the factory's +x face, clipped to the opening, so it needs no sort item of its own.
@@ -74,26 +74,50 @@ export function drawEntrance(r: R, pal: Palette, edge: string) {
   };
   onWall(r, bx, d0, x, y0, h, (c, w) => pane(c, w, 2));
   onWall(r, x, y1, bx, d1, h, (c, w) => pane(c, w, 3));
-  // the door at the tip: dark glass in two pairs of leaves with pull handles, under a transom
+  // the door at the tip, open: under a dark glass transom, its two middle leaves have slid back behind the outer
+  // ones (doubled glass there), and the lobby shows through the gap, lit cool by day and warm at night
   onFaceX(r, bx, d0, d1, h, (c, w) => {
+    const top = h - 2.6, a = w / 4, b = (3 * w) / 4;
     c.fillStyle = pal.white.right;
     c.fillRect(0, 0, w, h);
     c.fillStyle = pal.glassDark;
-    c.fillRect(0.12, 0.12, w - 0.24, h - 0.12);
-    c.strokeStyle = r.night ? 'rgba(255, 255, 255, 0.07)' : 'rgba(255, 255, 255, 0.16)';
+    c.fillRect(0.12, 0.12, w - 0.24, top - 0.12);
+    c.fillRect(0.12, top, a - 0.12, h - top);
+    c.fillRect(b, top, w - 0.12 - b, h - top);
+    // the lobby through the open doorway, its floor catching the light
+    const [l0, l1] = r.night ? pal.windowNight : pal.window;
+    const lobby = c.createLinearGradient(0, top, 0, h);
+    lobby.addColorStop(0, l0);
+    lobby.addColorStop(1, l1);
+    c.fillStyle = lobby;
+    c.fillRect(a, top, b - a, h - top);
+    c.fillStyle = r.night ? 'rgba(255, 220, 160, 0.35)' : 'rgba(255, 255, 255, 0.35)';
+    c.fillRect(a, h - 0.45, b - a, 0.45);
+    // and its depth: the ceiling inside in shade
+    const deep = c.createLinearGradient(0, top, 0, top + 1.4);
+    deep.addColorStop(0, r.night ? 'rgba(120, 60, 0, 0.25)' : 'rgba(20, 30, 45, 0.3)');
+    deep.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    c.fillStyle = deep;
+    c.fillRect(a, top, b - a, 1.4);
+    // the slid-back leaves over the fixed ones, and the frame round the doorway
+    c.fillStyle = r.night ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.18)';
+    c.fillRect(0.3, top + 0.08, a - 0.3, h - top - 0.08);
+    c.fillRect(b, top + 0.08, w - 0.3 - b, h - top - 0.08);
+    c.strokeStyle = r.night ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.22)';
     c.lineWidth = 0.07;
     c.beginPath();
-    for (let i = 1; i < 4; i++) {
-      c.moveTo((w * i) / 4, h - 2.6);
-      c.lineTo((w * i) / 4, h);
+    c.moveTo(0.12, top);
+    c.lineTo(w - 0.12, top);
+    for (const u of [a, b, 0.3, w - 0.3]) {
+      c.moveTo(u, top);
+      c.lineTo(u, h);
     }
-    c.moveTo(0.12, h - 2.6);
-    c.lineTo(w - 0.12, h - 2.6);
     c.stroke();
+    // the pull handles, now beside the doorway
     c.strokeStyle = r.night ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.5)';
     c.lineWidth = 0.06;
     c.beginPath();
-    for (const u of [w / 4 - 0.14, w / 4 + 0.14, (3 * w) / 4 - 0.14, (3 * w) / 4 + 0.14]) {
+    for (const u of [a - 0.18, b + 0.18]) {
       c.moveTo(u, h - 1.3);
       c.lineTo(u, h - 0.8);
     }
