@@ -11,7 +11,8 @@ export const POCKET_LAWN = [31.0, 38.2, 44.6, 38.2, 44.6, 44.2, 41.4, 47.8, 31.0
 export const POCKET_PATH = [[36.2, 49.0], [37.4, 45.2], [40.6, 41.6], [45.2, 41.9]];
 // the park by the robotaxi stop, south of the street and east of the avenue's pavement: grass, with the walk round
 // the house's west side and along its garden (the walkways' `pk` nodes) paved across it
-export const TAXI_LAWN = [82.4, 53.2, 131, 53.2, 131, 100, 82.4, 100];
+// down past the bottom of every view and east to the east road's pavement (the café and its garden: southLawn.ts)
+export const TAXI_LAWN = [82.4, 53.2, 139.6, 53.2, 139.6, 125, 82.4, 125];
 // the garden walk turns south at its east end and runs on past the bottom of every view (frame.ts `WORLD`)
 export const TAXI_PATHS = [[[85.2, 53.2], [85.2, 65], [112, 65.6], [128, 66], [128, 125]], [[85.2, 65], [81.0, 68]]];
 

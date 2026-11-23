@@ -48,7 +48,11 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
   traffic on a random stream of its own) and the office and second charging hub beyond it, `staffPark.ts` more life in the staff park (a pond whose
   fountain and ripples are redrawn every frame, flower beds in `pal.flowers`, a pergola with staff at lunch, people
-  strolling round the pond, more trees), also on a random stream of its own.
+  strolling round the pond, more trees), also on a random stream of its own, and `southLawn.ts` the café south of
+  the street (a kiosk whose door is a walkway portal, tables under umbrellas drawn as two items each, table and pole
+  below, canopy above the people sitting under it, so the depth sort keeps them apart), with benches, flower beds and
+  trees. Ground hooks: `groundPainter` takes painters to run with the pads (`more`) and on top of the lawns
+  (`onLawns`).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge, each platform under a glass
   hall from `world/glassHall.ts`, the one by the factory the dock wing grown out in glass, its face open to it so
   the storeroom inside shows (`world/dockInterior.ts`, which also draws the open garage by the docks the yard robots

@@ -9,6 +9,7 @@ import { C } from '../core';
 import { box, type Ctx, type R } from '../draw';
 import { groundPoly } from '../ground';
 import { Walker } from '../people/walker';
+import type { Palette } from '../palette';
 import type { Sprites } from '../sprites';
 import { BoxItem, FnItem, TreeItem } from '../statics';
 
@@ -34,6 +35,26 @@ const hash = (a: number, b: number) => {
   const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
   return v - Math.floor(v);
 };
+
+/** Flower beds (x0, y0, x1, y1 each): earth, then flowers in the palette's colours, the same pattern every time. */
+export function flowerBeds(ctx: Ctx, pal: Palette, beds: number[][]) {
+  ctx.fillStyle = pal.soil;
+  ctx.beginPath();
+  for (const [x0, y0, x1, y1] of beds) groundPoly(ctx, [x0, y0, x1, y0, x1, y1, x0, y1]);
+  ctx.fill();
+  for (const [x0, y0, x1, y1] of beds) {
+    for (let x = x0 + 0.25; x < x1 - 0.1; x += 0.38) {
+      for (let y = y0 + 0.2; y < y1 - 0.1; y += 0.36) {
+        const h = hash(x, y);
+        const jx = x + (hash(y, x) - 0.5) * 0.2, jy = y + (h - 0.5) * 0.2;
+        ctx.fillStyle = pal.flowers[Math.floor(h * pal.flowers.length)];
+        ctx.beginPath();
+        ctx.arc((jx - jy) * C, (jx + jy) * 0.5, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+}
 
 export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffPark {
   const { pal, statics: S } = env;
@@ -142,23 +163,7 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
     groundPoly(ctx, ellipse(POND.x, POND.y, POND.rx, POND.ry));
     ctx.fill();
     ctx.stroke();
-    // flower beds: earth, then flowers in the palette's colours, the same pattern every time
-    ctx.fillStyle = pal.soil;
-    ctx.beginPath();
-    for (const [x0, y0, x1, y1] of BEDS) groundPoly(ctx, [x0, y0, x1, y0, x1, y1, x0, y1]);
-    ctx.fill();
-    for (const [x0, y0, x1, y1] of BEDS) {
-      for (let x = x0 + 0.25; x < x1 - 0.1; x += 0.38) {
-        for (let y = y0 + 0.2; y < y1 - 0.1; y += 0.36) {
-          const h = hash(x, y);
-          const jx = x + (hash(y, x) - 0.5) * 0.2, jy = y + (h - 0.5) * 0.2;
-          ctx.fillStyle = pal.flowers[Math.floor(h * pal.flowers.length)];
-          ctx.beginPath();
-          ctx.arc((jx - jy) * C, (jx + jy) * 0.5, 0.15, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
+    flowerBeds(ctx, pal, BEDS);
   };
 
   return { acts, ground };
