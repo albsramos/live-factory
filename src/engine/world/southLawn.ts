@@ -1,11 +1,10 @@
 // The park south of the street, between the robotaxi stop and the east road (its lawn and garden walk are
-// TAXI_LAWN and TAXI_PATHS in streetLife.ts): a café kiosk with a lit window and an awning, tables under striped
-// umbrellas with staff at them, a short queue at the counter, benches and trees. The kiosk's door is
+// TAXI_LAWN and TAXI_PATHS in streetLife.ts): a café kiosk with a lit window and an awning, tables with staff at
+// them, a short queue at the counter, benches and trees. The kiosk's door is
 // a portal of the walkway graph, so people come and go. A random stream of its own keeps the rest of the town as it
 // was.
 
 import type { Activity, Env } from '../activities/activity';
-import { C } from '../core';
 import { box, type Ctx, type R } from '../draw';
 import { windowsY, type Band } from '../details';
 import { lineW } from '../ground';
@@ -46,43 +45,15 @@ export function buildSouthLawn(env: Env, sprites: Sprites, edge: string): SouthL
     new BoxItem(k.x0 - 0.2, k.y1, 2.45, k.x1 + 0.2, k.y1 + 1.1, 2.6, pal.white, { edge }),
   );
 
-  // tables under umbrellas: the table and the pole low down, the canopy a separate item above the people sitting
-  // round it, so the depth sort keeps them apart
+  // plain white tables on a steel stem, with staff at them
   TABLES.forEach(([x, y], i) => {
-    S.push(new FnItem(x - 0.45, y - 0.45, 0, x + 0.45, y + 0.45, 2.0, (r) => table(r, x, y)));
-    S.push(new FnItem(x - 1.2, y - 1.2, 2.05, x + 1.2, y + 1.2, 2.5, (r) => canopy(r, x, y, i)).still());
+    S.push(new FnItem(x - 0.45, y - 0.45, 0, x + 0.45, y + 0.45, 0.8, (r) => table(r, x, y)).still());
     person(x - 0.95, y, 'sit', 1, 0);
     if (i !== 1) person(x + 0.95, y, 'sit', -1, 0);
   });
   const table = (r: R, x: number, y: number) => {
-    const ctx = r.ctx, X = (x - y) * C, Y = (x + y) * 0.5;
-    box(r, x - 0.4, y - 0.4, 0.7, x + 0.4, y + 0.4, 0.76, pal.white, { edge });
     box(r, x - 0.06, y - 0.06, 0, x + 0.06, y + 0.06, 0.7, pal.steel);
-    ctx.strokeStyle = pal.steel.right;
-    ctx.lineWidth = 0.07;
-    ctx.beginPath();
-    ctx.moveTo(X, Y - 0.76);
-    ctx.lineTo(X, Y - 2.1);
-    ctx.stroke();
-  };
-  // eight panels round a low cone, every other one in colour
-  const canopy = (r: R, x: number, y: number, i: number) => {
-    const ctx = r.ctx, n = 8, rad = 1.15;
-    const apex = [(x - y) * C, (x + y) * 0.5 - 2.45];
-    const rim = Array.from({ length: n }, (_, j) => {
-      const a = (j / n) * Math.PI * 2 + 0.2, px = x + Math.cos(a) * rad, py = y + Math.sin(a) * rad;
-      return [(px - py) * C, (px + py) * 0.5 - 2.1];
-    });
-    for (let j = 0; j < n; j++) {
-      const a = rim[j], b = rim[(j + 1) % n];
-      ctx.fillStyle = j % 2 ? pal.white.top : pal.umbrellas[(i + 1) % pal.umbrellas.length];
-      ctx.beginPath();
-      ctx.moveTo(apex[0], apex[1]);
-      ctx.lineTo(a[0], a[1]);
-      ctx.lineTo(b[0], b[1]);
-      ctx.closePath();
-      ctx.fill();
-    }
+    box(r, x - 0.4, y - 0.4, 0.7, x + 0.4, y + 0.4, 0.76, pal.white, { edge });
   };
 
   // a short queue at the counter, and staff on two benches
