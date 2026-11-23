@@ -24,7 +24,7 @@ export interface SouthLawn {
 const KIOSK = { x0: 104, y0: 55, x1: 109, y1: 58.2, h: 3 };
 const DOOR = { x: 106.5, y: 58.7 };
 /** where the kiosk's path meets the garden walk */
-const FORK = { x: 106.5, y: 65.5 };
+const FORK = { x: 106.5, y: 66.3 };
 // either side of the kiosk's path, clear of it and of the garden walk
 const TABLES = [[102.2, 60.4], [102.8, 63.2], [110.8, 60.4], [110.4, 63.2]];
 

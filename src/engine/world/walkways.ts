@@ -91,9 +91,10 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
-  const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(112, 65.6), g.node(128, 66), g.node(128, 125, true)];
+  const pk = [g.node(85.8, 54.0, false, 0.5), g.node(86.9, 68.9, false, 0.5), g.node(112, 65.6), g.node(128, 66), g.node(128, 125, true)];
   g.link(sse[0], pk[0]);
-  g.link(pk[0], pk[1]);
+  // behind the robotaxi shelter, then out round its south end
+  g.chain([pk[0], g.node(85.8, 63.5, false, 0.5), pk[1]]);
   // the garden walk forks off to the café kiosk's door on the way
   south.walks(g, pk[1], pk[2]);
   g.chain(pk.slice(2));
