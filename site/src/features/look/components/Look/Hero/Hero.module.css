@@ -6,6 +6,13 @@
   flex-direction: column;
 }
 
+/* ends where the stat cards (which rise 120px into the header) begin, so nothing in the scene hides behind them */
+.stage {
+  position: absolute;
+  inset: 0 0 120px;
+  pointer-events: none;
+}
+
 .scene {
   position: absolute;
   inset: 0;
@@ -25,9 +32,9 @@
   background: linear-gradient(90deg, rgb(var(--look-fade) / 0.96) 0%, rgb(var(--look-fade) / 0.86) 24%, rgb(var(--look-fade) / 0.45) 44%, rgb(var(--look-fade) / 0) 66%);
 }
 
-/* a little shade under the bar; the scene melts into the page at the bottom */
+/* a little shade under the bar; the scene melts into the page at its lower edge */
 .fadeEnds {
-  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 16%, rgb(var(--look-fade) / 0) 58%, rgb(var(--look-fade)) 100%);
+  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 18%, rgb(var(--look-fade) / 0) 80%, rgb(var(--look-fade)) 100%);
 }
 
 .bar,

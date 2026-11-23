@@ -1,5 +1,6 @@
 import { LivingCity } from 'live-factory';
 import { patchSearch } from '../../../../../shared/lib/searchParams';
+import { useMediaQuery } from '../../../../../shared/lib/useMediaQuery';
 import styles from './Hero.module.css';
 
 interface HeroProps {
@@ -8,15 +9,23 @@ interface HeroProps {
 
 /**
  * The header: the live scene behind everything, faded towards the left (where the title sits) and into the page at
- * the bottom; the title's warm glow is drawn on the title block itself, so it stays behind it at any width.
+ * the bottom. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
+ * happens at the bottom of the frame (the robotaxi stop, the crossing) stays in view. The title's warm glow is drawn on the title block
+ * itself, so it stays behind it at any width.
  */
 export function Hero({ isDark }: HeroProps) {
+  // wider than the scene's own shape (from about 900px), show its whole height, outskirts filling the sides; on a
+  // narrower, taller screen that would leave empty ground above and below, so fill the box instead
+  const isWide = useMediaQuery('(min-width: 900px)');
   const handleTheme = () => patchSearch({ theme: isDark ? 'light' : 'dark' });
   return (
     <header className={styles.root}>
-      <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit="cover" isBranded />
+      {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
+      <div className={styles.stage}>
+        <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} isBranded />
+        <div className={styles.fadeEnds} />
+      </div>
       <div className={styles.fadeSide} />
-      <div className={styles.fadeEnds} />
 
       <nav className={styles.bar} aria-label="Site">
         <a className={styles.brand} href="./">Live Factory</a>
