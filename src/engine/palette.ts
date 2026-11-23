@@ -29,6 +29,8 @@ export interface Palette {
   factory: Mat;
   factoryDark: Mat;
   concrete: Mat;
+  /** the rocks round the staff park's lake */
+  rock: Mat;
   steel: Mat;
   dark: Mat;
   rack: Mat;
@@ -113,6 +115,7 @@ export function lightPalette(): Palette {
     factory: mat('#d3d3d9', 0.22),
     factoryDark: mat('#b9bac2', 0.24),
     concrete: mat('#e9e9ed'),
+    rock: mat('#bcbdc5', 0.3),
     steel: mat('#f2f2f5', 0.2),
     dark: mat('#3b3d44', 0.35),
     rack: mat('#e6e6ea', 0.2),
@@ -188,6 +191,7 @@ export function darkPalette(): Palette {
     factory: mat('#363840', 0.36),
     factoryDark: mat('#2c2e35', 0.36),
     concrete: mat('#2a2c32', 0.32),
+    rock: mat('#3b3d45', 0.34),
     steel: mat('#4a4c55', 0.34),
     dark: mat('#202126', 0.35),
     rack: mat('#33353c', 0.32),

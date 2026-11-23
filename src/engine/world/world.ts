@@ -28,6 +28,7 @@ import { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
+import { buildLake } from './lake';
 import { buildSouthLawn } from './southLawn';
 import { buildNorthBelt } from './northBelt';
 import { buildFarWest } from './farWest';
@@ -123,6 +124,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // a pond, a pergola and more staff in the staff park, also on a stream of its own
   const park = buildStaffPark({ ...env, rng: makeRng(opts.seed * 7451 + 53) }, sprites, edge);
   acts.push(...park.acts);
+  // and a lake at its north end, with rocks, on a stream of its own
+  const lake = buildLake({ ...env, rng: makeRng(opts.seed * 3967 + 89) });
   // a café, its tables and its garden in the park south of the street, on a stream of its own
   const south = buildSouthLawn({ ...env, rng: makeRng(opts.seed * 6143 + 67) }, sprites, edge);
   // a belt of trees and a path north of the yard, the Megapacks and the staff park, on a stream of its own
@@ -150,7 +153,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, west.ground], [south.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, west.ground], [south.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

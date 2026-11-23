@@ -4,7 +4,7 @@
 import type { Path, Pose } from '../path';
 import { type Zone, junction, compass } from './zone';
 import type { Vehicle } from './vehicle';
-import { roomOn } from './sense';
+import { roomOn, semiOn } from './sense';
 
 export interface Req {
   zone: Zone;
@@ -144,8 +144,10 @@ export function reserveZones(v: Vehicle, leg: LegState, dStop: number): number {
 /** Nothing stands on the road just past the group, where the whole vehicle has to fit once it's through. */
 function roomPast(v: Vehicle, leg: LegState, g: Group): boolean {
   const sOut = Math.max(...g.map((q) => q.sOut));
-  // the probe finds a body from a little before its end, so look a car length and a gap and a half past the exit
-  return roomOn(v, leg.path, sOut, sOut + v.tail + v.hl + 3.5);
+  // the probe finds a body from a little before its end, so look a car length and a gap and a half past the exit;
+  // and further for a semi, which can stand across the road ahead for a long while (the bay truck turning out
+  // through the bend while westbound cars queue back from it into the junction)
+  return roomOn(v, leg.path, sOut, sOut + v.tail + v.hl + 3.5) && (v.kind === 'semi' || !semiOn(v, leg.path, sOut, sOut + 25));
 }
 
 /** Let go of every zone the vehicle has fully left (no part of its footprint in it, nothing more to cross). */
