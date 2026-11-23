@@ -133,6 +133,14 @@
   pointer-events: none;
 }
 
+.eyebrow {
+  margin: 0 0 10px;
+  font: 600 var(--text-xs) / 1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--look-accent);
+}
+
 .title {
   margin: 0 0 12px;
   font: 600 clamp(36px, 4.4vw, 56px) / 1 var(--font-display);
