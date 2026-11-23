@@ -4,18 +4,21 @@ import type { WalkGraph } from '../people/crowd';
 import type { EastSide } from './eastSide';
 import type { Outskirts } from './outskirts';
 import type { SouthLawn } from './southLawn';
+import { BELT_Y, type NorthBelt } from './northBelt';
 import type { RoadZones } from './roads';
 import { POCKET_PATH } from './streetLife';
 import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
-export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide, south: SouthLawn) {
+export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide, south: SouthLawn, belt: NorthBelt) {
   const { CW1, CW3, CW4, CW5, YE, YG, LD, LE } = z;
   const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
   // either side of the yard gate
   const gate = [g.node(66.5, -18.6), g.node(66.5, -3.4)];
-  g.link(aw[0], gate[0]);
+  // past the north belt's path on the way to the yard gate
+  const awBelt = g.node(66.5, BELT_Y);
+  g.chain([aw[0], awBelt, gate[0]]);
   g.link(gate[0], gate[1], YG);
   g.link(gate[1], aw[1]);
   g.link(aw[1], awExit, YE);
@@ -26,7 +29,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   const ae = [g.node(77.5, -120, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 175, true)];
   // either side of the charging hub's driveway
   const hubSides = [g.node(77.8, 6.8, false, 0.5), g.node(77.8, 17.4, false, 0.5)];
-  g.chain([ae[0], hubSides[0]]);
+  const aeBelt = g.node(77.5, BELT_Y);
+  g.chain([ae[0], aeBelt, hubSides[0]]);
   g.link(hubSides[0], hubSides[1], outskirts.hubCrossing);
   g.chain([hubSides[1], ae[1], ae[2]]);
   g.chain(ae.slice(3));
@@ -79,7 +83,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   g.chain(houseWalk);
   // the car park's and the staff park's walks
   const parkEnd = outskirts.walks(g, houseWalk[2], sne[1]);
-  east.walks(g, { north: sne[1], south: sse[2], park: parkEnd });
+  const eastRoad = east.walks(g, { north: sne[1], south: sse[2], park: parkEnd });
+  belt.walks(g, { west: awBelt, east: aeBelt, eastRoad });
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
