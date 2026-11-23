@@ -6,8 +6,7 @@ import { BoxItem, HedgeItem, LampItem, TreeItem } from '../statics';
 import { Walker } from '../people/walker';
 import type { Env } from '../activities/activity';
 
-// the pocket park on the corner between the compute platform, the plaza walk and the street: grass, a path, benches,
-// and two of the plaza's LED-edged planters (plaza.ts)
+// the pocket park on the corner between the compute platform, the plaza walk and the street: grass, a path, benches
 export const POCKET_LAWN = [31.0, 38.2, 44.6, 38.2, 44.6, 44.2, 41.4, 47.8, 31.0, 47.8];
 export const POCKET_PATH = [[36.2, 49.0], [37.4, 45.2], [40.6, 41.6], [45.2, 41.9]];
 // the park by the robotaxi stop, south of the street and east of the avenue's pavement: grass, with the walk round
