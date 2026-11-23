@@ -2,8 +2,8 @@
 // after Giga Texas's: a green roof round a paved terrace with tables and benches where two Optimus robots walk about,
 // and a glass pavilion under a big pale roof plate that comes to a point towards the front. The
 // planters have LED strips along their top edges that glow warm at night, and stand clear of every walkway (and the
-// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts). Two more stand in the pocket park
-// beside the plaza, either side of its path and clear of its benches, its trees and the staff on their break there.
+// walkers' offset), the chatting group and the bench (walkways.ts, streetLife.ts). The staff park has two more like
+// them (`ledPlanters`, staffPark.ts).
 
 import { C } from '../core';
 import { onTop, type R } from '../draw';
@@ -36,10 +36,6 @@ const PLATE_Z = [16.0, 16.25];
 const PLANTERS = [
   [[33.0, 57.0], [35.0, 52.2], [39.5, 53.5], [39.5, 57.0]],
   [[34.0, 63.4], [40.0, 63.4], [40.0, 66.6], [36.5, 67.2]],
-  // the pocket park (streetLife.ts `POCKET_LAWN`): north of its path, east of the bench, and south of it, in the corner
-  // by the plaza walk
-  [[40.4, 40.3], [41.2, 38.6], [44.2, 38.6], [44.2, 40.3]],
-  [[38.6, 47.5], [39.2, 45.4], [41.4, 46.4], [41.4, 47.5]],
 ];
 const PLANTER_H = 0.45;
 
@@ -67,17 +63,20 @@ export function factoryFront(pal: Palette, edge: string) {
     new FnItem(px0, py0, PLATE_Z[0], px1, py1, PLATE_Z[1], (r) => drawMesh(r, plate, 0, 0, 0, 1, 0, [pal.white, pal.white])).still(),
     ...FURNITURE.map(([x0, y0, x1, y1, h]) => new BoxItem(x0, y0, ROOF, x1, y1, ROOF + h, pal.white, { edge }, undefined, false)),
   ];
-  for (const plan of PLANTERS) {
+  items.push(...ledPlanters(pal, PLANTERS));
+  return items;
+}
+
+/** Low angular planters over the plans given (counter-clockwise), grass on top and an LED strip round the top edge. */
+export function ledPlanters(pal: Palette, plans: number[][][]): Static[] {
+  return plans.map((plan) => {
     const mesh = prism(plan, 0, PLANTER_H);
     const [x0, y0, x1, y1] = bounds(plan);
-    items.push(
-      new FnItem(x0, y0, 0, x1, y1, PLANTER_H, (r) => {
-        drawMesh(r, mesh, 0, 0, 0, 1, 0, [pal.white, pal.lawn]);
-        ledStrip(r, pal, plan, PLANTER_H);
-      }).still(),
-    );
-  }
-  return items;
+    return new FnItem(x0, y0, 0, x1, y1, PLANTER_H, (r) => {
+      drawMesh(r, mesh, 0, 0, 0, 1, 0, [pal.white, pal.lawn]);
+      ledStrip(r, pal, plan, PLANTER_H);
+    }).still();
+  });
 }
 
 /** The LED strip round a planter's top edge: a fine bright line by day, a warm glowing one at night. */
