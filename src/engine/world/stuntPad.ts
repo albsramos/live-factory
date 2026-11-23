@@ -1,5 +1,5 @@
 // An Easter egg in the top-right corner of wide views: a clearing in the north belt's trees, just north of the
-// Megapack field, with a paved pad where three roadsters take turns showing off for a ring of Optimus, each with a
+// carrier depot, with a paved pad where three roadsters take turns showing off for a ring of Optimus, each with a
 // trick of its own: a flat spin, a barrel roll, or a corkscrew that rolls and turns half round at once. Every 20
 // seconds the last one drives off the circle to a free spot at the back and the next reverses out onto it; a robot
 // walks up and checks it over; then it lifts on its thrusters, does its trick and sets down, raising smoke as it lifts

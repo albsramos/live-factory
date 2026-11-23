@@ -8,6 +8,7 @@ import type { Traffic } from '../traffic/traffic';
 import type { Vehicle } from '../traffic/vehicle';
 import { junction, sameKind } from '../traffic/zone';
 import type { Env } from '../activities/activity';
+import { DEPOT_ROWS } from '../activities/carrierDepot';
 
 /** Zones the traffic reserves: the junction, the crosswalks, the stretches semis need to themselves, the pavements they cross. */
 export function roadZones(traffic: Traffic) {
@@ -49,7 +50,15 @@ export function roadZones(traffic: Traffic) {
   // where the north belt's path crosses the car carriers' two service roads (activities/carrierYard.ts)
   const NB = traffic.zone(30.6, -48.6, 37.4, -45.4, sameKind);
   const NB2 = traffic.zone(56.2, -48.6, 65.6, -45.4, sameKind);
-  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2 };
+  // the carrier depot (activities/carrierDepot.ts): for each spot, the stretch of the northbound lane a carrier turns
+  // out onto and backs in from, which cars leave to it (any other semi passes as a car), and the stretch of pavement
+  // the trailers sweep, which walkers cross as one
+  for (const [k, y] of DEPOT_ROWS.entries()) {
+    const z = truckZone(72, y - 21, 76.2, y + 4);
+    z.keyOf = (v, leg) => (leg.tag === `depot${k}` ? 'semi' : 'car');
+  }
+  const DC = traffic.zone(75.6, -62, 79.4, -20.4, sameKind);
+  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2, DC };
 }
 export type RoadZones = ReturnType<typeof roadZones>;
 /** A through route: its points, fillet radii and how often it is picked relative to the others. */

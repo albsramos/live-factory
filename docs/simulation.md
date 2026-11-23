@@ -69,6 +69,20 @@
   west of the cars' way up and 3 m short of their way out from behind the factory. They are scenery, not traffic
   (`CarrierYard.park`); nothing that moves comes within 0.8 m of them.
 
+- The carrier depot (`activities/carrierDepot.ts`), east of the avenue north of the second compute hall: four spots
+  (y −36, −31.6, −27.2, −22.8), carriers parked nose-in facing the avenue (noses at x 81) at chargers. A leaver pulls
+  out and turns right onto the northbound lane; a newcomer comes up that lane from y 175, stops 20 m past its spot and
+  backs in along the same curve (`backingTrack`). Pulling out, a trailer cuts the corner across every spot north of
+  its own (no further east than x 82.8, so the chargers stand beyond that, x 84.5–85.4), so the spots work as a stack:
+  only the north-most carrier leaves, a newcomer takes the spot just north of it, and one carrier moves at a time.
+  The trailers sweep the east pavement from y −58.4 to −20.8: walkers cross that stretch as one crossing (`DC`,
+  nodes at y −63.4 and −19.2), and the north belt's path starts beside it (x 80.6) rather than on it. Each spot has
+  its own 25 m stretch of the northbound lane (`truckZone`, keyed `semi` only for legs tagged `depot<k>`): a carrier
+  waits for it to be empty of cars, and cars then leave it to the carrier. Backing in holds the lane for some 20 s,
+  and the queue behind it can reach back to the junction's exit (y 37) at worst; the carriers charge 6 to 9 minutes,
+  so that happens rarely (a faster, busier depot once let the queue meet the robotaxis pulling out by the junction).
+  check:sim 60 passed eight runs in a row after that.
+
 - The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one every 30-45 s and one at a time, on the avenue's
   straight lanes, with a random stream of its own so the rest of the scene runs as before until it shows up. In its
   take-off stretch it lifts off once it is moving with room ahead, or standing in a queue (it hops over it). From

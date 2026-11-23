@@ -3,12 +3,13 @@
 //
 //   west   the factory grows a wing in front of its west end, and a long staff car park under solar canopies runs
 //          beside it, with a service road where a few cars come and go
-//   east   a second compute platform and a Megapack field north-east of the avenue, a charging hub that cars turn
+//   east   a second compute platform north-east of the avenue (the carrier depot behind it is activities/carrierDepot.ts),
+//          a charging hub that cars turn
 //          into off the northbound lane, and a park for staff on their break east of the pavilion
 
 import type { Env } from '../activities/activity';
 import { Looper } from '../activities/looper';
-import { megapacks, rackPlatform } from '../blocks';
+import { rackPlatform } from '../blocks';
 import { solarRoof, windowsX, windowsY, type Band, type LitFace } from '../details';
 import { groundPoly, groundRect, lineW } from '../ground';
 import type { Ctx } from '../draw';
@@ -135,14 +136,14 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   trees.push([99.6, 6, 'tree2', 0.9], [99.8, 17.5, 'tree', 0.9]);
 
   // ----------------------------------------------------------------------------------------------- compute and grid storage
-  // a second compute platform north of the hub, and a Megapack field behind it, with a robot doing its rounds
+  // a second compute platform north of the hub, with a robot doing its rounds; behind it, the carrier depot
+  // (activities/carrierDepot.ts, its chargers in world.ts)
   rackPlatform(S, pal, edge, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4 }, 5, 5, 200);
   // under a glass hall of its own, so the racks stay dry
   S.push(...glassHall(pal, { x0: 80, y0: -15.2, x1: 100.2, y1: -2.4, h: 4.2 }));
-  megapacks(S, pal, edge, [[79.6, 85.4], [87, 92.8], [94.4, 100.2]], [-19.4, -22.2, -25, -27.8, -30.6, -33.4, -36.2], 300);
   // back the way it came: a straight line home from the far end would cut between the racks
   const rounds = new Looper(env, 'robot', () => [{ x: 80.6, y: -17.3, wait: 3 }, { x: 101.2, y: -17.3, wait: 2 }, { x: 101.4, y: -9, wait: 3 }, { x: 101.2, y: -17.3 }], 80.6, -17.3);
-  trees.push([78.9, 1.0, 'tree2', 1], [79.0, -12, 'poplar', 1], [79.0, -24, 'poplar', 1]);
+  trees.push([78.9, 1.0, 'tree2', 1], [79.0, -12, 'poplar', 1]);
 
   // ----------------------------------------------------------------------------------------------- staff park
   // east of the pavilion and on north past the hub, to beyond the widest view's edge: grass with a path across it,
