@@ -52,7 +52,9 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   the street (a kiosk whose door is a walkway portal, tables under umbrellas drawn as two items each, table and pole
   below, canopy above the people sitting under it, so the depth sort keeps them apart), with benches, flower beds and
   trees; `northBelt.ts` a lawn with rows of trees and a path along y −47 north of the yard, the Megapacks and the
-  staff park, from the avenue's pavements out past the top-left edge and to the east road. Ground hooks: `groundPainter` takes painters to run with the pads (`more`) and on top of the lawns
+  staff park, from the avenue's pavements out past the top-left edge and to the east road; `farWest.ts` a second
+  staff car park west of the service road (every car stays, so it needs no routes) with someone walking between the
+  cars, and lawns with trees west of the factory and south of both car parks. Ground hooks: `groundPainter` takes painters to run with the pads (`more`) and on top of the lawns
   (`onLawns`).
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge, each platform under a glass
   hall from `world/glassHall.ts`, the one by the factory the dock wing grown out in glass, its face open to it so

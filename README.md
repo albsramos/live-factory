@@ -74,8 +74,10 @@ any other React setup.
   and a glass pavilion under a big pale roof plate that comes to a shallow point towards the front; across the rest
   of the roof, and on every other building's, the solar panels stand in rows tilted at 45°. Two angular planters on
   the plaza have LED strips that glow warm at night.
-- **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop and a bigger park
-  east of the pavilion, with grass, paths, trees and benches where employees sit or stand together on their break.
+- **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop with a café
+  kiosk, its tables under striped umbrellas and a queue at the counter, and a bigger park east of the pavilion with a
+  pond and fountain, flower beds and a pergola where staff have lunch, with grass, paths, trees and benches where
+  employees sit, chat or stroll on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
   thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
   junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear (or flies on out
@@ -90,9 +92,11 @@ any other React setup.
 - **Construction**: a tower crane swings between the material pile and the slab while workers move around.
 - **The home beside the loading bay**: solar roof, wall batteries with breathing status lights, and a carport where
   the car is on its charger.
-- **The outskirts**, for wide views: a new factory wing and a long staff car park under solar canopies to the west
-  (a few cars come and go on its service road, with grass beside it), and to the east a second compute platform, a Megapack field with a
-  robot doing its rounds, and a charging hub that cars turn into off the avenue.
+- **The outskirts**, for wide views and zooming out: a new factory wing and two staff car parks under solar canopies
+  to the west (a few cars come and go on the service road), with lawns and trees beyond; to the east a second compute
+  platform, a Megapack field with a robot doing its rounds, a charging hub that cars turn into off the avenue, and past
+  the staff park a second road with a junction of its own, an office and another charging hub; along the top, a belt
+  of trees with a path.
 - **Day and night**: by day the glazing is a faded blue-grey glass; at night it glows warm and lights the ground in
   front of the buildings, headlights throw beams along the road ahead of each car, and tail lights glow red, brighter
   when a car brakes or waits.
@@ -117,7 +121,8 @@ it a height, or put it in a sized box, and it fills that instead:
   shows more of the outskirts instead of cropping the middle away, down to 70 % of the scene's height.
 - `fit="contain"` always shows the whole height. Beyond the classic frame the town keeps going (a factory wing, a
   staff car park, a second compute platform, Megapacks, a charging hub, a staff park), so a wide banner is filled
-  edge to edge rather than letterboxed:
+  edge to edge rather than letterboxed. A `zoom` below 1 shows more of it, up to the edge of what is built (`WORLD`),
+  and nothing comes or goes inside that edge:
 
 ```tsx
 <LivingCity fit="contain" style={{ height: 520 }} /> {/* a 1630 × 520 hero, say */}
