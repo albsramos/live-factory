@@ -48,7 +48,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   wing, staff car park, second compute platform, Megapack field, charging hub, staff park), `eastSide.ts` the east road
   past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
   traffic on a random stream of its own) and the office and second charging hub beyond it, `staffPark.ts` more life in the staff park (a pond whose
-  fountain and ripples are redrawn every frame, a pergola with staff at lunch, three LED-edged wedge planters, people
+  fountain and ripples are redrawn every frame, a pergola with staff at lunch, three LED-edged triangular planters, people
   strolling round the pond, more trees), also on a random stream of its own, `lake.ts` the lake at the park's
   north end with rocks on its shores and in the water (`pal.rock`), the park's path going round its east side, and `southLawn.ts` the café south of
   the street (a kiosk whose door is a walkway portal, tables with staff at them), with benches and
