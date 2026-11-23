@@ -31,7 +31,8 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Either way the
   camera sits a little further back than the fit (`zoom` 0.67) for more of the town; the world goes on past the frame,
   so no empty edges show. Then an output chart and an on-site list. The figures are samples (`model/sample.ts`) and
-  the page says so; the title and place are left as `[Factory name]` and `[City, Country]`. Its palette is its own
+  the page says so; the title is an example, `GFBB Berlin`, with no line above it. Its palette is its own, a bright blue
+  accent (`--look-accent`, no gold), with 8 px corners on the cards and buttons (`--look-radius`)
   (`--look-*` in `Look.module.css`, night and day), switched by the theme in the URL (`auto` follows the computer).
   The content (the bar, the title and the cards) stops at 900 px wide (`--look-max`), with a gutter either side that
   grows with the screen (`--look-gutter`, 24–96 px); the scene's oval spans the whole width. That pool is drawn on the title block, so it
