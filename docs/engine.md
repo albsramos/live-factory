@@ -44,7 +44,9 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   `chargers.ts` the yard's chargers (posts and glowing cable in `../charging.ts`), `entrance.ts` the factory's main
   entrance (a V-shaped recess drawn as part of the face it is cut into, clipped to the opening so it needs no sort
   item, and the pillars in its mouth), `outskirts.ts` what lies beyond the classic frame for wide views (factory
-  wing, staff car park, second compute platform, Megapack field, charging hub, staff park).
+  wing, staff car park, second compute platform, Megapack field, charging hub, staff park), `eastSide.ts` the east road
+  past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
+  traffic on a random stream of its own) and the office and second charging hub beyond it.
 - `blocks.ts` builders used in both: `rackPlatform` (server racks with the glowing edge, each platform under a glass
   hall from `world/glassHall.ts`, the one by the factory the dock wing grown out in glass, its face open to it so
   the storeroom inside shows (`world/dockInterior.ts`, which also draws the open garage by the docks the yard robots

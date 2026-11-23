@@ -28,15 +28,18 @@ export interface Outskirts {
   /** glazed faces that light up the ground in front of them at night */
   litFaces: LitFace[];
   ground(ctx: Ctx): void;
-  /** join the outskirts' walkways to the town's: the node by the home's side path, and the street walk at x 104 */
-  walks(g: WalkGraph, houseNode: number, streetNode: number): void;
+  /**
+   * Join the outskirts' walkways to the town's: the node by the home's side path, and the street walk at x 104.
+   * Returns the staff park path's far end, for the east road's pavement to pick up.
+   */
+  walks(g: WalkGraph, houseNode: number, streetNode: number): number;
 }
 
 /** A row of stalls along x. */
 const row = (xs: number[], y: number, dir: -1 | 1, live: number[]): Stall[] => xs.map((x) => ({ x, y, dir, isLive: live.includes(x) }));
 
 /** A canopy on a post every two stalls, with solar glass on top. */
-function canopy(env: Env, edge: string, x0: number, y0: number, x1: number, y1: number, postY: number, z = 2.7) {
+export function canopy(env: Env, edge: string, x0: number, y0: number, x1: number, y1: number, postY: number, z = 2.7) {
   const { pal, statics: S } = env;
   S.push(
     new BoxItem(x0, y0, z - 0.22, x1, y1, z, pal.white, { edge }, (r) => solarRoof(r, pal, x0, y0, x1, y1, z, 0.3)),
@@ -144,8 +147,8 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // east of the pavilion and on north past the hub, to beyond the widest view's edge: grass with a path across it,
   // trees, benches, and people on their break. Beside the compute platform it keeps clear of the robot's rounds.
   const lawn = [101.5, 38.2, 101.5, -5, 102.9, -7.5, 102.9, -22, 136.5, -22, 136.5, 38.2];
-  // on past the east edge of every view (frame.ts `WORLD`)
-  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [152, 14.5], [180, 4], [235, -16]];
+  // to the east road's west pavement (eastSide.ts), which runs on past the edges of every view
+  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [139, 18.6]];
   for (const [x0, y0, x1, y1] of [[109.5, 24.2, 111.3, 24.7], [125.6, 31.2, 127.4, 31.7], [113.4, 35, 113.9, 36.8]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   staff(env, 110, 25.05, 'sit', 0, 1);
   staff(env, 110.9, 25.05, 'sit', 0, 1);
@@ -213,8 +216,9 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     // from the south end of the car park up its east side to the home's side path, clear of the reversing cars
     g.chain([g.node(19.5, 240, true), g.node(19.5, 96, false, 0.4), g.node(19.2, 74.6, false, 0.4), g.node(27.2, 74.0), houseNode]);
     // across the staff park from the street walk to its far corner
-    const ids = path.slice(1).map(([x, y], i) => g.node(x, y, i === path.length - 2));
+    const ids = path.slice(1).map(([x, y]) => g.node(x, y));
     g.chain([streetNode, ...ids]);
+    return ids[ids.length - 1];
   };
 
   const litFaces: LitFace[] = [[-6, 72, -6, 100, 1, 0], [-40, 100, -6, 100, 0, 1]];

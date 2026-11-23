@@ -5,7 +5,8 @@
 // platform in front of it reaching out into the yard, and a pocket park on its corner by the plaza; an open truck
 // yard (gate off the avenue, exit onto the street) top-centre, battery yard top-right; a home with carport and the
 // loading bay left; charging lot and construction bottom-centre; pavilion, robotaxi stop and park bottom-right.
-// The outskirts (outskirts.ts) fill the sides of wide views.
+// The outskirts (outskirts.ts) fill the sides of wide views; past the staff park, an east road parallel to the
+// avenue (x 142–150) crosses the street, with an office and a charging hub beyond it (eastSide.ts).
 
 import { makeRng } from '../core';
 import { CLAY_EDGE, type Ctx, type R } from '../draw';
@@ -25,6 +26,7 @@ import { Roadsters } from '../activities/roadster';
 import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
+import { buildEastSide } from './eastSide';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
@@ -111,6 +113,9 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // the factory wing, car park, compute, Megapacks, charging hub and staff park out on the sides
   const outskirts = buildOutskirts(env, sprites, edge);
   acts.push(...outskirts.acts);
+  // the east road and what lies past it, on a random stream of its own
+  const east = buildEastSide({ ...env, rng: makeRng(opts.seed * 9157 + 41) }, sprites, edge, density);
+  acts.push(...east.acts);
   staffBreak(env);
   // dock and yard robots
   // two take boxes from inside the factory, through the open garage between the second dock and the bay
@@ -122,7 +127,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   }
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
-  walkways(graph, zones, outskirts);
+  walkways(graph, zones, outskirts, east);
   // walkers spend a while off screen on the long walks to and from the world's edges, so more of them
   crowd.targetPeople = Math.round(32 * density);
   crowd.targetRobots = Math.round(28 * density);
@@ -131,10 +136,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts);
+  const ground = groundPainter(pal, lot, outskirts, east);
 
   const update = (dt: number) => {
     spawnCars(dt);
+    east.spawn(dt);
     traffic.update(dt);
     crowd.update(dt);
     for (const a of acts) a.update(dt);
