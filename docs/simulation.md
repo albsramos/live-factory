@@ -21,6 +21,9 @@
     away and their queue entries block other movements;
   - a semi waiting for one zone holds a queue place in every zone of that group, so don't group a busy zone with the
     junction on a semi's leg. Split the leg instead.
+- There are two junctions with the street, the avenue's (J, x 68–76) and the east road's (J2, x 142–150), each with
+  its own signal phases. Through traffic on the east road comes from a spawner of its own (`spawner` in `roads.ts`),
+  which keeps its own count.
 - Don't block the junction: a car (not a semi) only reserves a group holding the junction when the road past it
   has room for its whole length, free of anything standing, braking or queueing there (`roomPast` in `legs.ts`,
   `roomOn` in `sense.ts`). Until its nose is in, it gives the junction back if that room fills up and it can still

@@ -8,25 +8,32 @@ import { windowSpill, type LitFace } from '../details';
 import type { Palette } from '../palette';
 import type { ChargingLot } from '../activities/chargingLot';
 import type { Outskirts } from './outskirts';
+import type { EastSide } from './eastSide';
 import { POCKET_LAWN, POCKET_PATH, TAXI_LAWN, TAXI_PATHS } from './streetLife';
 
+/** Rounded kerbs (radius 3) at the four corners of a crossing of two roads, the box where they overlap. */
+export function junctionCorners(ctx: Ctx, x0: number, y0: number, x1: number, y1: number) {
+  for (const [cx, cy, ox, oy] of [[x0, y0, -3, -3], [x1, y0, 3, -3], [x0, y1, -3, 3], [x1, y1, 3, 3]]) {
+    const ccx = cx + ox, ccy = cy + oy;
+    const a0 = Math.atan2(cy + oy - ccy, cx - ccx);
+    const a1 = Math.atan2(cy - ccy, cx + ox - ccx);
+    let da = a1 - a0;
+    while (da > Math.PI) da -= Math.PI * 2;
+    while (da < -Math.PI) da += Math.PI * 2;
+    groundPoly(ctx, [cx, cy, ...arcPts(ccx, ccy, 3, a0, da, 6)]);
+  }
+}
+
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
-export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts) {
+export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts, east: EastSide) {
   const roads = (ctx: Ctx) => {
     groundRect(ctx, 68, -180, 76, 260);
     groundRect(ctx, 56, 42, 260, 50);
     groundRect(ctx, 44, 54, 52, 260);
     groundPoly(ctx, [...arcPts(56, 54, 12, Math.PI, Math.PI / 2, 18), ...arcPts(56, 54, 4, Math.PI * 1.5, -Math.PI / 2, 10)]);
     // rounded corners where the street meets the avenue
-    for (const [cx, cy, ox, oy] of [[68, 42, -3, -3], [76, 42, 3, -3], [68, 50, -3, 3], [76, 50, 3, 3]]) {
-      const ccx = cx + ox, ccy = cy + oy;
-      const a0 = Math.atan2(cy + oy - ccy, cx - ccx);
-      const a1 = Math.atan2(cy - ccy, cx + ox - ccx);
-      let da = a1 - a0;
-      while (da > Math.PI) da -= Math.PI * 2;
-      while (da < -Math.PI) da += Math.PI * 2;
-      groundPoly(ctx, [cx, cy, ...arcPts(ccx, ccy, 3, a0, da, 6)]);
-    }
+    junctionCorners(ctx, 68, 42, 76, 50);
+    east.road(ctx);
     // robotaxi bay
     groundPoly(ctx, [76, 53.5, 79.2, 57.5, 79.2, 70.5, 76, 74.5]);
   };
@@ -36,6 +43,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     [26, 36, 26, 72, 1, 0], [-40, 72, 26, 72, 0, 1], [30, 26.6, 30, 35.4, 1, 0], [30, 0.4, 30, 25.6, 1, 0],
     [80, 38, 97, 38, 0, 1], [97, 26, 97, 38, 1, 0], [20.4, 84.2, 28.8, 84.2, 0, 1], [28.8, 75.6, 28.8, 84.2, 1, 0],
     ...outskirts.litFaces,
+    ...east.litFaces,
   ];
   const ground = (ctx: Ctx) => {
     // paved pads
@@ -53,6 +61,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     groundRect(ctx, 54.5, 84.2, 66.4, 120);
     ctx.fill();
     outskirts.ground(ctx);
+    east.ground(ctx);
     // the truck's way out across the plaza corner
     ctx.strokeStyle = pal.pad;
     ctx.lineWidth = 4.2;
@@ -139,7 +148,8 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     lineW(ctx, 72, -100, 0, 72, 41.2, 0);
     lineW(ctx, 72, 50.8, 0, 72, 260, 0);
     lineW(ctx, 56, 46, 0, 67.4, 46, 0);
-    lineW(ctx, 76.6, 46, 0, 260, 46, 0);
+    lineW(ctx, 76.6, 46, 0, 141.4, 46, 0);
+    lineW(ctx, 150.6, 46, 0, 260, 46, 0);
     lineW(ctx, 48, 54, 0, 48, 260, 0);
     const arc = arcPts(56, 54, 8, Math.PI, Math.PI / 2, 16);
     for (let i = 0; i < arc.length; i += 2) {
@@ -166,6 +176,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     for (let x = 68.4; x < 75.7; x += 0.9) groundRect(ctx, x, 80.25, x + 0.45, 82.75);
     for (let y = 42.4; y < 49.7; y += 0.9) groundRect(ctx, 86.25, y, 88.75, y + 0.45);
     ctx.fill();
+    east.marks(ctx);
     // charging stalls
     ctx.strokeStyle = pal.roadLine;
     ctx.lineWidth = 0.12;

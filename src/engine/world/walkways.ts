@@ -1,13 +1,14 @@
 // The walkway graph people wander: see docs/simulation.md for how crossings and portals work.
 
 import type { WalkGraph } from '../people/crowd';
+import type { EastSide } from './eastSide';
 import type { Outskirts } from './outskirts';
 import type { RoadZones } from './roads';
 import { POCKET_PATH } from './streetLife';
 import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
-export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
+export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide) {
   const { CW1, CW3, CW4, CW5, YE, YG, LD, LE } = z;
   const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
@@ -33,7 +34,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   const sn = [g.node(42.5, 54), g.node(44.31, 47.25), g.node(49.25, 42.31), g.node(52.5, 41.1), g.node(56, 40.5), g.node(61, 40.5)];
   g.chain(sn);
   g.link(sn[5], aw[3]);
-  const sne = [g.node(86.5, 40.5), g.node(104, 40.5), g.node(230, 40.5, true)];
+  // on east to the east road's pavements (eastSide.ts)
+  const sne = [g.node(86.5, 40.5), g.node(104, 40.5)];
   g.link(ae[2], sne[0]);
   g.chain(sne);
   // round the inside corner of the bend a step back from the kerb, clear of where the bay truck's trailer cuts
@@ -44,7 +46,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(ss0, le[0]);
   g.link(le[0], le[1], LE);
   g.link(le[1], aw[4]);
-  const sse = [g.node(86.5, 51.5), g.node(90.5, 51.5), g.node(104, 51.5), g.node(230, 51.5, true)];
+  const sse = [g.node(86.5, 51.5), g.node(90.5, 51.5), g.node(104, 51.5)];
   g.link(ae[3], sse[0]);
   g.chain(sse);
   g.link(sne[0], sse[0], CW5);
@@ -75,7 +77,8 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   const houseWalk = [p[0], g.node(28.1, 66.2), g.node(29.9, 73.6), g.node(29.9, 80.4, true)];
   g.chain(houseWalk);
   // the car park's and the staff park's walks
-  outskirts.walks(g, houseWalk[2], sne[1]);
+  const parkEnd = outskirts.walks(g, houseWalk[2], sne[1]);
+  east.walks(g, { north: sne[1], south: sse[2], park: parkEnd });
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
