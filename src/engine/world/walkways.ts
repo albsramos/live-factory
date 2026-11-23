@@ -12,7 +12,7 @@ import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
 export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide, south: SouthLawn, belt: NorthBelt, park: StaffPark) {
-  const { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2, DC } = z;
+  const { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2, DC, NB3 } = z;
   const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
   // either side of the yard gate
@@ -31,7 +31,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   // either side of the charging hub's driveway
   const hubSides = [g.node(77.8, 6.8, false, 0.5), g.node(77.8, 17.4, false, 0.5)];
   // either side of the stretch the carrier depot's trailers sweep (activities/carrierDepot.ts), crossed as one
-  const depot = [g.node(77.5, -63.4), g.node(77.5, -19.2)];
+  const depot = [g.node(77.5, -67.4), g.node(77.5, -38.0)];
   g.link(ae[0], depot[0]);
   g.link(depot[0], depot[1], DC);
   g.link(depot[1], hubSides[0]);
@@ -88,7 +88,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   // the car park's and the staff park's walks
   const parkPath = outskirts.walks(g, houseWalk[2], sne[1]);
   const eastRoad = east.walks(g, { north: sne[1], south: sse[2], park: parkPath.end });
-  const beltPark = belt.walks(g, { west: awBelt, eastRoad }, [NB2, NB]);
+  const beltPark = belt.walks(g, { west: awBelt, eastRoad }, [NB2, NB], NB3);
   // round the pond and up to the north belt
   park.walks(g, parkPath.branch, beltPark);
   const pd = g.node(88.6, 38.8, true);

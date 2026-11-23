@@ -59,9 +59,9 @@ any other React setup.
   delivery. Each comes down a service road from the north and stops in one of two lanes; the cars drive out from
   behind the factory and up its ramp, the upper deck first. Full, it drives on and back north up a second road,
   with walkers on the north belt's path waiting at the zebras. Seven more full carriers stand parked in rows beside the
-  lanes and north of the factory, waiting to go. East of the avenue, in a depot of their own, more carriers stand
-  nose-in at chargers, their cables glowing; now and then the north-most one pulls out and turns right up the avenue,
-  and a new one comes up the avenue and backs into a free spot.
+  lanes and north of the factory, waiting to go. East of the avenue, in a depot of their own, four more stand
+  nose-in at chargers, ready to go; about every two minutes another comes in from the east road along a service road
+  north of the lake, charges in a lane along the depot's edge, and turns right up the avenue.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots in a white or champagne shell, with a black glass head ringed by a thin light line and
