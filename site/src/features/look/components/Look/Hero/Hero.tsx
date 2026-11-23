@@ -9,7 +9,7 @@ interface HeroProps {
 
 /**
  * The header: the navigation on a solid band of its own, then the live scene, seen through a soft oval that melts into the page at the sides and bottom,
- * the same either side; the town inside it sits to the right, clear of the title. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
+ * the same either side; the busiest part of the town sits in its middle. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
  * happens at the bottom of the frame (the robotaxi stop, the crossing) stays in view. The shade behind the title is drawn on the title
  * block itself, so it stays behind it at any width.
  */

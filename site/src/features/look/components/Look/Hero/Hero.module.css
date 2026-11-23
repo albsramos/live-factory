@@ -54,11 +54,12 @@
   aspect-ratio: auto;
 }
 
-/* wide, the scene's box runs on past the right edge (clipped), so the town's middle sits a fifth of the width to the
-   right and the factory's lettering clears the title; at that shape the scene keeps its scale */
+/* wide, the scene's box runs on past both edges (clipped), its middle a tenth of the width left of the window's, so
+   the busiest part of the town (the avenue, the junction, the charging hub and the robotaxi stop, all east of the
+   town's middle) sits in the middle of the window; at that shape the scene keeps its scale */
 @media (min-width: 900px) {
   .scene {
-    inset-inline-end: auto;
+    inset-inline-start: -30%;
     inline-size: 140%;
   }
 }
