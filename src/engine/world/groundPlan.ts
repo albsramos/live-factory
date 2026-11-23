@@ -13,7 +13,7 @@ import { POCKET_LAWN, POCKET_PATH, TAXI_LAWN, TAXI_PATHS } from './streetLife';
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
 export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts) {
   const roads = (ctx: Ctx) => {
-    groundRect(ctx, 68, -100, 76, 260);
+    groundRect(ctx, 68, -180, 76, 260);
     groundRect(ctx, 56, 42, 260, 50);
     groundRect(ctx, 44, 54, 52, 260);
     groundPoly(ctx, [...arcPts(56, 54, 12, Math.PI, Math.PI / 2, 18), ...arcPts(56, 54, 4, Math.PI * 1.5, -Math.PI / 2, 10)]);

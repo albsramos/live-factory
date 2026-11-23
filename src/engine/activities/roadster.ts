@@ -11,13 +11,14 @@ import type { Item } from '../sort';
 import type { Vehicle } from '../traffic/vehicle';
 import type { Activity, Env } from './activity';
 
-// Distances along each lane, from its start: the avenue's southbound lane starts at y −52, the northbound at y 112.
+// Distances along each lane, from its start: the avenue's southbound lane starts at y −120, the northbound at y 175
+// (outside the world box, frame.ts `WORLD`).
 const LANES = [
   // southbound: lifts off before the yard's exit and flies over it, the crossing and the junction; sets down
   // before the crossing by the robotaxi stop, or past it
-  { path: Path.poly([[70, -52], [70, 112]], []), takeoff: [44, 64] as [number, number], land: [94, 150] as [number, number] },
+  { path: Path.poly([[70, -120], [70, 175]], []), takeoff: [112, 132] as [number, number], land: [162, 218] as [number, number] },
   // northbound: lifts off beside the robotaxi stop and flies over the junction and the crossing north of it
-  { path: Path.poly([[74, 112], [74, -52]], []), takeoff: [42, 54] as [number, number], land: [82, 134] as [number, number] },
+  { path: Path.poly([[74, 175], [74, -120]], []), takeoff: [105, 117] as [number, number], land: [145, 197] as [number, number] },
 ];
 
 export class Roadsters implements Activity {

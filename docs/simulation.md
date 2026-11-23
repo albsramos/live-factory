@@ -2,9 +2,12 @@
 
 ## Vehicles
 
-- Vehicles start and end their trips beyond the edges of every framing: at least 30 m past the last spot a wide
-  banner shows, so nobody pops into view. The banner (3.1 : 1, `cover`) shows screen X within about ±104 m and screen
-  Y from 15 to 81 m (X = (x − y) · cos 30°, Y = (x + y) / 2 − z); the avenue's north end is y = −52.
+- Vehicles start and end their trips beyond the edges of every framing: outside the world box (`WORLD` in
+  `frame.ts`: screen X from −150 to 150 m, Y from −5 to 100 m, where X = (x − y) · cos 30°, Y = (x + y) / 2 − z), by
+  about 25 m, so nobody pops into view, however far a page zooms out (it stops at that box). The avenue runs from
+  y = −120 to y = 175, the street east to x = 230 and south to y = 200, the staff car park's service road to y = 230.
+  A spawn check (`traffic.clear`) tests the spawn point itself, so move it with the route. People walk in and out at
+  portals just as far out, or at a building door; the robotaxi's passengers get in and out at the bay.
 - A vehicle follows a list of legs; each leg is a filleted polyline (`Path.poly(points, radii)`, where `radii[i]` is
   the fillet at `points[i + 1]`). A leg can wait (`until`), dwell, reverse (`rev`) or ignore the vehicle ahead
   (`ghost`, only inside lots that a mutex keeps to one car).
@@ -75,5 +78,8 @@
 ## Checking a change
 
 `npm run check:sim` (default 20 simulated minutes; pass a number for more). It must report 0 vehicles touching
-people and 0 collisions, traffic standing still around 20 %, and truck runs at their usual rate. Run 60 minutes
+people, 0 collisions and 0 pop-ins (anything appearing or vanishing inside the world box), traffic standing still
+around 15–20 % (counted inside the world box), and truck runs at their usual rate. It also prints how many vehicles
+and people the classic banner shows on average (about 17 and 68): the routes run far past every view, so when they
+change, retune `targetCars` (`world/roads.ts`) and the crowd's targets (`world/world.ts`) to keep that. Run 60 minutes
 for anything near the junction, the yard or the loading bay.

@@ -9,7 +9,7 @@ import { ENTRANCE_DOOR } from './entrance';
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
 export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   const { CW1, CW3, CW4, CW5, YE, YG, LD, LE } = z;
-  const aw = [g.node(66.5, -50, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 112, true)];
+  const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
   // either side of the yard gate
   const gate = [g.node(66.5, -18.6), g.node(66.5, -3.4)];
@@ -21,7 +21,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.chain(aw.slice(4));
   // east side of the avenue; round the robotaxi bay, clear of the taper the cars pull in through and of the van's
   // nose swinging out as it turns in
-  const ae = [g.node(77.5, -50, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 100, true)];
+  const ae = [g.node(77.5, -120, true), g.node(77.5, 34.5), g.node(77.5, 40.5), g.node(77.5, 51.5), g.node(80.6, 55.5), g.node(81.0, 68, false, 0.4), g.node(80.6, 75.2, false, 0.4), g.node(77.8, 78.2), g.node(77.5, 81.5), g.node(77.5, 175, true)];
   // either side of the charging hub's driveway
   const hubSides = [g.node(77.8, 6.8, false, 0.5), g.node(77.8, 17.4, false, 0.5)];
   g.chain([ae[0], hubSides[0]]);
@@ -33,7 +33,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   const sn = [g.node(42.5, 54), g.node(44.31, 47.25), g.node(49.25, 42.31), g.node(52.5, 41.1), g.node(56, 40.5), g.node(61, 40.5)];
   g.chain(sn);
   g.link(sn[5], aw[3]);
-  const sne = [g.node(86.5, 40.5), g.node(104, 40.5), g.node(130, 40.5, true)];
+  const sne = [g.node(86.5, 40.5), g.node(104, 40.5), g.node(230, 40.5, true)];
   g.link(ae[2], sne[0]);
   g.chain(sne);
   // round the inside corner of the bend a step back from the kerb, clear of where the bay truck's trailer cuts
@@ -44,7 +44,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(ss0, le[0]);
   g.link(le[0], le[1], LE);
   g.link(le[1], aw[4]);
-  const sse = [g.node(86.5, 51.5), g.node(90.5, 51.5), g.node(104, 51.5), g.node(125, 51.5, true)];
+  const sse = [g.node(86.5, 51.5), g.node(90.5, 51.5), g.node(104, 51.5), g.node(230, 51.5, true)];
   g.link(ae[3], sse[0]);
   g.chain(sse);
   g.link(sne[0], sse[0], CW5);
@@ -52,7 +52,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   g.link(sn[0], fw1);
   // down the factory road past the charging lot's way out
   const fd = g.node(53.5, 57.6, false, 0.5);
-  const fe = [ss0, g.node(53.5, 64.5, false, 0.5), g.node(53.5, 83.5), g.node(53.5, 126, true)];
+  const fe = [ss0, g.node(53.5, 64.5, false, 0.5), g.node(53.5, 83.5), g.node(53.5, 200, true)];
   g.link(ss0, fd);
   g.link(fd, fe[1], LD);
   g.chain(fe.slice(1));
@@ -79,9 +79,9 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts) {
   const pd = g.node(88.6, 38.8, true);
   g.link(pd, sne[0]);
   // round the west side of the house and along its garden
-  const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(112, 65.6, true)];
+  const pk = [g.node(85.2, 54.0), g.node(85.2, 65.0), g.node(112, 65.6), g.node(128, 66), g.node(128, 125, true)];
   g.link(sse[0], pk[0]);
   g.link(pk[0], pk[1]);
-  g.link(pk[1], pk[2]);
+  g.chain(pk.slice(1));
   g.link(pk[1], ae[5]);
 }

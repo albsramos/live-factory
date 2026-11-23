@@ -100,7 +100,7 @@ export class TruckYard implements Activity {
         bay.taken = false;
       } },
       // straight before it waits for the crossing and the junction
-      { path: P([[70, 28], [70, 112]]), vmax: 5.5 },
+      { path: P([[70, 28], [70, 175]]), vmax: 5.5 },
     ];
   }
 
@@ -112,7 +112,7 @@ export class TruckYard implements Activity {
     this.inbound++;
     const legs: Leg[] = [
       // off the avenue and through the gate, then wait for the yard
-      { path: P([[70, -52], [70, -8], [L, -8], [L, TruckYard.GATE]], [3, 5]), vmax: 5, until: (v) => this.mutex.take(v) },
+      { path: P([[70, -120], [70, -8], [L, -8], [L, TruckYard.GATE]], [3, 5]), vmax: 5, until: (v) => this.mutex.take(v) },
       { path: P([[L, TruckYard.GATE], [L, stop]]), vmax: 3.5 },
       this.backIn(d, (v) => {
         this.mutex.free(v);
@@ -135,15 +135,16 @@ export class TruckYard implements Activity {
   }
 
   update(dt: number) {
-    // one truck coming in to load at a time, with a pause after it has gone on to the bay
+    // one truck coming in to load at a time, with a pause after it has gone on to the bay (shorter than it was, now
+    // that trucks start further out, beyond the world box, so they keep coming as often)
     if (this.inbound > 0) {
-      this.timer = Math.max(this.timer, rr(this.env.rng, 10, 20));
+      this.timer = Math.max(this.timer, rr(this.env.rng, 2, 9));
       return;
     }
     this.timer -= dt;
     if (this.timer > 0) return;
     const free = this.docks.filter((d) => !d.taken);
-    if (free.length && this.env.traffic.clear(70, -52, 18)) this.spawn(pick(this.env.rng, free));
+    if (free.length && this.env.traffic.clear(70, -120, 18)) this.spawn(pick(this.env.rng, free));
     else this.timer = 2;
   }
 }

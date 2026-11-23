@@ -133,7 +133,7 @@ it a height, or put it in a sized box, and it fills that instead:
 | `seed` | `7` | Changes who walks where and which cars appear |
 | `fit` | `'cover'` | `'cover'` fills the box (see *Sizing*). `'contain'` shows the whole height, outskirts filling the sides |
 | `focus` | `[0.5, 0.5]` | When `cover` crops, which part stays in view (`[0, 0]` is top left) |
-| `zoom` | `1` | Extra zoom on top of the fit |
+| `zoom` | `1` | Extra zoom on top of the fit. Below `1` shows more of the town, up to the edge of what is built (`WORLD`) |
 | `isPaused` | `false` | Freeze on the current frame |
 | `maxDpr` | `2` | Cap on the device pixel ratio. Lower it to trade sharpness for speed |
 | `maxFps` | `30` | Cap on frames drawn per second, to save CPU, GPU and battery. `0` draws on every screen refresh (60, 120 or 144 Hz) |

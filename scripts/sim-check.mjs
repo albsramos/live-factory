@@ -1,9 +1,11 @@
 // Runs the scene's simulation headless and reports what matters after a change to anything that moves:
 //   - vehicles touching people (should be 0)
-//   - vehicles touching each other on screen (should be 0; the bay truck's spawn point off the bottom edge is
-//     ignored, it is out of every view)
+//   - vehicles touching each other inside the world box (should be 0)
 //   - how much of the moving traffic stands still, how many truck runs complete, and the longest stall
 //   - how often the roadster hops, and how many of its hops set down in view
+//   - pop-ins: vehicles or people that appear or vanish inside the world box (frame.ts `WORLD`) rather than off its
+//     edges, a building door or the robotaxi bay (should be 0)
+//   - how many vehicles and people the classic banner shows on average, to compare busyness after a change
 // It starts the dev lab (`vite --mode lab`) itself and drives window.scene from ?debug.
 //
 // Usage: node scripts/sim-check.mjs [minutes = 20]
@@ -43,8 +45,17 @@ try {
       }
       return false;
     };
-    const onScreen = (x, y) => Math.abs((x - y) * 0.866) < 105 && (x + y) / 2 < 82;
-    const out = { people: [], crashes: [], stopped: 0, samples: 0, yard: 0, bay: 0, stall: 0, stallAt: '', hops: 0, landed: 0 };
+    // the world box (frame.ts WORLD) and the classic banner, in screen units
+    const inWorld = (x, y) => { const X = (x - y) * 0.866, Y = (x + y) / 2; return X > -150 && X < 150 && Y > -5 && Y < 100; };
+    const onBanner = (x, y) => { const X = (x - y) * 0.866, Y = (x + y) / 2; return Math.abs(X) < 104 && Y > 15 && Y < 81; };
+    const onScreen = inWorld;
+    // where people may appear or vanish in view: building doors (portal nodes inside the world) and the robotaxi bay
+    const doors = w.crowd.graph.nodes.filter((n) => n.portal && inWorld(n.x, n.y));
+    const mayPop = (x, y) => (x > 74.5 && x < 81 && y > 54 && y < 72) || doors.some((n) => Math.hypot(n.x - x, n.y - y) < 2.5);
+    const out = { people: [], crashes: [], stopped: 0, samples: 0, yard: 0, bay: 0, stall: 0, stallAt: '', hops: 0, landed: 0, pops: [], cars: 0, folk: 0, frames: 0 };
+    const lastV = new Map(), lastW = new Map();
+    for (const v of tr.vehicles) lastV.set(v.id, v);
+    for (const p of w.crowd.walkers) lastW.set(p, [p.x, p.y]);
     const hopSeen = new Map();
     const seenPeople = new Map(), seenCrash = new Set(), semis = new Map(), still = new Map();
     for (let i = 0; i < secs * 20; i++) {
@@ -76,6 +87,31 @@ try {
       }
       seenCrash.clear();
       for (const k of now) seenCrash.add(k);
+      // pop-ins and pop-outs, and how busy the classic banner is
+      const ids = new Set();
+      for (const v of tr.vehicles) {
+        ids.add(v.id);
+        if (!lastV.has(v.id) && inWorld(v.x, v.y)) out.pops.push(`${t.toFixed(0)}s ${v.kind} appeared at ${v.x.toFixed(0)},${v.y.toFixed(0)}`);
+        lastV.set(v.id, v);
+      }
+      for (const [id, v] of lastV) if (!ids.has(id)) {
+        if (inWorld(v.x, v.y)) out.pops.push(`${t.toFixed(0)}s ${v.kind} vanished at ${v.x.toFixed(0)},${v.y.toFixed(0)}`);
+        lastV.delete(id);
+      }
+      const here = new Set(w.crowd.walkers);
+      for (const p of w.crowd.walkers) {
+        if (!lastW.has(p) && inWorld(p.x, p.y) && !mayPop(p.x, p.y)) out.pops.push(`${t.toFixed(0)}s ${p.kind} appeared at ${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+        lastW.set(p, [p.x, p.y]);
+      }
+      for (const [p, [x, y]] of lastW) if (!here.has(p)) {
+        if (inWorld(x, y) && !mayPop(x, y)) out.pops.push(`${t.toFixed(0)}s ${p.kind} vanished at ${x.toFixed(1)},${y.toFixed(1)}`);
+        lastW.delete(p);
+      }
+      if (i % 20 === 0) {
+        out.frames++;
+        out.cars += vs.filter((v) => onBanner(v.x, v.y)).length;
+        out.folk += w.crowd.walkers.filter((p) => !p.hidden && onBanner(p.x, p.y)).length;
+      }
       // the roadster's hops, and how many of them set down in view
       for (const v of vs) if (v.hop) {
         const was = hopSeen.get(v.id), now = v.hop.phase;
@@ -91,7 +127,8 @@ try {
           if (!semis.has(v.id)) semis.set(v.id, v.y < 10 && v.x > 60 ? 'yard' : v.y > 100 ? 'bay' : 'seed');
         }
         const isHolding = v.keep || (v.leg && (v.leg.dwell !== undefined || v.leg.until));
-        if (!isHolding) {
+        // only traffic inside the world box counts: the long runs to and from its edges would water the share down
+        if (!isHolding && inWorld(v.x, v.y)) {
           out.samples++;
           if (v.v < 0.05) {
             out.stopped++;
@@ -114,7 +151,9 @@ try {
   console.log(`  truck runs                 yard ${r.yard}, loading bay ${r.bay}   (about 7 and 6 per 15 minutes)`);
   console.log(`  longest stall              ${r.stall.toFixed(0)} s, ${r.stallAt || '-'}`);
   console.log(`  roadster hops              ${r.hops}, ${r.landed} set down in view   (one every 30-45 s; most set down)`);
-  const isBad = r.people.length > 0 || r.crashes.length > 0 || r.stall > 180 || stoppedPct > 35;
+  console.log(`  pop-ins in the world box   ${r.pops.length}${r.pops.length ? '\n    ' + r.pops.slice(0, 10).join('\n    ') : ''}`);
+  console.log(`  in the classic banner      ${(r.cars / r.frames).toFixed(1)} vehicles, ${(r.folk / r.frames).toFixed(1)} people on average`);
+  const isBad = r.people.length > 0 || r.crashes.length > 0 || r.stall > 180 || stoppedPct > 35 || r.pops.length > 0;
   console.log(isBad ? 'FAIL' : 'OK');
   process.exitCode = isBad ? 1 : 0;
 } finally {

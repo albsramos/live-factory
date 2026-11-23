@@ -82,10 +82,10 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     laneIn: 86.2,
     laneOut: 83.6,
     waitX: 3,
-    arrive: { pts: [[-1.8, 150], [-1.8, 86.2], [3, 86.2]], radii: [2.2] },
+    arrive: { pts: [[-1.8, 230], [-1.8, 86.2], [3, 86.2]], radii: [2.2] },
     depart: {
       clear: { pts: [[0.5, 83.6], [-4.2, 83.6], [-4.2, 98]], radii: [2.5] },
-      away: { pts: [[-4.2, 98], [-4.2, 150]], radii: [] },
+      away: { pts: [[-4.2, 98], [-4.2, 230]], radii: [] },
     },
     chargerGap: 0.35,
     role: 'park',
@@ -117,10 +117,10 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     laneIn: 14,
     laneOut: 11.2,
     waitX: 82.6,
-    arrive: { pts: [[74, 112], [74, 14], [82.6, 14]], radii: [3.5] },
+    arrive: { pts: [[74, 175], [74, 14], [82.6, 14]], radii: [3.5] },
     depart: {
       clear: { pts: [[80.5, 11.2], [74, 11.2], [74, 4]], radii: [2.5] },
-      away: { pts: [[74, 4], [74, -52]], radii: [] },
+      away: { pts: [[74, 4], [74, -120]], radii: [] },
     },
     chargerGap: 0.35,
     role: 'hub',
@@ -144,7 +144,8 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // east of the pavilion and on north past the hub, to beyond the widest view's edge: grass with a path across it,
   // trees, benches, and people on their break. Beside the compute platform it keeps clear of the robot's rounds.
   const lawn = [101.5, 38.2, 101.5, -5, 102.9, -7.5, 102.9, -22, 136.5, -22, 136.5, 38.2];
-  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [152, 14.5]];
+  // on past the east edge of every view (frame.ts `WORLD`)
+  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [152, 14.5], [180, 4], [235, -16]];
   for (const [x0, y0, x1, y1] of [[109.5, 24.2, 111.3, 24.7], [125.6, 31.2, 127.4, 31.7], [113.4, 35, 113.9, 36.8]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   staff(env, 110, 25.05, 'sit', 0, 1);
   staff(env, 110.9, 25.05, 'sit', 0, 1);
@@ -175,7 +176,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     // the car park's service road
     ctx.fillStyle = pal.road;
     ctx.beginPath();
-    groundRect(ctx, -5.8, 82.2, -0.2, 160);
+    groundRect(ctx, -5.8, 82.2, -0.2, 260);
     ctx.fill();
     // grass and its path
     ctx.fillStyle = pal.lawn;
@@ -210,7 +211,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
 
   const walks = (g: WalkGraph, houseNode: number, streetNode: number) => {
     // from the south end of the car park up its east side to the home's side path, clear of the reversing cars
-    g.chain([g.node(19.5, 152, true), g.node(19.5, 96, false, 0.4), g.node(19.2, 74.6, false, 0.4), g.node(27.2, 74.0), houseNode]);
+    g.chain([g.node(19.5, 240, true), g.node(19.5, 96, false, 0.4), g.node(19.2, 74.6, false, 0.4), g.node(27.2, 74.0), houseNode]);
     // across the staff park from the street walk to its far corner
     const ids = path.slice(1).map(([x, y], i) => g.node(x, y, i === path.length - 2));
     g.chain([streetNode, ...ids]);
