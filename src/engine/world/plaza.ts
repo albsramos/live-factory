@@ -67,9 +67,16 @@ export function factoryFront(pal: Palette, edge: string) {
   return items;
 }
 
-/** Low angular planters over the plans given (counter-clockwise), grass on top and an LED strip round the top edge. */
+/** Low angular planters over the plans given, grass on top and an LED strip round the top edge. */
 export function ledPlanters(pal: Palette, plans: number[][][]): Static[] {
-  return plans.map((plan) => {
+  return plans.map((given) => {
+    // the mesh wants its plan counter-clockwise; take either way round
+    let area = 0;
+    given.forEach(([x, y], i) => {
+      const [nx, ny] = given[(i + 1) % given.length];
+      area += x * ny - nx * y;
+    });
+    const plan = area < 0 ? [...given].reverse() : given;
     const mesh = prism(plan, 0, PLANTER_H);
     const [x0, y0, x1, y1] = bounds(plan);
     return new FnItem(x0, y0, 0, x1, y1, PLANTER_H, (r) => {

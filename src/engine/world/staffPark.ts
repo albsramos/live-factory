@@ -1,6 +1,6 @@
 // More life in the staff park east of the pavilion (its lawn, path and first benches are in outskirts.ts): a pond
 // with a fountain, a pergola where staff have lunch, a bench by the water, two people strolling round the pond, three
-// LED-edged planters, long thin wedges, and more trees. Staff only, sitting, chatting or strolling (docs/simulation.md,
+// LED-edged planters, broad triangles, and more trees. Staff only, sitting, chatting or strolling (docs/simulation.md,
 // the parks). It draws from a random stream of its own, so the rest of the town plays out as before.
 
 import type { Activity, Env } from '../activities/activity';
@@ -136,14 +136,14 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   }
 
   // ------------------------------------------------------------------------------------------- planters
-  // long thin wedges tapering to a point, after the gardens at the real factory, their LED strips glowing at night:
-  // two side by side on the open lawn south of the pond, between the path in and the park's main path, and one
-  // north-east of it, beside the path up to the lake. Each keeps about 2 m or more from the paths and the strollers'
-  // ring round the pond, and clear of the lamps, the trees and the staff on the grass.
+  // three broad triangles round the pond, after the gardens at the real factory, their LED strips glowing at night:
+  // west of it, between the pergola and the path in; north of it, past the bench and the people chatting, short of
+  // the path up to the lake; and south of it, on the open lawn before the park's main path. Each keeps about 2 m or
+  // more from the paths and the strollers' ring round the pond, and clear of the lamps, the trees and the staff.
   S.push(...ledPlanters(pal, [
-    [[122.0, 17.5], [129.5, 11.5], [130.4, 13.0]],
-    [[124.5, 19.5], [130.5, 16.0], [131.0, 17.4]],
-    [[130.4, -6.2], [134.8, -11.2], [135.4, -10.0]],
+    [[110.0, 6.0], [109.1, -0.7], [115.3, 1.0]],
+    [[119.8, -6.2], [123.2, -14.6], [124.4, -10.4]],
+    [[123.3, 11.2], [128.5, 18.4], [130.8, 13.1]],
   ]));
 
   // ------------------------------------------------------------------------------------------- trees

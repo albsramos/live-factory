@@ -81,7 +81,7 @@ any other React setup.
   the plaza have LED strips that glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop with a café
   kiosk, its tables and a queue at the counter, and a bigger park east of the pavilion with a
-  pond and fountain, a lake with rocks at its north end, a pergola where staff have lunch and three long, pointed wedge planters lit like the plaza's, with grass, paths, trees and benches where
+  pond and fountain, a lake with rocks at its north end, a pergola where staff have lunch and three triangular planters lit like the plaza's, with grass, paths, trees and benches where
   employees sit, chat or stroll on their break; low lamps light the paths at night.
 - **An Easter egg**: somewhere in the trees at the top right of a wide view, three roadsters take turns showing off
   for a ring of Optimus, one every 20 seconds, each with its own trick: a spin, a barrel roll or a corkscrew.
