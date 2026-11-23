@@ -99,8 +99,10 @@ export class TruckYard implements Activity {
         this.mutex.free(v);
         bay.taken = false;
       } },
-      // straight before it waits for the crossing and the junction
-      { path: P([[70, 28], [70, 175]]), vmax: 5.5 },
+      // straight before it waits for the crossing and the junction; it takes the junction only together with the
+      // zebra 30 m past it, or it could stand in the junction waiting for the zebra while a northbound car stands on
+      // the zebra waiting for the junction (a gridlock check:sim once found)
+      { path: P([[70, 28], [70, 175]]), vmax: 5.5, groupGap: 34 },
     ];
   }
 

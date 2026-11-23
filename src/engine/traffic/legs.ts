@@ -36,6 +36,11 @@ export interface Leg {
   /** Don't brake for other vehicles on this leg (scripted yard moves). */
   ghost?: boolean;
   /**
+   * Reserve zones this far apart together, instead of 3.5 m (a car) or a truck length (a semi): for a semi that must
+   * not stop in a junction waiting for a crossing beyond it (docs/simulation.md).
+   */
+  groupGap?: number;
+  /**
    * For a semi reversing: the trailer's heading (radians) at each distance along this leg. Backing a trailer is
    * unstable to simulate, so a reverse leg replays a forward run backwards (see `backingTrack`).
    */
@@ -81,7 +86,7 @@ export function prepareLeg(v: Vehicle, l: Leg): LegState {
   reqs.sort((a, b) => a.sIn - b.sIn);
   const groups: Group[] = [];
   // a semi never waits with its trailer across a lane: it reserves everything within a truck length together
-  const gapLimit = v.kind === 'semi' ? Math.max(3.5, v.tail + v.hl) : 3.5;
+  const gapLimit = l.groupGap ?? (v.kind === 'semi' ? Math.max(3.5, v.tail + v.hl) : 3.5);
   for (const q of reqs) {
     const g = groups[groups.length - 1];
     if (g && q.sIn - Math.max(...g.map((x) => x.sOut)) < gapLimit) g.push(q);
