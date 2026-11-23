@@ -149,10 +149,10 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(carriers);
   // the carrier depot east of the avenue: carriers parked ready to go, and a charging lane that carriers back into
   // off the avenue now and then, on a stream of its own; a charger beside each parked cab, its cable to a port
-  // on the cab's side, and one by the lane's spot, north of the cab, both clear of the trailers cutting the corners
+  // on the cab's side, and the lane's the same way, south of its cab, where a carrier backing in never reaches
   const depot = new CarrierDepot(env, makeRng(opts.seed * 3191 + 107), zones.depot);
   for (const s of depot.spots) S.push(charger(pal, DEPOT_NOSE + 3.95, s.y + 2.65, [DEPOT_NOSE + 2.75, s.y + 1.6, 1.1], s, true));
-  S.push(charger(pal, LANE_REF + 0.8, LANE_Y - 2.4, [LANE_REF - 0.4, LANE_Y - 1.3, 1.1], depot.lane));
+  S.push(charger(pal, LANE_REF + 0.8, LANE_Y + 2.65, [LANE_REF - 0.4, LANE_Y + 1.6, 1.1], depot.lane, true));
   acts.push(depot);
   // lamps along the park paths, lit at night
   const lamps = buildParkLamps(env);

@@ -9,14 +9,14 @@
 // trailer cuts the corner across the front of the north lane. The cars are scripted, not traffic: they never leave
 // the yard.
 
-import { type Mat, pick, rr } from '../core';
+import { type Mat, rr } from '../core';
 import type { Ctx, R } from '../draw';
 import { groundPoly, groundRect, rectShadow } from '../ground';
 import { BELT_Y } from '../world/northBelt';
 import { drawMesh } from '../mesh';
 import { Path, type Pose } from '../path';
 import type { Item } from '../sort';
-import { LOADS, RAMP_FOOT, SLOTS, type DeckCar } from '../traffic/carrierMesh';
+import { carrierPaint, LOADS, RAMP_FOOT, SLOTS, type DeckCar } from '../traffic/carrierMesh';
 import type { Leg } from '../traffic/legs';
 import { MESH } from '../traffic/meshes';
 import type { VehicleItem } from '../traffic/vehicleItem';
@@ -68,10 +68,9 @@ export class CarrierYard implements Activity {
 
   constructor(private env: Env) {}
 
-  /** Mostly white, now and then another of the SUV's paints. */
+  /** Mostly white, now and then silver (traffic/carrierMesh.ts). */
   private paint(): Mat {
-    const { pal, rng } = this.env;
-    return rng() < 0.55 ? pal.paints[0] : pick(rng, pal.paints);
+    return carrierPaint(this.env.rng, this.env.pal.paints);
   }
 
   /** Stand loading until the carrier is full, then drive on and up the east road, back north. */

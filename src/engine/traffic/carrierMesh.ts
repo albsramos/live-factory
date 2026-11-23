@@ -4,7 +4,7 @@
 // (activities/carrierYard.ts) fills as cars drive up its ramp.
 // Everything is in the kingpin's frame, l back along the trailer (negative), w across it, as in meshes.ts.
 
-import type { Mat } from '../core';
+import { type Mat, pick, type Rng } from '../core';
 import type { R } from '../draw';
 import { MeshBuilder, drawMesh, type MatSlot } from '../mesh';
 import { MESH } from './meshes';
@@ -120,4 +120,12 @@ export function carrierReach(v: Vehicle) {
   let back = 1.4;
   for (const c of LOADS.get(v) ?? []) back = Math.max(back, -12.8 - (c.l - 2.43));
   return back;
+}
+
+/**
+ * A paint for a car on a carrier: mostly white, otherwise white or silver, never graphite or black. The first three
+ * of the SUV's paints (`pal.paints`) are the light ones.
+ */
+export function carrierPaint(rng: Rng, paints: readonly Mat[]): Mat {
+  return rng() < 0.55 ? paints[0] : pick(rng, paints.slice(0, 3));
 }

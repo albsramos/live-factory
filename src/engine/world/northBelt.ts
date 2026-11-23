@@ -88,7 +88,7 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     ctx.lineJoin = 'round';
     ctx.beginPath();
     groundRect(ctx, 28, -76, 64.6, -41);
-    groundPoly(ctx, [79.6, -76, 139.6, -76, 139.6, -22, 102.9, -22, 102.9, -41, 79.6, -41]);
+    groundPoly(ctx, [79.6, -76, 139.6, -76, 139.6, -22, 102.9, -22, 102.9, -44.2, 79.6, -44.2]);
     ctx.fill();
     ctx.stroke();
     ctx.strokeStyle = pal.plaza;

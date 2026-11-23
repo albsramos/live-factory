@@ -16,8 +16,8 @@
   `CLAY_EDGE`, which `edgeColor` resolves by theme.
 - Vehicles: the SUV (every car on the road and in the car parks), the pickup, the robotaxi pod and van, the roadster
   and the semi. A semi with the role `carrier` pulls an open two-deck car carrier instead of a box
-  (`traffic/carrierMesh.ts`: its frame, the deck slots and the cars it carries, `LOADS`). Colours: `pal.paints` holds only the SUV's (white, silver, graphite, black); the pickup is always
-  silver (`traffic/paints.ts`, applied by `traffic.add`); the robotaxis are gold (`pal.gold`).
+  (`traffic/carrierMesh.ts`: its frame, the deck slots and the cars it carries, `LOADS`). Colours: `pal.paints` holds only the SUV's (white, silver, graphite, black); the cars on a carrier are
+  only white or silver (`carrierPaint`); the pickup is always silver (`traffic/paints.ts`, applied by `traffic.add`); the robotaxis are gold (`pal.gold`).
 - Static scenery is baked once per size into device-pixel-aligned bitmaps (`BoxItem`, `FnItem.still()` in
   `statics.ts`); only `.live()` overlays (LEDs, status lights) draw every frame. The ground, roads and static shadows
   are one cached layer (`Scene.renderGround`, `world/groundPlan.ts`).

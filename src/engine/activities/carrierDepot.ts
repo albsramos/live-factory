@@ -9,11 +9,11 @@
 // pavement its trailer swings across; pulling out, its trailer sweeps the east pavement north of the lane. Walkers
 // cross that whole stretch of pavement as one crossing, and cars leave the lanes to the carrier (world/roads.ts).
 
-import { type Mat, pick, rr, type Rng } from '../core';
+import { type Mat, rr, type Rng } from '../core';
 import type { Ctx } from '../draw';
 import { groundPoly } from '../ground';
 import { Path } from '../path';
-import { LOADS, SLOTS } from '../traffic/carrierMesh';
+import { carrierPaint, LOADS, SLOTS } from '../traffic/carrierMesh';
 import { backingTrack, type Leg } from '../traffic/legs';
 import { Vehicle } from '../traffic/vehicle';
 import type { VehicleItem } from '../traffic/vehicleItem';
@@ -78,8 +78,7 @@ export class CarrierDepot implements Activity {
   }
 
   private paint(): Mat {
-    const { pal } = this.env;
-    return this.rng() < 0.55 ? pal.paints[0] : pick(this.rng, pal.paints);
+    return carrierPaint(this.rng, this.env.pal.paints);
   }
 
   /** Down the avenue past the lane, back into it; charge; out onto the avenue, north. */
@@ -143,7 +142,7 @@ export class CarrierDepot implements Activity {
   ground(ctx: Ctx) {
     ctx.fillStyle = this.env.pal.pad;
     ctx.beginPath();
-    groundPoly(ctx, [78.8, -38.4, 78.8, -47.5, 81.2, -46.4, 84, -43.6, 102.9, -43.6, 102.9, -38.4]);
+    groundPoly(ctx, [78.8, -38.4, 78.8, -47.5, 81.2, -46.4, 84, -43.6, 101, -43.6, 101, -38.4]);
     ctx.fill();
   }
 }
