@@ -19,6 +19,8 @@ import type { Vehicle } from '../traffic/vehicle';
 
 /** the pad: its centre, where the car does its tricks, and its paved extent */
 export const PAD = { x: 93, y: -57, x0: 83, y0: -66, x1: 103, y1: -48.8 };
+/** the driveway from the avenue's east kerb to the pad, drawn with the roads so it is kerbed like them */
+export const PAD_DRIVE = { x0: 75.5, y0: -60.8, x1: 83.4, y1: -56.6 };
 const PERIOD = 20;
 /** seconds into each period when the trick starts, and how long it takes */
 const START = 10, TRICK = 6.4;
