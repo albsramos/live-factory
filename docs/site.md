@@ -34,7 +34,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   the page says so; the title is an example, `Factory`, under an eyebrow line naming the site, `GFBB Berlin`. Its palette is its own, a bright blue
   accent (`--look-accent`, no gold), with 8 px corners on the cards and buttons (`--look-radius`)
   (`--look-*` in `Look.module.css`, night and day), switched by the theme in the URL (`auto` follows the computer).
-  The content (the bar, the title and the cards) stops at 900 px wide (`--look-max`), with a gutter either side that
+  The content (the bar, the title and the cards) stops at 1200 px wide (`--look-max`), with a gutter either side that
   grows with the screen (`--look-gutter`, 24–96 px); the scene's oval spans the whole width. That pool is drawn on the title block, so it
   stays behind the title at any width.
 - `src/shared/ui/` domain-free primitives (Button, LinkButton, Segmented, Slider) in the plain neutral look of shadcn/ui: a
