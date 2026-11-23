@@ -75,7 +75,7 @@ any other React setup.
   of the roof, and on every other building's, the solar panels stand in rows tilted at 45°. Two angular planters on
   the plaza have LED strips that glow warm at night.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop with a café
-  kiosk, its tables under striped umbrellas and a queue at the counter, and a bigger park east of the pavilion with a
+  kiosk, its tables and a queue at the counter, and a bigger park east of the pavilion with a
   pond and fountain and a pergola where staff have lunch, with grass, paths, trees and benches where
   employees sit, chat or stroll on their break.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four

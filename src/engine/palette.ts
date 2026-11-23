@@ -15,8 +15,6 @@ export interface Palette {
   /** the staff park's pond, and the light on its ripples */
   water: string;
   waterHi: string;
-  /** the café's umbrellas: every other panel in one of these */
-  umbrellas: string[];
   road: string;
   roadLine: string;
   curbHi: string;
@@ -103,7 +101,6 @@ export function lightPalette(): Palette {
     lawn: '#d5e2cf',
     water: '#c3d5e1',
     waterHi: '#eef4f8',
-    umbrellas: ['#f0a3b6', '#f3cd68', '#b6a0e2', '#fbf8f1', '#ee8d6a'],
     road: '#dcdce2',
     roadLine: '#f6f6f8',
     curbHi: '#f9f9fb',
@@ -179,7 +176,6 @@ export function darkPalette(): Palette {
     lawn: '#1e2c22',
     water: '#18252f',
     waterHi: '#3a5568',
-    umbrellas: ['#8a4c5c', '#8a7638', '#5e5180', '#77766f', '#86503c'],
     road: '#141519',
     roadLine: '#3a3c44',
     curbHi: '#2c2e35',
