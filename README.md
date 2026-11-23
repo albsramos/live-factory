@@ -58,7 +58,8 @@ any other React setup.
 - **Car carriers**: in the north yard, out at the top of wide views, two-deck car carriers load new crossovers for
   delivery. Each comes down a service road from the north and stops in one of two lanes; the cars drive out from
   behind the factory and up its ramp, the upper deck first. Full, it drives on and back north up a second road,
-  with walkers on the north belt's path waiting at the zebras.
+  with walkers on the north belt's path waiting at the zebras. Two more full carriers stand parked beside the lanes,
+  waiting to go.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots in a white or champagne shell, with a black glass head ringed by a thin light line and

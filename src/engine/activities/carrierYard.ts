@@ -19,7 +19,8 @@ import type { Item } from '../sort';
 import { LOADS, RAMP_FOOT, SLOTS, type DeckCar } from '../traffic/carrierMesh';
 import type { Leg } from '../traffic/legs';
 import { MESH } from '../traffic/meshes';
-import type { Vehicle } from '../traffic/vehicle';
+import type { VehicleItem } from '../traffic/vehicleItem';
+import { Vehicle } from '../traffic/vehicle';
 import { type Activity, type Env, Mutex } from './activity';
 
 const P = Path.poly;
@@ -60,6 +61,8 @@ export class CarrierYard implements Activity {
   private lanes: Lane[] = LANES.map((l) => ({ ...l, carrier: null, sent: 0, full: false }));
   private yard = new Mutex();
   private cars: Car[] = [];
+  /** full carriers parked on the west side, waiting to leave; scenery, not traffic (nothing comes near them) */
+  private parked: Vehicle[] = [];
   private timer = 6;
   private carTimer = 2;
 
@@ -100,6 +103,22 @@ export class CarrierYard implements Activity {
     v.mats[5] = pal.white;
     LOADS.set(v, []);
     lane.carrier = v;
+  }
+
+  /**
+   * Full carriers parked side by side on the west side at `xs`, facing north: between the cars' way up (x 32.5) and
+   * the Megapacks, south of where the carriers swing into the south lane.
+   */
+  park(xs: number[]) {
+    const { traffic, pal } = this.env;
+    for (const x of xs) {
+      const v = new Vehicle('semi', pal, pal.white, [{ path: P([[x, -22.9], [x, -23]]), vmax: 1 }], traffic, 'carrier');
+      v.mats[5] = pal.white;
+      // parked: lights off
+      v.door = 0.02;
+      LOADS.set(v, SLOTS.map((slot) => ({ slot, paint: this.paint(), l: slot.l })));
+      this.parked.push(v);
+    }
   }
 
   /** A carrier already standing in a lane with `n` cars on it, for the opening frame. */
@@ -179,6 +198,10 @@ export class CarrierYard implements Activity {
   }
 
   items(out: Item[]) {
+    for (const v of this.parked) for (const it of v.items) {
+      (it as VehicleItem).bounds();
+      out.push(it);
+    }
     for (const c of this.cars) {
       const p = c.pose;
       const ex = Math.abs(p.hx) * 2.43 + Math.abs(p.hy) * 1.0, ey = Math.abs(p.hy) * 2.43 + Math.abs(p.hx) * 1.0;
@@ -188,6 +211,7 @@ export class CarrierYard implements Activity {
   }
 
   shadows(ctx: Ctx) {
+    for (const v of this.parked) v.shadow(ctx);
     for (const c of this.cars) rectShadow(ctx, c.pose.x, c.pose.y, c.pose.hx, c.pose.hy, 2.3, 0.95, 1.25);
   }
 

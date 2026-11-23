@@ -143,6 +143,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const carriers = new CarrierYard({ ...env, rng: makeRng(opts.seed * 2861 + 101) });
   carriers.seed(0, 2);
   carriers.seed(1, 4);
+  carriers.park([37.2, 41.6]);
   acts.push(carriers);
   // lamps along the park paths, lit at night
   const lamps = buildParkLamps(env);
