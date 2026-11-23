@@ -77,7 +77,9 @@ any other React setup.
 - **Parks for the staff**: a pocket park on the corner by the plaza, a lawn beside the robotaxi stop with a café
   kiosk, its tables and a queue at the counter, and a bigger park east of the pavilion with a
   pond and fountain, a lake with rocks at its north end and a pergola where staff have lunch, with grass, paths, trees and benches where
-  employees sit, chat or stroll on their break.
+  employees sit, chat or stroll on their break; low lamps light the paths at night.
+- **An Easter egg**: somewhere in the trees at the top right of a wide view, a roadster shows off for a ring of
+  Optimus every 20 seconds: a spin, a barrel roll or a corkscrew.
 - **The roadster**: every 30 to 45 seconds a low roadster with gold-tinted glass comes along the avenue and hops. Four
   thrusters under its corners lift it off the lane in a burst of smoke, it flies on over the traffic and the
   junction, rolls once trailing two spirals of vapour, and sets down again where the lane is clear (or flies on out
