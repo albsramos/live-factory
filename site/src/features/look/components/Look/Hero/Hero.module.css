@@ -59,20 +59,6 @@
   }
 }
 
-/* a little extra shade behind the title, so it reads over the busiest part of the scene */
-.fadeSide {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgb(var(--look-fade) / 0.95) 0%,
-    rgb(var(--look-fade) / 0.8) 25%,
-    rgb(var(--look-fade) / 0.35) 42%,
-    rgb(var(--look-fade) / 0) 56%
-  );
-}
-
 .bar,
 .inner {
   position: relative;
