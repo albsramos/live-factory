@@ -10,7 +10,7 @@
   padding: 24px;
   background: var(--look-card);
   border: 1px solid var(--look-line);
-  border-radius: 20px;
+  border-radius: var(--look-radius);
   box-shadow: var(--look-shadow);
 }
 
@@ -61,7 +61,7 @@
 }
 
 .key[data-kind="built"]::before {
-  background: var(--look-gold-deep);
+  background: var(--look-accent);
 }
 
 .plot,
@@ -138,11 +138,11 @@
 }
 
 .dot[data-kind="robots"] {
-  background: var(--look-gold-deep);
+  background: var(--look-accent);
 }
 
 .dot[data-kind="trucks"] {
-  background: var(--look-blue);
+  background: var(--look-sky);
 }
 
 .dot[data-kind="packs"] {

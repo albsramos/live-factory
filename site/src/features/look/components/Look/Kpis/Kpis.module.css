@@ -15,7 +15,7 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--look-glass-line);
-  border-radius: 20px;
+  border-radius: var(--look-radius);
   box-shadow: var(--look-shadow);
 }
 
@@ -71,5 +71,5 @@
 }
 
 .bar[data-state="now"] {
-  background: var(--look-gold-deep);
+  background: var(--look-accent);
 }

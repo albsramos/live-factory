@@ -1,4 +1,4 @@
-/* The look's own palette, night and day: the scene's lit-window gold over near-black, or over the site's pale grey.
+/* The look's own palette, night and day: a bright blue accent over near-black, or over the site's pale grey.
    Its parts read these properties, so the theme switches in one place. */
 .root {
   --look-bg: #0e0f12;
@@ -11,19 +11,18 @@
   --look-line: #24252c;
   --look-glass-line: rgb(255 255 255 / 0.08);
   --look-bar: #3a3c47;
-  --look-gold: #f2c76b;
-  --look-gold-deep: #e0a526;
-  --look-built: linear-gradient(180deg, #f6d68e, #d9a440);
-  --look-title: linear-gradient(180deg, #ffffff 30%, #f6dca0 100%);
-  --look-eyebrow: #f2c76b;
-  --look-cta: #f2c76b;
-  --look-cta-fg: #1a1409;
+  --look-accent: #4c8dff;
+  --look-built: linear-gradient(180deg, #7fb0ff, #3d7bff);
+  --look-cta: #3d7bff;
+  --look-cta-fg: #ffffff;
   --look-ghost: rgb(232 233 238 / 0.28);
   --look-chip: rgb(232 233 238 / 0.12);
   --look-good: #7fd1a4;
   --look-warn: #f0a07a;
-  --look-blue: #6aa7ff;
+  --look-sky: #7dd3fc;
   --look-shadow: none;
+  /* the corners of the cards and buttons */
+  --look-radius: 8px;
   /* the space either side of the content (bar, title, cards), growing with the screen */
   --look-gutter: clamp(24px, 5vw, 96px);
   /* how wide the content (bar, title, cards) runs at most */
@@ -46,16 +45,15 @@
   --look-line: #e4e5ea;
   --look-glass-line: rgb(20 20 30 / 0.08);
   --look-bar: #d6d7dd;
-  --look-built: linear-gradient(180deg, #e9b949, #c98f1c);
-  --look-title: linear-gradient(180deg, #1d1e23 35%, #7a5a12 100%);
-  --look-eyebrow: #8a6410;
-  --look-cta: #1d1e23;
+  --look-accent: #1f63f0;
+  --look-built: linear-gradient(180deg, #4f86ff, #1f5fe0);
+  --look-cta: #1f63f0;
   --look-cta-fg: #ffffff;
   --look-ghost: rgb(29 30 35 / 0.25);
   --look-chip: rgb(255 255 255 / 0.7);
   --look-good: #1f7a4c;
   --look-warn: #b4532a;
-  --look-blue: #3d5fc4;
+  --look-sky: #0e7490;
   --look-shadow: 0 12px 32px -16px rgb(20 20 40 / 0.25);
 }
 
