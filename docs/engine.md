@@ -54,7 +54,8 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   trees; `northBelt.ts` a lawn with rows of trees and a path along y −47 north of the yard, the Megapacks and the
   staff park, from the avenue's pavements out past the top-left edge and to the east road; `stuntPad.ts` an Easter egg in a clearing of the north belt north of the Megapacks: every 20 s a roadster
   lifts on its thrusters and does a spin, a barrel roll or a corkscrew for a ring of Optimus (its jets drawn with
-  `drawJets` on a vehicle-shaped object), `parkLamps.ts` low lamps along the park paths that glow at night and paint
+  `drawJets` on a vehicle-shaped object; the pad and its driveway off the avenue are part of the road outline,
+  `padRoad`, so they are kerbed as one with rounded corners, and `padMarks` paints its circles after the roads), `parkLamps.ts` low lamps along the park paths that glow at night and paint
   pools of light into the ground layer; `farWest.ts` a second
   staff car park west of the service road (every car stays, so it needs no routes) with someone walking between the
   cars, and lawns with trees west of the factory and south of both car parks. Ground hooks: `groundPainter` takes painters to run with the pads (`more`) and on top of the lawns

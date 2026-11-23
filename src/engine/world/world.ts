@@ -160,7 +160,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, pad.ground, west.ground], [south.ground, lamps.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, west.ground], [south.ground, lamps.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

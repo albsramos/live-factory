@@ -9,7 +9,7 @@ import type { Palette } from '../palette';
 import type { ChargingLot } from '../activities/chargingLot';
 import type { Outskirts } from './outskirts';
 import type { EastSide } from './eastSide';
-import { PAD_DRIVE } from './stuntPad';
+import { padMarks, padRoad } from './stuntPad';
 import { POCKET_LAWN, POCKET_PATH, TAXI_LAWN, TAXI_PATHS } from './streetLife';
 
 /** Rounded kerbs (radius 3) at the four corners of a crossing of two roads, the box where they overlap. */
@@ -44,8 +44,8 @@ export function groundPainter(
     // rounded corners where the street meets the avenue
     junctionCorners(ctx, 68, 42, 76, 50);
     east.road(ctx);
-    // the stunt pad's driveway off the avenue
-    groundRect(ctx, PAD_DRIVE.x0, PAD_DRIVE.y0, PAD_DRIVE.x1, PAD_DRIVE.y1);
+    // the stunt pad and its driveway off the avenue
+    padRoad(ctx);
     // robotaxi bay
     groundPoly(ctx, [76, 53.5, 79.2, 57.5, 79.2, 70.5, 76, 74.5]);
   };
@@ -191,6 +191,7 @@ export function groundPainter(
     for (let y = 42.4; y < 49.7; y += 0.9) groundRect(ctx, 86.25, y, 88.75, y + 0.45);
     ctx.fill();
     east.marks(ctx);
+    padMarks(ctx, pal);
     // charging stalls
     ctx.strokeStyle = pal.roadLine;
     ctx.lineWidth = 0.12;

@@ -9,6 +9,7 @@ import { C, rr } from '../core';
 import type { Ctx, R } from '../draw';
 import { arcPts, blobShadow, groundPoly, groundRect, rectShadow } from '../ground';
 import { drawMesh } from '../mesh';
+import type { Palette } from '../palette';
 import { Walker } from '../people/walker';
 import type { Item } from '../sort';
 import { FnItem } from '../statics';
@@ -19,7 +20,7 @@ import type { Vehicle } from '../traffic/vehicle';
 
 /** the pad: its centre, where the car does its tricks, and its paved extent */
 export const PAD = { x: 93, y: -57, x0: 83, y0: -66, x1: 103, y1: -48.8 };
-/** the driveway from the avenue's east kerb to the pad, drawn with the roads so it is kerbed like them */
+/** the driveway from the avenue's east kerb into the pad */
 export const PAD_DRIVE = { x0: 75.5, y0: -60.8, x1: 83.4, y1: -56.6 };
 const PERIOD = 20;
 /** seconds into each period when the trick starts, and how long it takes */
@@ -29,7 +30,7 @@ const TRICKS: Trick[] = ['spin', 'roll', 'corkscrew'];
 
 const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
-export function buildStuntPad(env: Env): { act: Activity; ground(ctx: Ctx): void } {
+export function buildStuntPad(env: Env): { act: Activity } {
   const { pal, statics: S, rng } = env;
   const mats = () => [pal.paints[0], pal.tintGlass, pal.tyre, pal.headlight, pal.taillight, pal.white, pal.robot, pal.robotHead];
 
@@ -132,27 +133,42 @@ export function buildStuntPad(env: Env): { act: Activity; ground(ctx: Ctx): void
     },
   };
 
-  const ground = (ctx: Ctx) => {
-    ctx.fillStyle = pal.pad;
-    ctx.beginPath();
-    groundRect(ctx, PAD.x0, PAD.y0, PAD.x1, PAD.y1);
-    ctx.fill();
-    // the landing circle, and a short line where the car sets down
-    ctx.strokeStyle = pal.roadLine;
-    ctx.lineWidth = 0.16;
-    ctx.beginPath();
-    groundPoly(ctx, arcPts(PAD.x, PAD.y, 3.6, 0, Math.PI * 2, 40));
-    ctx.stroke();
-    ctx.lineWidth = 0.12;
-    ctx.beginPath();
-    groundPoly(ctx, arcPts(PAD.x, PAD.y, 4.1, 0, Math.PI * 2, 44));
-    ctx.stroke();
-    const X = (PAD.x - PAD.y) * C, Y = (PAD.x + PAD.y) * 0.5;
-    ctx.fillStyle = pal.roadLine;
-    ctx.beginPath();
-    ctx.arc(X, Y, 0.12, 0, Math.PI * 2);
-    ctx.fill();
-  };
+  return { act };
+}
 
-  return { act, ground };
+/**
+ * The pad and its driveway as part of the town's road outline: asphalt like a car park, kerbed as one with the roads,
+ * the driveway's corners rounded where it leaves the avenue (x 76) and where it opens into the pad (x 83).
+ */
+export function padRoad(ctx: Ctx) {
+  const d = PAD_DRIVE, r = 2.4;
+  groundRect(ctx, PAD.x0, PAD.y0, PAD.x1, PAD.y1);
+  groundRect(ctx, d.x0, d.y0, d.x1, d.y1);
+  // each fillet: the corner, then the arc that rounds it off, centred a radius away along both kerbs
+  for (const [cx, cy, ox, oy] of [[76, d.y0, r, -r], [76, d.y1, r, r], [PAD.x0, d.y0, -r, -r], [PAD.x0, d.y1, -r, r]]) {
+    // from where the arc meets the driveway's kerb round to where it meets the other kerb
+    const from = Math.atan2(-oy, 0), to = Math.atan2(0, -ox);
+    let da = to - from;
+    while (da > Math.PI) da -= Math.PI * 2;
+    while (da < -Math.PI) da += Math.PI * 2;
+    groundPoly(ctx, [cx, cy, ...arcPts(cx + ox, cy + oy, r, from, da, 8)]);
+  }
+}
+
+/** The landing circles and the spot where the car sets down, painted on the pad after the roads. */
+export function padMarks(ctx: Ctx, pal: Palette) {
+  ctx.strokeStyle = pal.roadLine;
+  ctx.lineWidth = 0.16;
+  ctx.beginPath();
+  groundPoly(ctx, arcPts(PAD.x, PAD.y, 3.6, 0, Math.PI * 2, 40));
+  ctx.stroke();
+  ctx.lineWidth = 0.12;
+  ctx.beginPath();
+  groundPoly(ctx, arcPts(PAD.x, PAD.y, 4.1, 0, Math.PI * 2, 44));
+  ctx.stroke();
+  const X = (PAD.x - PAD.y) * C, Y = (PAD.x + PAD.y) * 0.5;
+  ctx.fillStyle = pal.roadLine;
+  ctx.beginPath();
+  ctx.arc(X, Y, 0.12, 0, Math.PI * 2);
+  ctx.fill();
 }
