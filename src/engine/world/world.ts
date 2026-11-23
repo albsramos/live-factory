@@ -30,6 +30,7 @@ import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
 import { buildSouthLawn } from './southLawn';
 import { buildNorthBelt } from './northBelt';
+import { buildFarWest } from './farWest';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
@@ -126,6 +127,9 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   const south = buildSouthLawn({ ...env, rng: makeRng(opts.seed * 6143 + 67) }, sprites, edge);
   // a belt of trees and a path north of the yard, the Megapacks and the staff park, on a stream of its own
   const belt = buildNorthBelt({ ...env, rng: makeRng(opts.seed * 5303 + 71) }, sprites, edge);
+  // a second staff car park and lawns with trees out west, on a stream of its own
+  const west = buildFarWest({ ...env, rng: makeRng(opts.seed * 4789 + 83) }, sprites, edge);
+  acts.push(...west.acts);
   staffBreak(env);
   // dock and yard robots
   // two take boxes from inside the factory, through the open garage between the second dock and the bay
@@ -146,7 +150,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [park.ground, belt.ground], [south.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [park.ground, belt.ground, west.ground], [south.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);
