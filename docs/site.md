@@ -21,7 +21,9 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
 - `src/features/look/` a possible landing page built round the scene, `?look` in the URL, linked from the header's
   "Possible look" button: the scene as the header (branded), seen through a soft oval (a CSS mask: two linear fades
   and an ellipse that rounds their corners) that melts into the page well before every edge, a little darker behind
-  the title on its left (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The scene runs the header's height down to just under the cards' top, and from 900px wide it is
+  the title on its left (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is compact, about two fifths of the window's height (`max(380px, 40vh)`, 400 px on a 16" MacBook at
+  100%), its title on one line; the title block sits on a soft pool of the page's colour under its warm glow. The
+  scene runs the header's height down to just under the cards' top, and from 900px wide it is
   `contain` (its whole height, outskirts filling the sides), so the bottom of the frame, the robotaxi stop and the
   crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Either way the
   camera sits a little further back than the fit (`zoom` 0.67) for more of the town; the world goes on past the frame,
