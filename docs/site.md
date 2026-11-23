@@ -22,8 +22,9 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   "Possible look" button: the scene as the header (branded), seen through a soft oval (a CSS mask: two linear fades
   and an ellipse that rounds their corners) that melts into the page well before every edge, a little darker behind
   the title on its left (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is compact, about two fifths of the window's height (`max(380px, 40vh)`, 400 px on a 16" MacBook at
-  100%), its title on one line; the navigation bar sits on a solid band of its own (`--look-nav`, white by day, black at
-  night, a hairline under it) and the scene starts below it; the title block sits on a soft pool of the page's colour. The
+  100%), its title on one line; the navigation bar sits on a band of its own in the page's colour (`--look-bg`), a hairline
+  under it, and the scene starts below it; from 900px wide the scene's box runs 40% past the right edge (clipped), so
+  the town's middle sits to the right and the factory's lettering clears the title; the title block sits on a soft pool of the page's colour. The
   scene runs the header's height down to just under the cards' top, and from 900px wide it is
   `contain` (its whole height, outskirts filling the sides), so the bottom of the frame, the robotaxi stop and the
   crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Either way the
