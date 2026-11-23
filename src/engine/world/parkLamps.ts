@@ -12,7 +12,7 @@ const H = 2.9;
 const LAMPS = [
   // the staff park: along the main path, round the pond, up to the lake and round its east side
   [114.6, 31.1], [127.5, 25.0], [121.3, 22.8], [129.6, 8.4], [118.4, 8.4], [118.4, -0.4], [129.6, -0.4],
-  [127.2, -13.4], [131, -18.6], [138.8, -32],
+  [127.2, -13.4], [131, -18.6], [135.9, -33],
   // the café's lawn: along the garden walk and by the café's path
   [95, 66.9], [118, 67.4], [129.4, 80], [107.9, 62.0],
   // the north belt's path, and the corners of the stunt pad
