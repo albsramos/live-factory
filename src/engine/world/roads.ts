@@ -46,7 +46,10 @@ export function roadZones(traffic: Traffic) {
   const YG = traffic.zone(64, -17.4, 68.4, -5, sameKind);
   const LD = traffic.zone(51.9, 58.7, 55.0, 63.4, sameKind);
   const LE = traffic.zone(58.2, 50.1, 62.6, 52.6, sameKind);
-  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE };
+  // where the north belt's path crosses the car carriers' two service roads (activities/carrierYard.ts)
+  const NB = traffic.zone(30.6, -48.6, 37.4, -45.4, sameKind);
+  const NB2 = traffic.zone(56.2, -48.6, 65.6, -45.4, sameKind);
+  return { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2 };
 }
 export type RoadZones = ReturnType<typeof roadZones>;
 /** A through route: its points, fillet radii and how often it is picked relative to the others. */

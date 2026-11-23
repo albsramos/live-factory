@@ -1,8 +1,9 @@
 // The north belt: along the top of wide, zoomed-out views, north of the truck yard, the Megapacks and the staff
 // park, a strip of lawn with rows of trees and a path along y −47. West of the avenue the path runs from the avenue's
 // pavement out past the top-left of every view; east of it, from the avenue's other pavement to the east road's.
-// It never crosses the avenue, so it needs no zone. Two benches with staff on them. Trees are placed from a random
-// stream of its own, so the rest of the town plays out as before.
+// It never crosses the avenue; it crosses the car carriers' two service roads at zebras (activities/carrierYard.ts).
+// Two benches with staff on them. Trees are placed from a random stream of its own, so the rest of the town plays
+// out as before.
 
 import type { Env } from '../activities/activity';
 import { rr } from '../core';
@@ -13,6 +14,8 @@ import { Walker } from '../people/walker';
 import type { Sprites } from '../sprites';
 import { BoxItem, TreeItem } from '../statics';
 import { PAD } from './stuntPad';
+import { EXIT_X, ROAD_X } from '../activities/carrierYard';
+import type { Zone } from '../traffic/zone';
 
 export interface NorthBelt {
   ground(ctx: Ctx): void;
@@ -20,7 +23,7 @@ export interface NorthBelt {
    * The path: `west` and `east` are the avenue's pavement nodes at y −47, `eastRoad` the east road's. Returns the
    * node at x 137.5 where the staff park's path comes up from the south.
    */
-  walks(g: WalkGraph, ends: { west: number; east: number; eastRoad: number }): number;
+  walks(g: WalkGraph, ends: { west: number; east: number; eastRoad: number }, roads: [Zone, Zone]): number;
 }
 
 export const BELT_Y = -47;
@@ -47,6 +50,10 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     // and clear of the staff park's path, which comes up from the south at x 137.5, and of the lake (lake.ts)
     if (y > -50 && Math.abs(x - 137.5) < 2.4) continue;
     if (y > -42 && x > 103 && x < 137) continue;
+    // and of the car carriers' service road (carrierYard.ts)
+    if (Math.abs(x - ROAD_X) < 4.4 || (x > EXIT_X - 7 && x < EXIT_X + 4.4)) continue;
+    // and of where their trailers cut the corners into the yard's lanes
+    if (y > -45 && x < 64) continue;
     // and of the stunt pad's clearing (stuntPad.ts)
     if (x > PAD.x0 - 2.5 && x < PAD.x1 + 2.5 && y > PAD.y0 - 2.5 && y < PAD.y1 + 1.5) continue;
     S.push(new TreeItem(sprites, x, y, kind, s, 120 + i++ * 1.3));
@@ -84,9 +91,15 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     ctx.lineCap = 'butt';
   };
 
-  const walks = (g: WalkGraph, ends: { west: number; east: number; eastRoad: number }) => {
+  const walks = (g: WalkGraph, ends: { west: number; east: number; eastRoad: number }, roadZones: [Zone, Zone]) => {
     // west: out past the top-left edge of every view (frame.ts `WORLD`)
-    g.chain([ends.west, g.node(52, BELT_Y), g.node(36, BELT_Y), g.node(-40, BELT_Y, true)]);
+    // across the car carriers' two service roads (activities/carrierYard.ts) at zebras
+    const east = [g.node(55.2, BELT_Y), g.node(38.6, BELT_Y)];
+    const west = g.node(29.4, BELT_Y);
+    g.link(ends.west, east[0], roadZones[0]);
+    g.link(east[0], east[1]);
+    g.link(east[1], west, roadZones[1]);
+    g.link(west, g.node(-40, BELT_Y, true));
     const park = g.node(137.5, BELT_Y);
     g.chain([ends.east, g.node(96, BELT_Y), g.node(120, BELT_Y), park, ends.eastRoad]);
     return park;
