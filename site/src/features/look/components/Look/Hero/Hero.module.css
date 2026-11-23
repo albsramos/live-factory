@@ -1,0 +1,163 @@
+.root {
+  position: relative;
+  overflow: hidden;
+  min-block-size: clamp(600px, 54vw, 780px);
+  display: flex;
+  flex-direction: column;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  block-size: 100%;
+  aspect-ratio: auto;
+}
+
+/* darkest behind the title, clear past the middle */
+.fadeSide,
+.fadeEnds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fadeSide {
+  background: linear-gradient(90deg, rgb(var(--look-fade) / 0.96) 0%, rgb(var(--look-fade) / 0.86) 24%, rgb(var(--look-fade) / 0.45) 44%, rgb(var(--look-fade) / 0) 66%);
+}
+
+/* a little shade under the bar; the scene melts into the page at the bottom */
+.fadeEnds {
+  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 16%, rgb(var(--look-fade) / 0) 58%, rgb(var(--look-fade)) 100%);
+}
+
+.bar,
+.inner {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 2000px;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+.bar {
+  padding-block: var(--space-5);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brand {
+  font: 600 20px / 1 var(--font-display);
+  color: var(--look-fg);
+  text-decoration: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding: 0 var(--space-5);
+  font: 600 14px / 1 var(--font-body);
+  color: var(--look-fg);
+  text-decoration: none;
+  background: var(--look-chip);
+  border: 1px solid var(--look-ghost);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.inner {
+  flex: 1;
+  padding-block: 48px 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* the warm glow lives on the title block, so it follows the title at any width */
+.copy {
+  position: relative;
+  isolation: isolate;
+  max-inline-size: 600px;
+}
+
+.copy::before {
+  content: "";
+  position: absolute;
+  inset: -45% -35% -45% -30%;
+  z-index: -1;
+  background: radial-gradient(closest-side, var(--look-glow), transparent);
+  pointer-events: none;
+}
+
+.eyebrow {
+  margin: 0 0 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 var(--text-s) / 1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--look-eyebrow);
+}
+
+.live {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--look-good);
+  box-shadow: 0 0 0 4px rgb(127 209 164 / 0.2);
+}
+
+.title {
+  margin: 0 0 20px;
+  font: 600 clamp(48px, 7.4vw, 104px) / 0.95 var(--font-display);
+  letter-spacing: -0.04em;
+  background: var(--look-title);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.lede {
+  margin: 0 0 32px;
+  max-inline-size: 460px;
+  font-size: var(--text-l);
+  line-height: 1.55;
+  color: var(--look-sub);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 48px;
+  padding: 0 22px;
+  font: 600 var(--text-m) / 1 var(--font-body);
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+}
+
+.primary {
+  color: var(--look-cta-fg);
+  background: var(--look-cta);
+}
+
+.ghost {
+  color: var(--look-fg);
+  border: 1px solid var(--look-ghost);
+}
