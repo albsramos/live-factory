@@ -217,10 +217,11 @@ It needs an internet connection, and always shows the latest version of the site
 - **From GitHub** (the quick start): `npm install github:albsramos/live-factory`. npm clones the repository and builds
   `dist/` on install (the `prepare` script). pnpm and Yarn take the same `github:` spec; pnpm may ask you to approve
   that build step. Add `#<tag or commit>` to pin a version.
-- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.2.0.tgz` in your app.
-- **Inside your own component library:** copy `src/` into it. It is plain TypeScript and React with no other imports;
-  the component's styles are a CSS module beside it (`src/LivingCity/LivingCity.module.css`), which Vite, Next.js
-  and most React toolchains handle out of the box. Its test (`LivingCity.test.tsx`) sits in the same folder.
+- **As a tarball:** `npm run build && npm pack`, then `npm install live-factory-0.3.0.tgz` in your app.
+- **Copy the source into your app or component library** (no npm): copy `src/` in and import from its `index.ts`.
+  It is plain TypeScript and React with no other imports, and its styles are a CSS module beside the component.
+  [docs/embed.md](docs/embed.md) has the steps (which tests to leave out, the CSS-module type declaration,
+  `'use client'` for the Next.js App Router), checked by doing exactly that in a bare app.
 - **Publish it:** run `npm publish` (or rename it first, for example `@your-scope/live-factory`). The build produces
   ESM, CommonJS and type declarations in `dist/`.
 
@@ -267,4 +268,4 @@ Every push to `main` rebuilds the demo website and publishes it to GitHub Pages 
 - `LivingCity/`: the React component, its CSS module and its test; `cityController.ts` runs the scene from the
   component's ref callback (no effects).
 
-The scene uses no logos, wordmarks or text.
+The scene uses no logos, wordmarks or text, unless you turn on `isBranded`, which letters the factory's front.

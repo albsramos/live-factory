@@ -39,3 +39,7 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 - add or edit a component in `site/` → `docs/site.md` (and the react-component skill)
 - change `<LivingCity>`'s props → update the props table in `README.md`, and bump the version if it breaks callers
 - change how the scene looks, or publish → `docs/release.md`, or the `scene-change` skill for the whole procedure
+- change what `src/` imports or needs from its host (a new dependency, a new kind of import, a directive) →
+  `docs/embed.md`, the steps for copying the source into another app without npm, and keep them true
+
+To use this code in another app without npm, follow `docs/embed.md`.
