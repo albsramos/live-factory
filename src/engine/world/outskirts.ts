@@ -30,9 +30,10 @@ export interface Outskirts {
   ground(ctx: Ctx): void;
   /**
    * Join the outskirts' walkways to the town's: the node by the home's side path, and the street walk at x 104.
-   * Returns the staff park path's far end, for the east road's pavement to pick up.
+   * Returns the staff park path's far end, for the east road's pavement to pick up, and the node where the path to
+   * the pond branches off.
    */
-  walks(g: WalkGraph, houseNode: number, streetNode: number): number;
+  walks(g: WalkGraph, houseNode: number, streetNode: number): { end: number; branch: number };
 }
 
 /** A row of stalls along x. */
@@ -149,7 +150,8 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // east to the east road's pavement (eastSide.ts); the pond and pergola are in staffPark.ts
   const lawn = [101.5, 38.2, 101.5, -5, 102.9, -7.5, 102.9, -22, 139.6, -22, 139.6, 38.2];
   // to the east road's west pavement (eastSide.ts), which runs on past the edges of every view
-  const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [139, 18.6]];
+  // (119, 27.5) is where the path to the pond branches off (staffPark.ts)
+  const path = [[104, 40.6], [110, 32], [119, 27.5], [122, 26], [137, 19.5], [139, 18.6]];
   for (const [x0, y0, x1, y1] of [[109.5, 24.2, 111.3, 24.7], [125.6, 31.2, 127.4, 31.7], [113.4, 35, 113.9, 36.8]]) S.push(new BoxItem(x0, y0, 0, x1, y1, 0.45, pal.white, { edge }));
   staff(env, 110, 25.05, 'sit', 0, 1);
   staff(env, 110.9, 25.05, 'sit', 0, 1);
@@ -197,6 +199,8 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     ctx.lineCap = 'round';
     ctx.beginPath();
     for (let i = 1; i < path.length; i++) lineW(ctx, path[i - 1][0], path[i - 1][1], 0, path[i][0], path[i][1], 0);
+    // on to the east road's pavement
+    lineW(ctx, 139, 18.6, 0, 141.2, 18, 0);
     ctx.stroke();
     ctx.lineCap = 'butt';
     // stall lines
@@ -219,7 +223,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
     // across the staff park from the street walk to its far corner
     const ids = path.slice(1).map(([x, y]) => g.node(x, y));
     g.chain([streetNode, ...ids]);
-    return ids[ids.length - 1];
+    return { end: ids[ids.length - 1], branch: ids[1] };
   };
 
   const litFaces: LitFace[] = [[-6, 72, -6, 100, 1, 0], [-40, 100, -6, 100, 0, 1]];

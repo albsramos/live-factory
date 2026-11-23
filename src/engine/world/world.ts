@@ -141,7 +141,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   }
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
-  walkways(graph, zones, outskirts, east, south, belt);
+  walkways(graph, zones, outskirts, east, south, belt, park);
   // walkers spend a while off screen on the long walks to and from the world's edges, so more of them
   crowd.targetPeople = Math.round(32 * density);
   crowd.targetRobots = Math.round(28 * density);
@@ -150,7 +150,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [park.ground, belt.ground, west.ground], [south.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, west.ground], [south.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

@@ -7,14 +7,17 @@ import type { Activity, Env } from '../activities/activity';
 import { Looper } from '../activities/looper';
 import { C } from '../core';
 import { box, type Ctx, type R } from '../draw';
-import { groundPoly } from '../ground';
+import { groundPoly, lineW } from '../ground';
+import type { WalkGraph } from '../people/crowd';
 import { Walker } from '../people/walker';
 import type { Sprites } from '../sprites';
 import { BoxItem, FnItem, TreeItem } from '../statics';
 
 export interface StaffPark {
   acts: Activity[];
-  /** the pond, painted into the cached ground layer */
+  /** the path round the pond and across the park: from the main path at (119, 27.5) to the north belt's at y −47 */
+  walks(g: WalkGraph, from: number, to: number): void;
+  /** the pond and its paths, painted into the cached ground layer */
   ground(ctx: Ctx): void;
 }
 
@@ -111,7 +114,7 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   const acts: Activity[] = [new Looper(env, 'person', stroll(0), ring[0].x, ring[0].y), new Looper(env, 'person', stroll(1), ring[1].x + 0.6, ring[1].y)];
 
   // a few more staff chatting on the grass
-  for (const group of [[[127.4, -4.6], [128.6, -4.0], [127.8, -3.2]], [[134.2, 25.4], [135.3, 26.0]], [[117.8, -7.6], [118.9, -8.2]]]) {
+  for (const group of [[[125.9, -4.6], [127.1, -4.0], [126.3, -3.2]], [[134.2, 25.4], [135.3, 26.0]], [[117.8, -7.6], [118.9, -8.2]]]) {
     const cx = group.reduce((a, p) => a + p[0], 0) / group.length, cy = group.reduce((a, p) => a + p[1], 0) / group.length;
     for (const [x, y] of group) person(x, y, 'chat', cx - x, cy - y);
   }
@@ -120,11 +123,24 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   const trees: [number, number, 'tree' | 'tree2' | 'poplar' | 'small', number][] = [
     [104, -16, 'tree', 1], [117, -18.5, 'tree2', 1], [121.5, -14, 'small', 0.9], [136.5, -17, 'tree', 1],
     [137.6, -8, 'poplar', 0.95], [137.8, 2, 'tree2', 0.9], [133, 14, 'tree', 1], [138, 11, 'small', 0.85],
-    [124, 32.6, 'tree2', 0.9], [138, 32.5, 'poplar', 0.9], [131.5, -2.5, 'small', 0.85], [116.5, 7.5, 'small', 0.8],
+    [124, 32.6, 'tree2', 0.9], [138, 32.5, 'poplar', 0.9], [134, -1, 'small', 0.85], [116.5, 7.5, 'small', 0.8],
   ];
   trees.forEach(([x, y, k, s], i) => S.push(new TreeItem(sprites, x, y, k, s, 80 + i * 1.3)));
 
+  // the path: off the main path, onto the ring round the pond (the strollers' ring) on its south-west side, off it
+  // on the north-east and on north to the north belt's path
+  const IN = [[119, 27.5], [120, 19], [ring[4].x, ring[4].y]];
+  const OUT = [[ring[9].x, ring[9].y], [130.6, -6], [133, -22], [133, -47]];
   const ground = (ctx: Ctx) => {
+    ctx.strokeStyle = pal.plaza;
+    ctx.lineWidth = 1.1;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (const line of [IN, OUT]) for (let i = 1; i < line.length; i++) lineW(ctx, line[i - 1][0], line[i - 1][1], 0, line[i][0], line[i][1], 0);
+    groundPoly(ctx, ellipse(fx, fy, 6.6, 5.0, 40));
+    ctx.stroke();
+    ctx.lineCap = 'butt';
     // the pond with a paved rim
     ctx.fillStyle = pal.water;
     ctx.strokeStyle = pal.plaza;
@@ -136,5 +152,12 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
     ctx.stroke();
   };
 
-  return { acts, ground };
+  const walks = (g: WalkGraph, from: number, to: number) => {
+    const ids = ring.map((p) => g.node(p.x, p.y, false, 0.5));
+    for (let i = 0; i < ids.length; i++) g.link(ids[i], ids[(i + 1) % ids.length]);
+    g.chain([from, g.node(120, 19), ids[4]]);
+    g.chain([ids[9], g.node(130.6, -6), g.node(133, -22), to]);
+  };
+
+  return { acts, ground, walks };
 }
