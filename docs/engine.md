@@ -52,8 +52,9 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   north end with rocks on its shores and in the water (`pal.rock`), the park's path going round its east side, and `southLawn.ts` the café south of
   the street (a kiosk whose door is a walkway portal, tables with staff at them), with benches and
   trees; `northBelt.ts` a lawn with rows of trees and a path along y −47 north of the yard, the Megapacks and the
-  staff park, from the avenue's pavements out past the top-left edge and to the east road; `stuntPad.ts` an Easter egg in a clearing of the north belt north of the Megapacks: every 20 s a roadster
-  lifts on its thrusters and does a spin, a barrel roll or a corkscrew for a ring of Optimus (its jets drawn with
+  staff park, from the avenue's pavements out past the top-left edge and to the east road; `stuntPad.ts` an Easter egg in a clearing of the north belt north of the Megapacks: three roadsters take turns
+  for a ring of Optimus, each with its own trick (a spin, a barrel roll or a corkscrew): every 20 s the last drives off
+  the circle to a free spot and the next reverses on (its jets drawn with
   `drawJets` on a vehicle-shaped object; the pad and its driveway off the avenue are part of the road outline,
   `padRoad`, so they are kerbed as one with rounded corners, and `padMarks` paints its circles after the roads), `parkLamps.ts` low lamps along the park paths that glow at night and paint
   pools of light into the ground layer; `farWest.ts` a second
