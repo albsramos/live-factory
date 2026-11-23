@@ -26,7 +26,7 @@ import { Roadsters } from '../activities/roadster';
 import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
 import { CarrierYard } from '../activities/carrierYard';
-import { CarrierDepot, DEPOT_NOSE } from '../activities/carrierDepot';
+import { CarrierDepot, DEPOT_NOSE, LANE_REF, LANE_Y } from '../activities/carrierDepot';
 import { charger } from './chargers';
 import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
@@ -147,13 +147,12 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   carriers.seed(1, 4);
   carriers.park([37.2, 41.6, 28.4, 24.2, 20.0, 15.8, 11.6]);
   acts.push(carriers);
-  // the carrier depot east of the avenue: carriers charging nose-in, now and then one leaving and one coming in, on a
-  // stream of its own; a charger beside each cab, its cable to a port on the cab's side, and both out of the way of
-  // the trailers that cut the corner across the spots north of their own (measured: they come no further east than
-  // x 82.8 there)
+  // the carrier depot east of the avenue: carriers parked ready to go, and a charging lane that carriers come into
+  // from the east road now and then, on a stream of its own; a charger beside each parked cab, its cable to a port
+  // on the cab's side, and one by the lane's spot, north of the cab, both clear of the trailers cutting the corners
   const depot = new CarrierDepot(env, makeRng(opts.seed * 3191 + 107));
-  for (const [k, dwell] of [[1, 25], [2, 120], [3, 200]]) depot.seed(k, dwell);
   for (const s of depot.spots) S.push(charger(pal, DEPOT_NOSE + 3.95, s.y + 2.65, [DEPOT_NOSE + 2.75, s.y + 1.6, 1.1], s, true));
+  S.push(charger(pal, LANE_REF + 0.8, LANE_Y - 2.4, [LANE_REF - 0.4, LANE_Y - 1.3, 1.1], depot.lane));
   acts.push(depot);
   // lamps along the park paths, lit at night
   const lamps = buildParkLamps(env);

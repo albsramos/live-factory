@@ -17,6 +17,7 @@ export function Hero({ isDark }: HeroProps) {
   // wider than the scene's own shape (from about 900px), show its whole height, outskirts filling the sides; on a
   // narrower, taller screen that would leave empty ground above and below, so fill the box instead. Either way the
   // camera sits well back from the fit (two thirds of it), for most of the town; the world goes on past the frame.
+  // A little quieter than the playground's default (density 0.7), so the header reads calmer behind the title.
   const isWide = useMediaQuery('(min-width: 900px)');
   const handleTheme = () => patchSearch({ theme: isDark ? 'light' : 'dark' });
   return (
@@ -37,7 +38,7 @@ export function Hero({ isDark }: HeroProps) {
       <div className={styles.hero}>
         {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
         <div className={styles.stage}>
-          <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} isBranded />
+          <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} density={0.7} isBranded />
         </div>
 
         <div className={styles.inner}>

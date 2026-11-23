@@ -38,6 +38,11 @@
   were tried and dropped: a semi-only zone over the bend (grouped with the merge, plaza and crosswalk zones beside
   it, it locked the whole corner) and holding the bay truck until the stretch was quiet (it cost truck runs, and a
   charging-lot car pulling out ahead of it still set the loop off).
+- Don't let a semi stand in a junction waiting for a zone past it: the yard's semis leaving south take the junction
+  only together with the zebra 30 m beyond it (`groupGap` on their last leg, which widens the gap within which a
+  leg's zones are reserved together). Without it, a semi stood in the junction waiting for that zebra while a
+  northbound car stood on the zebra waiting for the junction, until the deadlock breaker let cars drive through each
+  other (check:sim, a few runs in sixteen once the town's timing shifted).
 - A vehicle keeps a zone until no part of its footprint (the box round its turned outline, plus 0.3 m) is in it, so
   a long trailer holds a crossing until it has fully passed, and lets go as soon as it has.
 - Where two movements of one car park share a driveway, tag their legs (`tag: 'in'` / `'out'`, as `StallLot` does)
@@ -69,19 +74,18 @@
   west of the cars' way up and 3 m short of their way out from behind the factory. They are scenery, not traffic
   (`CarrierYard.park`); nothing that moves comes within 0.8 m of them.
 
-- The carrier depot (`activities/carrierDepot.ts`), east of the avenue north of the second compute hall: four spots
-  (y −36, −31.6, −27.2, −22.8), carriers parked nose-in facing the avenue (noses at x 81) at chargers. A leaver pulls
-  out and turns right onto the northbound lane; a newcomer comes up that lane from y 175, stops 20 m past its spot and
-  backs in along the same curve (`backingTrack`). Pulling out, a trailer cuts the corner across every spot north of
-  its own (no further east than x 82.8, so the chargers stand beyond that, x 84.5–85.4), so the spots work as a stack:
-  only the north-most carrier leaves, a newcomer takes the spot just north of it, and one carrier moves at a time.
-  The trailers sweep the east pavement from y −58.4 to −20.8: walkers cross that stretch as one crossing (`DC`,
-  nodes at y −63.4 and −19.2), and the north belt's path starts beside it (x 80.6) rather than on it. Each spot has
-  its own 25 m stretch of the northbound lane (`truckZone`, keyed `semi` only for legs tagged `depot<k>`): a carrier
-  waits for it to be empty of cars, and cars then leave it to the carrier. Backing in holds the lane for some 20 s,
-  and the queue behind it can reach back to the junction's exit (y 37) at worst; the carriers charge 6 to 9 minutes,
-  so that happens rarely (a faster, busier depot once let the queue meet the robotaxis pulling out by the junction).
-  check:sim 60 passed eight runs in a row after that.
+- The carrier depot (`activities/carrierDepot.ts`), east of the avenue north of the second compute hall: four full
+  carriers parked nose-in facing the avenue (noses at x 81, y −36 to −22.8), scenery rather than traffic, and a
+  charging lane along the depot's north edge (y −41.8). About every two minutes a carrier comes in from the right:
+  down the east road's southbound lane from off the top edge, right onto a service road along y −52.5 (that turn is
+  beyond the edge of every view), down a bend north of the lake to the lane, where it charges; then right onto the
+  avenue's northbound lane and off north. Nothing comes up the avenue or crosses a lane, and one carrier is in the
+  depot at a time. Turning out, the trailer sweeps the avenue's east pavement from y −64.6 to −39.9 (crossed as one,
+  `DC`, nodes at y −67.4 and −38) and reaches x 81.1 at the north belt's path, which starts east of that (x 86);
+  the bend crosses the path at a zebra (`NB3`, swept from x 105.9 to 118.1); turning off the east road, the trailer
+  sweeps its west pavement from y −61.4 to −50.9 (`depotCrossing` in eastSide.ts) and the lawn inside the corner,
+  where the north belt keeps no trees. Cars on the northbound lane leave a 28 m stretch to the carrier turning out
+  (a `truckZone` keyed `semi` only for legs tagged `depot`).
 
 - The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one every 30-45 s and one at a time, on the avenue's
   straight lanes, with a random stream of its own so the rest of the scene runs as before until it shows up. In its
