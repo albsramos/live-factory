@@ -16,7 +16,7 @@ const LAMPS = [
   // the café's lawn: along the garden walk and by the café's path
   [95, 66.9], [118, 67.4], [129.4, 80], [107.9, 62.0],
   // the north belt's path, and the corners of the stunt pad
-  [52, -45.7], [64, -45.7], [84, -45.7], [116, -45.7], [130, -45.7], [82.4, -48.6], [103.6, -65.5],
+  [52, -45.7], [46, -48.3], [84, -45.7], [116, -45.7], [130, -45.7], [82.4, -48.6], [103.6, -65.5],
 ];
 
 function lamp(r: R, x: number, y: number, env: Env) {

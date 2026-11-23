@@ -15,7 +15,8 @@
   lamp slots) redo it when `pal.generation` moves on (`Walker.recolor`, `recolor` in `traffic/vehicleItem.ts`). Box edges take
   `CLAY_EDGE`, which `edgeColor` resolves by theme.
 - Vehicles: the SUV (every car on the road and in the car parks), the pickup, the robotaxi pod and van, the roadster
-  and the semi. Colours: `pal.paints` holds only the SUV's (white, silver, graphite, black); the pickup is always
+  and the semi. A semi with the role `carrier` pulls an open two-deck car carrier instead of a box
+  (`traffic/carrierMesh.ts`: its frame, the deck slots and the cars it carries, `LOADS`). Colours: `pal.paints` holds only the SUV's (white, silver, graphite, black); the pickup is always
   silver (`traffic/paints.ts`, applied by `traffic.add`); the robotaxis are gold (`pal.gold`).
 - Static scenery is baked once per size into device-pixel-aligned bitmaps (`BoxItem`, `FnItem.still()` in
   `statics.ts`); only `.live()` overlays (LEDs, status lights) draw every frame. The ground, roads and static shadows
@@ -67,7 +68,8 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   load from; both drawn on the wing's face clipped to their openings, like the entrance): thin wall and roof items
   outside the racks' boxes, so the sort always knows the racks are inside) and `megapacks`; `details.ts` windows,
   glass, solar roofs.
-- `activities/` the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop, crane, dog
+- `activities/` the scripted scenes, one per file (truck yard, the north yard's car carriers (`carrierYard.ts`, on a
+  random stream of its own, with the service roads' paving), loading bay, charging lot, robotaxi stop, crane, dog
   walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
   `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look

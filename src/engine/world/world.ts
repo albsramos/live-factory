@@ -25,6 +25,7 @@ import { TaxiStop } from '../activities/taxiStop';
 import { Roadsters } from '../activities/roadster';
 import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
+import { CarrierYard } from '../activities/carrierYard';
 import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
@@ -138,6 +139,11 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // an Easter egg in the north belt: roadsters doing tricks for a ring of Optimus, on a stream of its own
   const pad = buildStuntPad({ ...env, rng: makeRng(opts.seed * 3449 + 97) });
   acts.push(pad.act);
+  // car carriers loading new cars for delivery in the north yard, on a stream of its own
+  const carriers = new CarrierYard({ ...env, rng: makeRng(opts.seed * 2861 + 101) });
+  carriers.seed(0, 2);
+  carriers.seed(1, 4);
+  acts.push(carriers);
   // lamps along the park paths, lit at night
   const lamps = buildParkLamps(env);
   staffBreak(env);
@@ -160,7 +166,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, park.ground, lake.ground, west.ground], [south.ground, lamps.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, (ctx) => carriers.ground(ctx), park.ground, lake.ground, west.ground], [south.ground, lamps.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

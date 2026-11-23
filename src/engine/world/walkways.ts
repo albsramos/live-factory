@@ -12,7 +12,7 @@ import { ENTRANCE_DOOR } from './entrance';
 
 /** The walkway graph: both pavements of the avenue and the street, the crossings, the plaza, the parks and the doors. */
 export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east: EastSide, south: SouthLawn, belt: NorthBelt, park: StaffPark) {
-  const { CW1, CW3, CW4, CW5, YE, YG, LD, LE } = z;
+  const { CW1, CW3, CW4, CW5, YE, YG, LD, LE, NB, NB2 } = z;
   const aw = [g.node(66.5, -120, true), g.node(66.5, 4), g.node(66.5, 34.5), g.node(66.5, 40.5), g.node(66.5, 51.5), g.node(66.5, 66), g.node(66.5, 81.5), g.node(66.5, 96), g.node(66.5, 175, true)];
   const awExit = g.node(66.5, 29.8);
   // either side of the yard gate
@@ -85,7 +85,7 @@ export function walkways(g: WalkGraph, z: RoadZones, outskirts: Outskirts, east:
   // the car park's and the staff park's walks
   const parkPath = outskirts.walks(g, houseWalk[2], sne[1]);
   const eastRoad = east.walks(g, { north: sne[1], south: sse[2], park: parkPath.end });
-  const beltPark = belt.walks(g, { west: awBelt, east: aeBelt, eastRoad });
+  const beltPark = belt.walks(g, { west: awBelt, east: aeBelt, eastRoad }, [NB2, NB]);
   // round the pond and up to the north belt
   park.walks(g, parkPath.branch, beltPark);
   const pd = g.node(88.6, 38.8, true);

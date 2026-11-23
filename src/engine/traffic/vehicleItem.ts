@@ -10,6 +10,7 @@ import type { Vehicle } from './vehicle';
 import { drawDoors } from './doors';
 import { drawJets } from './exhaust';
 import { ROLL_Z } from './hop';
+import { carrierReach, drawCarrier } from './carrierMesh';
 
 /** After a theme change, the colours its mesh slots copied out of the palette (its materials recolour themselves). */
 function recolor(v: Vehicle) {
@@ -34,7 +35,12 @@ export class VehicleItem implements Item {
   constructor(readonly v: Vehicle, readonly part: 0 | 1) {}
 
   bounds() {
-    const b = this.v.bodies[this.part];
+    let b = this.v.bodies[this.part];
+    if (this.part === 1 && this.v.role === 'carrier') {
+      // its overhang, or a car on its way up the ramp, reaches back past the trailer's box
+      const k = carrierReach(this.v) / 2;
+      b = { ...b, x: b.x - b.hx * k, y: b.y - b.hy * k, hl: b.hl + k };
+    }
     const ex = Math.abs(b.hx) * b.hl + Math.abs(b.hy) * b.hw;
     const ey = Math.abs(b.hy) * b.hl + Math.abs(b.hx) * b.hw;
     let x0 = b.x - ex, x1 = b.x + ex, y0 = b.y - ey, y1 = b.y + ey;
@@ -59,7 +65,7 @@ export class VehicleItem implements Item {
       this.y1 += r;
     }
     this.z0 = Math.max(0, this.v.z - (this.v.z > 0 ? 0.4 : 0));
-    this.z1 = this.v.z + (this.part === 1 ? 4.1 : this.v.h + (this.v.roll === 0 ? 0 : 0.5));
+    this.z1 = this.v.z + (this.part === 1 ? (this.v.role === 'carrier' ? 4.65 : 4.1) : this.v.h + (this.v.roll === 0 ? 0 : 0.5));
   }
 
   draw(r: R) {
@@ -141,6 +147,7 @@ function drawTrailer(r: R, v: Vehicle) {
   const hx = v.thx, hy = v.thy;
   // the tractor's frame behind the cab, which the trailer rides over (it keeps the tractor's own heading)
   drawMesh(r, MESH.chassis, v.x, v.y, 0, v.hx, v.hy, v.mats);
+  if (v.role === 'carrier') return drawCarrier(r, v, kx, ky, hx, hy);
   drawMesh(r, MESH.trailer, kx, ky, 0, hx, hy, v.mats);
   const open = v.door; // curtain side: 0 closed … 1 rolled up
   if (open <= 0.01) return;

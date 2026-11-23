@@ -47,14 +47,18 @@ any other React setup.
 
 - **Traffic**: sleek crossovers in white, silver, graphite or black, a silver angular pickup, two-seat robotaxis and
   a robovan drive a small road network. They stop at an invisible signal at the junction, give way to people already
-  on the zebra crossings, and hold back while a truck pulls out. Semis only come for the yard and the loading bay,
-  so there are never more than two at once.
+  on the zebra crossings, and hold back while a truck pulls out. Semis only come for the yard and the loading bay
+  (and the car carriers keep to their own roads in the north), so there are never more than two on the streets.
 - **Truck yard**: a semi turns in off the avenue, drives down the yard lane past one of the two docks, then backs in
   with the trailer swinging round. It loads under a green dock lamp, pulls out, and backs into the charging bay
   beside the docks, charges, then pulls out across the yard and turns onto the avenue once there's a gap. Every spot
   a semi parks has its own slim white charger on a kerbed island the trucks can't drive over (with a battery bank
   beside the bay); while a semi is parked there, the cable to its cab glows green. The next semi can load while one charges. People on the pavement wait at the yard's gate and exit while a semi crosses,
   well clear of where its trailer swings, and the same goes for the charging lot's driveways.
+- **Car carriers**: in the north yard, out at the top of wide views, two-deck car carriers load new crossovers for
+  delivery. Each comes down a service road from the north and stops in one of two lanes; the cars drive out from
+  behind the factory and up its ramp, the upper deck first. Full, it drives on and back north up a second road,
+  with walkers on the north belt's path waiting at the zebras.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots in a white or champagne shell, with a black glass head ringed by a thin light line and
@@ -250,8 +254,8 @@ Every push to `main` rebuilds the demo website and publishes it to GitHub Pages 
   actuated signal at the junction. Only the front vehicle of a queue reserves, and a semi reserves everything within
   a truck length at once, so it never waits with its trailer across a lane.
 - `engine/people/`: people and robots, with a walk cycle and a walkway graph to wander.
-- `engine/activities/`: the scripted scenes, one per file (truck yard, loading bay, charging lot, robotaxi stop,
-  crane, dog walk), and car parks whose cars come and go.
+- `engine/activities/`: the scripted scenes, one per file (truck yard, car carriers, loading bay, charging lot,
+  robotaxi stop, crane, dog walk), and car parks whose cars come and go.
 - `engine/world/`: the layout: ground plan, buildings, props, routes and walkways, and the outskirts beyond the
   classic frame, for wide views.
 - `engine/lights.ts`: headlight beams, tail lights and lamp glints at night.

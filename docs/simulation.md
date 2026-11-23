@@ -56,6 +56,15 @@
   Each parking spot's charger, and the battery bank, stand on kerbed islands outside every sweep. After changing the yard, record
   the semis' bodies over 30 minutes and check that nothing fixed lies in them (the island, the platform, the batteries).
 
+- The north yard (`activities/carrierYard.ts`): car carriers come down a service road at x 34 from the north,
+  stop in one of two lanes (y −38.5 and −29.5) and leave north up a second road at x 62.5; neither touches the
+  avenue. New cars are scripted, not traffic: they start behind the factory (hidden by it in every view), drive up
+  the west side (x 32.5) and onto a ramp. One thing moves in the yard at a time (a mutex for carriers coming and
+  going and the cars), and the south lane's carrier leaves only when the north lane is empty, since its trailer cuts
+  the corner across the north lane's cab. The trailers cut deep into the corners north of the lanes, out to y −46 at
+  x 38 and x 57 at the north belt's path: the paving, the zebra zones (`NB`, `NB2` in `world/roads.ts`) and their
+  walkway nodes cover that, and the north belt keeps its trees and lamps out of it.
+
 - The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one every 30-45 s and one at a time, on the avenue's
   straight lanes, with a random stream of its own so the rest of the scene runs as before until it shows up. In its
   take-off stretch it lifts off once it is moving with room ahead, or standing in a queue (it hops over it). From
