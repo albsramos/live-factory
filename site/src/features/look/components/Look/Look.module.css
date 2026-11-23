@@ -16,7 +16,6 @@
   --look-built: linear-gradient(180deg, #f6d68e, #d9a440);
   --look-title: linear-gradient(180deg, #ffffff 30%, #f6dca0 100%);
   --look-eyebrow: #f2c76b;
-  --look-glow: rgb(242 199 107 / 0.16);
   --look-cta: #f2c76b;
   --look-cta-fg: #1a1409;
   --look-ghost: rgb(232 233 238 / 0.28);
@@ -50,7 +49,6 @@
   --look-built: linear-gradient(180deg, #e9b949, #c98f1c);
   --look-title: linear-gradient(180deg, #1d1e23 35%, #7a5a12 100%);
   --look-eyebrow: #8a6410;
-  --look-glow: rgb(224 165 38 / 0.18);
   --look-cta: #1d1e23;
   --look-cta-fg: #ffffff;
   --look-ghost: rgb(29 30 35 / 0.25);

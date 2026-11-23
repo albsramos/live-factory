@@ -22,7 +22,7 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   "Possible look" button: the scene as the header (branded), seen through a soft oval (a CSS mask: two linear fades
   and an ellipse that rounds their corners) that melts into the page well before every edge, a little darker behind
   the title on its left (each fade eases in over several stops, with no line where it starts), then stat cards that rise 64px into its lower edge. The header is compact, about two fifths of the window's height (`max(380px, 40vh)`, 400 px on a 16" MacBook at
-  100%), its title on one line; the title block sits on a soft pool of the page's colour under its warm glow. The
+  100%), its title on one line; the title block sits on a soft pool of the page's colour. The
   scene runs the header's height down to just under the cards' top, and from 900px wide it is
   `contain` (its whole height, outskirts filling the sides), so the bottom of the frame, the robotaxi stop and the
   crossing, stays in view; narrower, `cover`, which would otherwise leave empty ground above and below. Either way the
@@ -31,8 +31,8 @@ A Vite + React app; `npm run dev` serves it, `npm run build:site` builds `site-d
   the page says so; the title and place are left as `[Factory name]` and `[City, Country]`. Its palette is its own
   (`--look-*` in `Look.module.css`, night and day), switched by the theme in the URL (`auto` follows the computer).
   The content (the bar, the title and the cards) stops at 900 px wide (`--look-max`), with a gutter either side that
-  grows with the screen (`--look-gutter`, 24–96 px); the scene's oval spans the whole width. The title's warm glow is drawn on the
-  title block, so it stays behind the title at any width.
+  grows with the screen (`--look-gutter`, 24–96 px); the scene's oval spans the whole width. That pool is drawn on the title block, so it
+  stays behind the title at any width.
 - `src/shared/ui/` domain-free primitives (Button, LinkButton, Segmented, Slider) in the plain neutral look of shadcn/ui: a
   near-black primary (near-white at night), grey tabs and tracks, no accent colour. `src/shared/lib/` hooks and
   helpers. Tokens are in `src/styles/tokens.css` (light and dark).
