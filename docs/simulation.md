@@ -67,7 +67,8 @@
   pulling away, since one waiting below may set off as it flies over; a semi counts from higher up) and every zone it
   comes down in, or reaches within its stopping room, would let it in (`Zone.wouldGrant`, which doesn't queue). It
   takes those zones as it starts down, like a car arriving, so a hub car waits rather than merging under it.
-  Otherwise it flies on off the edge. The checks ignore a vehicle that is above another or above people.
+  Otherwise it flies on off the edge. Northbound, it sets down before the charging hub's driveway (y 16): a car
+  turning in there or pulling out isn't in the landing check's forecast, and once came down on one. The checks ignore a vehicle that is above another or above people.
 
 ## People
 

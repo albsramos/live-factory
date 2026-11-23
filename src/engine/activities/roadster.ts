@@ -18,7 +18,9 @@ const LANES = [
   // before the crossing by the robotaxi stop, or past it
   { path: Path.poly([[70, -120], [70, 175]], []), takeoff: [112, 132] as [number, number], land: [162, 218] as [number, number] },
   // northbound: lifts off beside the robotaxi stop and flies over the junction and the crossing north of it
-  { path: Path.poly([[74, 175], [74, -120]], []), takeoff: [105, 117] as [number, number], land: [145, 197] as [number, number] },
+  // (it sets down before the charging hub's driveway, y 16: a car turning in or pulling out there isn't in the landing
+  // check's forecast)
+  { path: Path.poly([[74, 175], [74, -120]], []), takeoff: [105, 117] as [number, number], land: [140, 158.5] as [number, number] },
 ];
 
 export class Roadsters implements Activity {
