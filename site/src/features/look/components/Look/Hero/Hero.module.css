@@ -7,7 +7,22 @@
   flex-direction: column;
 }
 
-/* runs nearly the header's full height, ending just under the top of the stat cards (which rise 64px into it) */
+/* the navigation's own band, solid white by day and black at night, a hairline under it; the scene stays below */
+.nav {
+  position: relative;
+  background: var(--look-nav);
+  border-block-end: 1px solid var(--look-line);
+}
+
+/* everything under the navigation: the scene, the shade behind the title, and the title */
+.hero {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* runs nearly the hero's full height, ending just under the top of the stat cards (which rise 64px into it) */
 .stage {
   position: absolute;
   inset: 0 0 56px;
@@ -94,7 +109,7 @@
 
 .inner {
   flex: 1;
-  padding-block: 8px 88px;
+  padding-block: 20px 88px;
   display: flex;
   flex-direction: column;
   justify-content: center;

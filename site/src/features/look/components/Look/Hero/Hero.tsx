@@ -8,7 +8,7 @@ interface HeroProps {
 }
 
 /**
- * The header: the live scene behind everything, seen through a soft oval that melts into the page before every edge,
+ * The header: the navigation on a solid band of its own, then the live scene, seen through a soft oval that melts into the page before every edge,
  * a little darker behind the title on the left. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
  * happens at the bottom of the frame (the robotaxi stop, the crossing) stays in view. The shade behind the title is drawn on the title
  * block itself, so it stays behind it at any width.
@@ -21,33 +21,38 @@ export function Hero({ isDark }: HeroProps) {
   const handleTheme = () => patchSearch({ theme: isDark ? 'light' : 'dark' });
   return (
     <header className={styles.root}>
-      {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
-      <div className={styles.stage}>
-        <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} isBranded />
+      {/* the navigation sits on a solid band of its own; the scene starts below it */}
+      <div className={styles.nav}>
+        <nav className={styles.bar} aria-label="Site">
+          <a className={styles.brand} href="./">Live Factory</a>
+          <div className={styles.actions}>
+            <button type="button" className={styles.chip} onClick={handleTheme}>
+              {isDark ? 'Light' : 'Dark'}
+            </button>
+            <a className={styles.chip} href="./">Back to the playground</a>
+          </div>
+        </nav>
       </div>
-      <div className={styles.fadeSide} />
 
-      <nav className={styles.bar} aria-label="Site">
-        <a className={styles.brand} href="./">Live Factory</a>
-        <div className={styles.actions}>
-          <button type="button" className={styles.chip} onClick={handleTheme}>
-            {isDark ? 'Light' : 'Dark'}
-          </button>
-          <a className={styles.chip} href="./">Back to the playground</a>
+      <div className={styles.hero}>
+        {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
+        <div className={styles.stage}>
+          <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} isBranded />
         </div>
-      </nav>
+        <div className={styles.fadeSide} />
 
-      <div className={styles.inner}>
-        <div className={styles.copy}>
-          <p className={styles.eyebrow}>
-            <span className={styles.live} aria-hidden="true" />
-            Live · [City, Country]
-          </p>
-          <h1 className={styles.title}>[Factory name]</h1>
-          <p className={styles.lede}>Every car, robot and truck on the site, running right now. The day so far, in numbers, just below.</p>
-          <div className={styles.ctas}>
-            <a className={styles.primary} href="#numbers">See today’s numbers</a>
-            <a className={styles.ghost} href="./">Open the playground</a>
+        <div className={styles.inner}>
+          <div className={styles.copy}>
+            <p className={styles.eyebrow}>
+              <span className={styles.live} aria-hidden="true" />
+              Live · [City, Country]
+            </p>
+            <h1 className={styles.title}>[Factory name]</h1>
+            <p className={styles.lede}>Every car, robot and truck on the site, running right now. The day so far, in numbers, just below.</p>
+            <div className={styles.ctas}>
+              <a className={styles.primary} href="#numbers">See today’s numbers</a>
+              <a className={styles.ghost} href="./">Open the playground</a>
+            </div>
           </div>
         </div>
       </div>

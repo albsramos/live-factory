@@ -2,6 +2,7 @@
    Its parts read these properties, so the theme switches in one place. */
 .root {
   --look-bg: #0e0f12;
+  --look-nav: #000000;
   --look-fade: 14 15 18;
   --look-fg: #e8e9ee;
   --look-sub: #c6c8d0;
@@ -37,6 +38,7 @@
 
 .root[data-theme="light"] {
   --look-bg: #f4f4f6;
+  --look-nav: #ffffff;
   --look-fade: 244 244 246;
   --look-fg: #1d1e23;
   --look-sub: #3f414a;
