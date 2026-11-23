@@ -68,7 +68,7 @@
 /* the stat cards rise into the scene's faded lower edge */
 .overlap {
   position: relative;
-  margin-block-start: -120px;
+  margin-block-start: -64px;
 }
 
 .note {
