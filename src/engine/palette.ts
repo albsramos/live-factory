@@ -12,6 +12,12 @@ export interface Palette {
   plaza: string;
   /** the small park's grass, a breath greener than the plaza */
   lawn: string;
+  /** the staff park's pond, and the light on its ripples */
+  water: string;
+  waterHi: string;
+  /** flower beds: the earth, and the flowers' colours */
+  soil: string;
+  flowers: string[];
   road: string;
   roadLine: string;
   curbHi: string;
@@ -96,6 +102,10 @@ export function lightPalette(): Palette {
     pad: '#e4e4e9',
     plaza: '#efeff2',
     lawn: '#d5e2cf',
+    water: '#c3d5e1',
+    waterHi: '#eef4f8',
+    soil: '#d8d1c4',
+    flowers: ['#f0a3b6', '#f3cd68', '#b6a0e2', '#fbf8f1', '#ee8d6a'],
     road: '#dcdce2',
     roadLine: '#f6f6f8',
     curbHi: '#f9f9fb',
@@ -169,6 +179,10 @@ export function darkPalette(): Palette {
     pad: '#1f2026',
     plaza: '#1d1e23',
     lawn: '#1e2c22',
+    water: '#18252f',
+    waterHi: '#3a5568',
+    soil: '#272420',
+    flowers: ['#8a4c5c', '#8a7638', '#5e5180', '#77766f', '#86503c'],
     road: '#141519',
     roadLine: '#3a3c44',
     curbHi: '#2c2e35',
