@@ -42,7 +42,8 @@ export function Hero({ isDark }: HeroProps) {
 
         <div className={styles.inner}>
           <div className={styles.copy}>
-            <h1 className={styles.title}>GFBB Berlin</h1>
+            <p className={styles.eyebrow}>GFBB Berlin</p>
+            <h1 className={styles.title}>Factory</h1>
             <p className={styles.lede}>Every car, robot and truck on the site, running right now. The day so far, in numbers, just below.</p>
             <div className={styles.ctas}>
               <a className={styles.primary} href="#numbers">See today’s numbers</a>
