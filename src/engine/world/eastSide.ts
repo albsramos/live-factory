@@ -31,7 +31,8 @@ export interface EastSide {
   marks(ctx: Ctx): void;
   litFaces: LitFace[];
   /** pavements both sides of the road, joined to the street's pavements and the staff park's path */
-  walks(g: WalkGraph, ends: { north: number; south: number; park: number }): void;
+  /** returns the west pavement's node at the north belt's path (y −47), for the path to join */
+  walks(g: WalkGraph, ends: { north: number; south: number; park: number }): number;
 }
 
 // the road, its lanes and where people cross it
@@ -169,10 +170,10 @@ export function buildEastSide(env: Env, sprites: Sprites, edge: string, density:
   const walks = (g: WalkGraph, ends: { north: number; south: number; park: number }) => {
     // west pavement: from beyond the north edge down past the staff park's path to the street corner, and on south
     // of the street past the bottom edge; people cross the road at the zebras
-    const w = [g.node(WEST, -120, true), g.node(WEST, 18), g.node(WEST, 34.5), g.node(WEST, 40.5)];
+    const w = [g.node(WEST, -120, true), g.node(WEST, -47), g.node(WEST, 18), g.node(WEST, 34.5), g.node(WEST, 40.5)];
     g.chain(w);
-    g.link(ends.park, w[1]);
-    g.link(ends.north, w[3]);
+    g.link(ends.park, w[2]);
+    g.link(ends.north, w[4]);
     const ws = [g.node(WEST, 51.5), g.node(WEST, 57.5), g.node(WEST, 175, true)];
     g.chain(ws);
     g.link(ends.south, ws[0]);
@@ -187,8 +188,9 @@ export function buildEastSide(env: Env, sprites: Sprites, edge: string, density:
     // south of the street, the east pavement runs from the zebra out east past the edge
     const es = [g.node(EAST, 57.5), g.node(EAST, 51.5), g.node(230, 51.5, true)];
     g.chain(es);
-    g.link(w[2], e2[1], north);
+    g.link(w[3], e2[1], north);
     g.link(ws[1], es[0], south);
+    return w[1];
   };
 
   return { acts: [hub], spawn, road, ground, marks, litFaces, walks };

@@ -29,6 +29,7 @@ import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
 import { buildSouthLawn } from './southLawn';
+import { buildNorthBelt } from './northBelt';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
@@ -123,6 +124,8 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(...park.acts);
   // a café, its tables and its garden in the park south of the street, on a stream of its own
   const south = buildSouthLawn({ ...env, rng: makeRng(opts.seed * 6143 + 67) }, sprites, edge);
+  // a belt of trees and a path north of the yard, the Megapacks and the staff park, on a stream of its own
+  const belt = buildNorthBelt({ ...env, rng: makeRng(opts.seed * 5303 + 71) }, sprites, edge);
   staffBreak(env);
   // dock and yard robots
   // two take boxes from inside the factory, through the open garage between the second dock and the bay
@@ -134,7 +137,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   }
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
-  walkways(graph, zones, outskirts, east, south);
+  walkways(graph, zones, outskirts, east, south, belt);
   // walkers spend a while off screen on the long walks to and from the world's edges, so more of them
   crowd.targetPeople = Math.round(32 * density);
   crowd.targetRobots = Math.round(28 * density);
@@ -143,7 +146,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [park.ground], [south.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [park.ground, belt.ground], [south.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);
