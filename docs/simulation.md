@@ -63,9 +63,11 @@
   going and the cars), and the south lane's carrier leaves only when the north lane is empty, since its trailer cuts
   the corner across the north lane's cab. The trailers cut deep into the corners north of the lanes, out to y −46 at
   x 38 and x 57 at the north belt's path: the paving, the zebra zones (`NB`, `NB2` in `world/roads.ts`) and their
-  walkway nodes cover that, and the north belt keeps its trees and lamps out of it. Two more full carriers stand
-  parked side by side on the west side (x 37.2 and 41.6, facing north, y −26 to −7), between the cars' way up and
-  the Megapacks and south of the entry turn's sweep; they are scenery, not traffic (`CarrierYard.park`).
+  walkway nodes cover that, and the north belt keeps its trees and lamps out of it. Seven more full carriers stand
+  parked side by side, facing north, y −26 to −7: two on the west side (x 37.2 and 41.6), between the cars' way up
+  and the Megapacks and south of the entry turn's sweep, and a row of five north of the factory (x 11.6 to 28.4),
+  west of the cars' way up and 3 m short of their way out from behind the factory. They are scenery, not traffic
+  (`CarrierYard.park`); nothing that moves comes within 0.8 m of them.
 
 - The roadster (`activities/roadster.ts`, `traffic/hop.ts`): one every 30-45 s and one at a time, on the avenue's
   straight lanes, with a random stream of its own so the rest of the scene runs as before until it shows up. In its

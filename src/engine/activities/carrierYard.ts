@@ -106,8 +106,10 @@ export class CarrierYard implements Activity {
   }
 
   /**
-   * Full carriers parked side by side on the west side at `xs`, facing north: between the cars' way up (x 32.5) and
-   * the Megapacks, south of where the carriers swing into the south lane.
+   * Full carriers parked side by side at `xs`, facing north, their cabs at y −26 and their tails at y −7: on the yard's
+   * west side, between the cars' way up (x 32.5) and the Megapacks, south of where the carriers swing into the south
+   * lane; and in a row north of the factory, west of the cars' way up and the service road, their tails 3 m short of
+   * the cars' way out from behind the factory (y −3).
    */
   park(xs: number[]) {
     const { traffic, pal } = this.env;
@@ -222,6 +224,8 @@ export class CarrierYard implements Activity {
     ctx.beginPath();
     for (const x of [ROAD_X, EXIT_X]) groundRect(ctx, x - 2.6, -130, x + 2.6, -39);
     groundRect(ctx, 10, -5.2, 31, -0.8);
+    // the row of parked carriers north of the factory
+    groundRect(ctx, 9.4, -28.4, 31, -5.2);
     // where the trailers cut the corners, onto the lawn north of the yard
     groundPoly(ctx, [ROAD_X + 2.6, -40, ROAD_X + 2.6, -46.5, 40, -46, 46, -43.4, 52, -41.6, 54, -42.4, 56, -45, 57.3, -50, 58.3, -55, 58.3, -62, EXIT_X - 2.6, -74, EXIT_X - 2.6, -40]);
     ctx.fill();
