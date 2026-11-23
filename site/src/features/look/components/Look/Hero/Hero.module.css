@@ -1,8 +1,8 @@
 .root {
   position: relative;
   overflow: hidden;
-  /* about two fifths of the window's height (400px on a 16" MacBook at 100%), never so short the title can't fit */
-  min-block-size: max(380px, 40vh);
+  /* half the window's height (500px on a 16" MacBook at 100%), never so short the title can't fit */
+  min-block-size: max(380px, 50vh);
   display: flex;
   flex-direction: column;
 }
