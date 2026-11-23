@@ -25,6 +25,8 @@
   --look-warn: #f0a07a;
   --look-blue: #6aa7ff;
   --look-shadow: none;
+  /* the space either side of the content (bar, title, cards), growing with the screen */
+  --look-gutter: clamp(24px, 5vw, 96px);
 
   min-block-size: 100vh;
   background: var(--look-bg);
@@ -60,7 +62,7 @@
 .body {
   max-inline-size: 2000px;
   margin-inline: auto;
-  padding: 0 var(--space-5) var(--space-7);
+  padding: 0 var(--look-gutter) var(--space-7);
   display: grid;
   gap: var(--space-4);
 }
