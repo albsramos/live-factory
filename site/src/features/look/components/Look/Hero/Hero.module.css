@@ -1,7 +1,8 @@
 .root {
   position: relative;
   overflow: hidden;
-  min-block-size: clamp(600px, 54vw, 780px);
+  /* about two fifths of the window's height (400px on a 16" MacBook at 100%), never so short the title can't fit */
+  min-block-size: max(380px, 40vh);
   display: flex;
   flex-direction: column;
 }
@@ -40,10 +41,10 @@
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgb(var(--look-fade) / 0.9) 0%,
-    rgb(var(--look-fade) / 0.7) 20%,
-    rgb(var(--look-fade) / 0.3) 36%,
-    rgb(var(--look-fade) / 0) 52%
+    rgb(var(--look-fade) / 0.95) 0%,
+    rgb(var(--look-fade) / 0.8) 25%,
+    rgb(var(--look-fade) / 0.35) 42%,
+    rgb(var(--look-fade) / 0) 56%
   );
 }
 
@@ -57,7 +58,7 @@
 }
 
 .bar {
-  padding-block: var(--space-5);
+  padding-block: var(--space-4);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -66,7 +67,7 @@
 }
 
 .brand {
-  font: 600 20px / 1 var(--font-display);
+  font: 600 17px / 1 var(--font-display);
   color: var(--look-fg);
   text-decoration: none;
 }
@@ -80,9 +81,9 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  min-block-size: 44px;
-  padding: 0 var(--space-5);
-  font: 600 14px / 1 var(--font-body);
+  min-block-size: 34px;
+  padding: 0 var(--space-4);
+  font: 600 13px / 1 var(--font-body);
   color: var(--look-fg);
   text-decoration: none;
   background: var(--look-chip);
@@ -93,7 +94,7 @@
 
 .inner {
   flex: 1;
-  padding-block: 48px 104px;
+  padding-block: 8px 88px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -111,16 +112,17 @@
   position: absolute;
   inset: -45% -35% -45% -30%;
   z-index: -1;
-  background: radial-gradient(closest-side, var(--look-glow), transparent);
+  /* the warm glow over a soft pool of the page's colour, so the title reads over the lit factory */
+  background: radial-gradient(closest-side, var(--look-glow), transparent), radial-gradient(closest-side, rgb(var(--look-fade) / 0.72), transparent);
   pointer-events: none;
 }
 
 .eyebrow {
-  margin: 0 0 20px;
+  margin: 0 0 12px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font: 600 var(--text-s) / 1 var(--font-body);
+  font: 600 var(--text-xs) / 1 var(--font-body);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--look-eyebrow);
@@ -135,8 +137,8 @@
 }
 
 .title {
-  margin: 0 0 20px;
-  font: 600 clamp(48px, 7.4vw, 104px) / 0.95 var(--font-display);
+  margin: 0 0 12px;
+  font: 600 clamp(36px, 4.4vw, 56px) / 1 var(--font-display);
   letter-spacing: -0.04em;
   background: var(--look-title);
   background-clip: text;
@@ -145,9 +147,9 @@
 }
 
 .lede {
-  margin: 0 0 32px;
+  margin: 0 0 20px;
   max-inline-size: 460px;
-  font-size: var(--text-l);
+  font-size: var(--text-m);
   line-height: 1.55;
   color: var(--look-sub);
 }
@@ -162,9 +164,9 @@
 .ghost {
   display: inline-flex;
   align-items: center;
-  min-block-size: 48px;
-  padding: 0 22px;
-  font: 600 var(--text-m) / 1 var(--font-body);
+  min-block-size: 38px;
+  padding: 0 18px;
+  font: 600 var(--text-s) / 1 var(--font-body);
   text-decoration: none;
   border-radius: var(--radius-pill);
 }
