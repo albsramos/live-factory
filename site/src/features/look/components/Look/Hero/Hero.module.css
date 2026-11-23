@@ -7,10 +7,10 @@
   flex-direction: column;
 }
 
-/* the navigation's own band, solid white by day and black at night, a hairline under it; the scene stays below */
+/* the navigation's own band, in the page's own colour with a hairline under it; the scene stays below */
 .nav {
   position: relative;
-  background: var(--look-nav);
+  background: var(--look-bg);
   border-block-end: 1px solid var(--look-line);
 }
 
@@ -47,6 +47,15 @@
   inset: 0;
   block-size: 100%;
   aspect-ratio: auto;
+}
+
+/* wide, the scene's box runs on past the right edge (clipped), so the town's middle sits a fifth of the width to the
+   right and the factory's lettering clears the title; at that shape the scene keeps its scale */
+@media (min-width: 900px) {
+  .scene {
+    inset-inline-end: auto;
+    inline-size: 140%;
+  }
 }
 
 /* a little extra shade behind the title, so it reads over the busiest part of the scene */
