@@ -100,7 +100,7 @@
   justify-content: center;
 }
 
-/* the warm glow lives on the title block, so it follows the title at any width */
+/* the shade lives on the title block, so it follows the title at any width */
 .copy {
   position: relative;
   isolation: isolate;
@@ -112,8 +112,8 @@
   position: absolute;
   inset: -45% -35% -45% -30%;
   z-index: -1;
-  /* the warm glow over a soft pool of the page's colour, so the title reads over the lit factory */
-  background: radial-gradient(closest-side, var(--look-glow), transparent), radial-gradient(closest-side, rgb(var(--look-fade) / 0.72), transparent);
+  /* a soft pool of the page's colour, so the title reads over the lit factory */
+  background: radial-gradient(closest-side, rgb(var(--look-fade) / 0.72), transparent);
   pointer-events: none;
 }
 
