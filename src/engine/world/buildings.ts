@@ -10,7 +10,7 @@ import { solarRoof, windowGlow, windowsX, windowsY, type Band } from '../details
 import { BoxItem, FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
 import { charger } from './chargers';
-import { drawEntrance, entrancePillars } from './entrance';
+import { ENTRANCE, drawEntrance, entrancePillars } from './entrance';
 import { drawLettering, type Branding } from './lettering';
 import type { DockInterior } from './dockInterior';
 import { TERRACE_AREA, drawRoofTerrace, factoryFront } from './plaza';
@@ -27,8 +27,9 @@ import { carMats } from '../palette';
  */
 export function factory(env: Env, edge: string, yard: TruckYard, branding: Branding, inside: DockInterior) {
   const { pal, statics: S } = env;
-  // the ground floor, either side of the recessed entrance (entrance.ts)
-  const groundFloor: Band = { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, 7.6], [20.4, 35.5]] };
+  // the ground floor, either side of the recessed entrance (entrance.ts; u runs from the face's y 72 end)
+  const eu0 = 72 - ENTRANCE.y1, eu1 = 72 - ENTRANCE.y0;
+  const groundFloor: Band = { top: 9.2, bot: 12.7, every: 1.5, spans: [[0.5, eu0 - 0.4], [eu1 + 0.4, 35.5]] };
   const factoryBandsX: Band[] = [{ top: 1.2, bot: 3.8, every: 1.5 }, { top: 5.2, bot: 7.8, every: 1.5 }, groundFloor];
   // with the lettering on, the panel band it sits on is wider all along this face: the window ribbons above and below
   // it step back 0.4 m, so the letters have room above and below
