@@ -27,15 +27,16 @@
   position: absolute;
   inset: 0 0 56px;
   pointer-events: none;
-  /* an oval window onto the scene: clear across most of it, melting into the page before every edge, so nothing of
-     the town shows past it. A soft ellipse rounds the corners of two linear fades (across and down), the three
-     multiplied together, so the clear middle stays wide, like a stadium. Each fade eases in over several stops, so
-     there is no visible line where it starts. */
+  /* an oval window onto the scene: clear across most of it, melting into the page at the sides and the bottom, so
+     nothing of the town shows past them. At the top, under the navigation's hairline, it fades only a touch. A soft
+     ellipse hung from the top edge rounds the lower corners of two linear fades (across and down), the three
+     multiplied together, so the clear middle stays wide. Each fade eases in over several stops, with no visible line
+     where it starts. */
   --oval-x: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.12) 4%, rgb(0 0 0 / 0.42) 9%, rgb(0 0 0 / 0.78) 14%, #000 20%,
     #000 80%, rgb(0 0 0 / 0.78) 86%, rgb(0 0 0 / 0.42) 91%, rgb(0 0 0 / 0.12) 96%, transparent 100%);
-  --oval-y: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.12) 5%, rgb(0 0 0 / 0.42) 11%, rgb(0 0 0 / 0.78) 18%, #000 26%,
+  --oval-y: linear-gradient(180deg, rgb(0 0 0 / 0.85) 0%, #000 4%,
     #000 72%, rgb(0 0 0 / 0.78) 81%, rgb(0 0 0 / 0.42) 89%, rgb(0 0 0 / 0.12) 95%, transparent 100%);
-  --oval-round: radial-gradient(ellipse 62% 72% at 50% 50%, #000 55%, rgb(0 0 0 / 0.75) 72%, rgb(0 0 0 / 0.35) 86%, transparent 100%);
+  --oval-round: radial-gradient(ellipse 62% 140% at 50% 0%, #000 55%, rgb(0 0 0 / 0.75) 72%, rgb(0 0 0 / 0.35) 86%, transparent 100%);
   mask-image: var(--oval-x), var(--oval-y), var(--oval-round);
   mask-composite: intersect;
   -webkit-mask-image: var(--oval-x), var(--oval-y), var(--oval-round);
