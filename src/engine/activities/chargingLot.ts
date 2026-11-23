@@ -63,7 +63,7 @@ export class ChargingLot implements Activity {
         this.busy[i] = false;
         this.cars[i] = null;
       } },
-      { path: P([[50.5, 60.3], [46, 60.3], [46, 135]], [3]), vmax: 7 },
+      { path: P([[50.5, 60.3], [46, 60.3], [46, 200]], [3]), vmax: 7 },
     ];
   }
 
@@ -88,7 +88,7 @@ export class ChargingLot implements Activity {
     rng(); // was the sedan-or-SUV draw, kept so the seeded scene stays as it was
     const v = traffic.add('suv', pick(rng, pal.paints), [
       // wait for the lot inside its entrance, well clear of the street and of trucks swinging round the bend
-      { path: P([[50, 135], [50, 48], [60.4, 48], [60.4, 55.6]], [6, 2.5]), vmax: 7, until: (vv) => this.lot.take(vv), done: () => (this.incoming = null) },
+      { path: P([[50, 200], [50, 48], [60.4, 48], [60.4, 55.6]], [6, 2.5]), vmax: 7, until: (vv) => this.lot.take(vv), done: () => (this.incoming = null) },
       { path: P([[60.4, 55.6], [60.4, 57.5], [sx, 61.5], [sx, 64.2]], [2, 2]), vmax: 2.4, ghost: true, ...this.charge(rr(rng, 14, 30)) },
       ...this.leave(i, sx),
     ], 'lot');
@@ -116,6 +116,6 @@ export class ChargingLot implements Activity {
     // one car on its way in at a time, so nobody queues out into the street
     if (this.incoming && this.incoming.dead) this.incoming = null;
     const free = this.busy.map((b, i) => (b ? -1 : i)).filter((i) => i >= 0);
-    if (!this.incoming && free.length && this.env.traffic.clear(50, 135, 8)) this.spawn(pick(this.env.rng, free));
+    if (!this.incoming && free.length && this.env.traffic.clear(50, 200, 8)) this.spawn(pick(this.env.rng, free));
   }
 }

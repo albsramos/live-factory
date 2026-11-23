@@ -26,8 +26,9 @@ export class TaxiStop implements Activity {
     const spot = [0, 1, 2].find((i) => !used.has(i));
     if (spot === undefined) return;
     const [x, y] = this.spots[spot];
-    // newcomers walk up the pavement from below the bottom edge, so nobody appears out of thin air
-    const w = new Walker('person', pal, rng, instant ? x : 77.6, instant ? y : 88);
+    // newcomers walk up the pavement from beyond the bottom of every view (frame.ts `WORLD`), so nobody appears out
+    // of thin air
+    const w = new Walker('person', pal, rng, instant ? x : 77.6, instant ? y : 175);
     (w as Walker & { spot?: number }).spot = spot;
     if (instant) w.face(-1, 0.2);
     else w.go([{ x: 77.7, y: 80 }, { x: 80.0, y: 75.4 }, { x: 81.0, y: 68 }, { x, y, face: [-1, 0.2] }]);
@@ -49,12 +50,12 @@ export class TaxiStop implements Activity {
     const v = this.current;
     if (!v) {
       this.timer -= dt;
-      if (this.timer <= 0 && traffic.clear(74, 112, 10)) {
+      if (this.timer <= 0 && traffic.clear(74, 175, 10)) {
         this.timer = rr(rng, 12, 20);
         const van = rng() < 0.3;
         this.current = traffic.add(van ? 'van' : 'pod', pal.gold, [
           {
-            path: P([[74, 112], [74, 78], [77.5, 72.5], [77.5, van ? 64.5 : 63.4]], [4, 4]),
+            path: P([[74, 175], [74, 78], [77.5, 72.5], [77.5, van ? 64.5 : 63.4]], [4, 4]),
             vmax: 6.5,
             arrive: (vv) => {
               vv.doorTarget = 1;
@@ -62,7 +63,7 @@ export class TaxiStop implements Activity {
             },
             until: () => this.phase === 'none',
           },
-          { path: P([[77.5, van ? 64.5 : 63.4], [77.5, 60], [74, 55.5], [74, -52]], [4, 4]), vmax: 6.5 },
+          { path: P([[77.5, van ? 64.5 : 63.4], [77.5, 60], [74, 55.5], [74, -120]], [4, 4]), vmax: 6.5 },
         ]);
       }
       if (this.waiting.length < 2 && rng() < dt * 0.15) this.addWaiting(false);

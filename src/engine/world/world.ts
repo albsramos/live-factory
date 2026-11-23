@@ -123,8 +123,9 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   acts.push(new Looper(env, 'robot', () => [{ x: 51, y: -4.6, wait: 3 }, { x: 51, y: -10.5, wait: 4 }, { x: 51, y: -16.2, wait: 3 }], 51, -8));
 
   walkways(graph, zones, outskirts);
-  crowd.targetPeople = Math.round(18 * density);
-  crowd.targetRobots = Math.round(16 * density);
+  // walkers spend a while off screen on the long walks to and from the world's edges, so more of them
+  crowd.targetPeople = Math.round(32 * density);
+  crowd.targetRobots = Math.round(28 * density);
   for (let i = 0; i < crowd.targetPeople; i++) crowd.wanderer('person');
   for (let i = 0; i < crowd.targetRobots; i++) crowd.wanderer('robot');
   // however long the page stays open, the crowd never grows past half again its size

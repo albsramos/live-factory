@@ -48,6 +48,17 @@ export const ASPECT = FRAME.w / FRAME.h;
  * cropping the middle of the scene away: it keeps at least `minH` of the frame's height, up to `w` across.
  */
 export const WIDE = { w: 210, minH: FRAME.h * 0.7 };
+/**
+ * The area the town is built to fill, in design units (screen X and Y). Zooming out (`zoom` below 1) stops where a
+ * view would show past it; everything that comes and goes starts and ends outside it (see docs/simulation.md).
+ */
+export const WORLD = { x0: -150, x1: 150, y0: -5, y1: 100 };
+
+/** Whether a point on the ground (world x, y) lies inside the world box, i.e. could be in some view. */
+export function inWorld(x: number, y: number) {
+  const X = (x - y) * 0.8660254, Y = (x + y) * 0.5;
+  return X > WORLD.x0 && X < WORLD.x1 && Y > WORLD.y0 && Y < WORLD.y1;
+}
 
 /**
  * The camera for a W x H box (CSS pixels): the zoom (CSS pixels per design unit), the centre of the view and its
@@ -61,11 +72,24 @@ export function fitView(W: number, H: number, o: Pick<SceneOptions, 'fit' | 'zoo
     fw = Math.min(WIDE.w, fh * (W / H));
     fh = fw / (W / H);
   }
-  const zoom = (o.fit === 'cover' ? Math.max(W / fw, H / fh) : Math.min(W / FRAME.w, H / FRAME.h)) * o.zoom;
+  const fit = o.fit === 'cover' ? Math.max(W / fw, H / fh) : Math.min(W / FRAME.w, H / FRAME.h);
+  let zoom = fit * o.zoom;
+  // zoomed out, stop where the view would show past the built world (but never closer than the fit itself)
+  if (o.zoom < 1) zoom = Math.max(zoom, Math.min(fit, Math.max(W / (WORLD.x1 - WORLD.x0), H / (WORLD.y1 - WORLD.y0))));
   const hw = W / (2 * zoom), hh = H / (2 * zoom);
   // when cropping, slide the view towards the focal point without leaving the frame
   const slackX = Math.max(0, FRAME.w / 2 - hw), slackY = Math.max(0, FRAME.h / 2 - hh);
-  const cx = FRAME.cx + (o.focusX - 0.5) * 2 * slackX;
-  const cy = FRAME.cy + (o.focusY - 0.5) * 2 * slackY;
+  let cx = FRAME.cx + (o.focusX - 0.5) * 2 * slackX;
+  let cy = FRAME.cy + (o.focusY - 0.5) * 2 * slackY;
+  // and keep a zoomed-out view inside the world where it fits
+  if (o.zoom < 1) {
+    cx = clampIn(cx, WORLD.x0 + hw, WORLD.x1 - hw);
+    cy = clampIn(cy, WORLD.y0 + hh, WORLD.y1 - hh);
+  }
   return { zoom, cx, cy, hw, hh };
+}
+
+/** `v` kept between `lo` and `hi`; when the range is empty (a view bigger than the world), their middle. */
+function clampIn(v: number, lo: number, hi: number) {
+  return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v));
 }

@@ -5,6 +5,7 @@ import { clamp, rr } from '../core';
 import { box } from '../draw';
 import { boxShadow } from '../ground';
 import { drawMesh } from '../mesh';
+import { inWorld } from '../frame';
 import { Path } from '../path';
 import { FnItem } from '../statics';
 import { MESH } from '../traffic/meshes';
@@ -65,7 +66,7 @@ export class TruckBay implements Activity {
     const paint = rng() < 0.75 ? pal.white : pal.paints[2];
     this.truck = traffic.add('semi', paint, [
       {
-        path: P([[50, 160], [50, 130], [L, 117], [L, Y]], [6, 6]),
+        path: P([[50, 210], [50, 130], [L, 117], [L, Y]], [6, 6]),
         vmax: 5.5,
         arrive: (v) => {
           this.state = 'opening';
@@ -76,7 +77,7 @@ export class TruckBay implements Activity {
       // out across the plaza corner south of the zebra crossing, then round the bend a little outside the lane
       // centre, so the trailer cuts less of the inside corner, yet not so far out that cars coming the other way
       // round the bend see the cab in their path (the walkway rounds the corner clear of the trailer's sweep)
-      { path: P([[L, Y], [L, 75], [49.1, 62.9], [49.1, 47.1], [62, 47.1], [66, 48], [135, 48]], [4, 6, 6.9, 3, 3]), vmax: 5.5 },
+      { path: P([[L, Y], [L, 75], [49.1, 62.9], [49.1, 47.1], [62, 47.1], [66, 48], [230, 48]], [4, 6, 6.9, 3, 3]), vmax: 5.5 },
     ]);
     this.truck.mats[5] = pal.white;
     this.truck.cargo = 0;
@@ -124,7 +125,7 @@ export class TruckBay implements Activity {
     switch (this.state) {
       case 'empty':
         this.timer -= dt;
-        if (this.timer <= 0 && this.env.traffic.clear(50, 160, 16)) this.spawnTruck();
+        if (this.timer <= 0 && this.env.traffic.clear(50, 210, 16)) this.spawnTruck();
         break;
       case 'opening':
         if (t && t.door >= 1) this.state = 'loading';
@@ -144,8 +145,8 @@ export class TruckBay implements Activity {
         }
         break;
       case 'leaving':
-        // the next truck is only sent once this one has left the scene
-        if (!t || t.dead) {
+        // the next truck is only sent once this one has left the scene: gone past the edge of every view
+        if (!t || t.dead || !inWorld(t.x, t.y)) {
           this.truck = null;
           this.state = 'empty';
           this.timer = rr(this.env.rng, 4, 8);

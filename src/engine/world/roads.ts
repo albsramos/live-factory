@@ -30,6 +30,10 @@ export function roadZones(traffic: Traffic) {
   truckZone(68, 4, 72.2, 31);
   // reaching back over the plaza corner, so the bay truck waits in the bay rather than with its cab at the kerb
   truckZone(40, 52, 52, 72);
+  // where the bay truck, coming up the factory road, turns across the southbound lane into the loading bay: in
+  // view since the world grew past the classic frame (frame.ts `WORLD`), so cars wait for it rather than drive
+  // through its trailer
+  truckZone(43.4, 108, 48.6, 136);
   // where cars leaving the charging lot join the factory road: they wait for a moment with nobody in it
   const merge = traffic.zone(44, 52, 52, 63, (a, b) => a === b && a !== 'merge');
   merge.keyOf = (v) => (v.role === 'lot' ? 'merge' : 'car');
@@ -48,25 +52,26 @@ export type RoadZones = ReturnType<typeof roadZones>;
 export function carSpawner(env: Env, density: number) {
   const { pal, rng, traffic } = env;
   const routes: { pts: number[][]; r: number[]; w: number }[] = [
-    { pts: [[70, -52], [70, 112]], r: [], w: 3 },
-    { pts: [[74, 112], [74, -52]], r: [], w: 3 },
-    { pts: [[50, 135], [50, 48], [135, 48]], r: [6], w: 1.3 },
-    { pts: [[135, 44], [46, 44], [46, 135]], r: [10], w: 1.3 },
-    { pts: [[70, -52], [70, 48], [135, 48]], r: [6], w: 0.5 },
-    { pts: [[70, -52], [70, 44], [46, 44], [46, 135]], r: [2, 10], w: 0.8 },
-    { pts: [[74, 112], [74, 48], [135, 48]], r: [2], w: 1 },
-    { pts: [[74, 112], [74, 44], [46, 44], [46, 135]], r: [6, 10], w: 0.5 },
-    { pts: [[50, 135], [50, 48], [74, 48], [74, -52]], r: [6, 6], w: 0.5 },
-    { pts: [[50, 135], [50, 48], [70, 48], [70, 112]], r: [6, 2], w: 0.8 },
-    { pts: [[135, 44], [74, 44], [74, -52]], r: [2], w: 1 },
-    { pts: [[135, 44], [70, 44], [70, 112]], r: [6], w: 0.5 },
+    { pts: [[70, -120], [70, 175]], r: [], w: 3 },
+    { pts: [[74, 175], [74, -120]], r: [], w: 3 },
+    { pts: [[50, 200], [50, 48], [230, 48]], r: [6], w: 1.3 },
+    { pts: [[230, 44], [46, 44], [46, 200]], r: [10], w: 1.3 },
+    { pts: [[70, -120], [70, 48], [230, 48]], r: [6], w: 0.5 },
+    { pts: [[70, -120], [70, 44], [46, 44], [46, 200]], r: [2, 10], w: 0.8 },
+    { pts: [[74, 175], [74, 48], [230, 48]], r: [2], w: 1 },
+    { pts: [[74, 175], [74, 44], [46, 44], [46, 200]], r: [6, 10], w: 0.5 },
+    { pts: [[50, 200], [50, 48], [74, 48], [74, -120]], r: [6, 6], w: 0.5 },
+    { pts: [[50, 200], [50, 48], [70, 48], [70, 175]], r: [6, 2], w: 0.8 },
+    { pts: [[230, 44], [74, 44], [74, -120]], r: [2], w: 1 },
+    { pts: [[230, 44], [70, 44], [70, 175]], r: [6], w: 0.5 },
   ];
   const paths = routes.map((rt) => Path.poly(rt.pts, rt.r));
   const totalW = routes.reduce((a, r) => a + r.w, 0);
   // semis only come for the yard and the loading bay, not as through traffic
   const kinds: [VehicleKind, number, number][] = [['suv', 0.74, 7.2], ['pod', 0.13, 6.4], ['pickup', 0.08, 7], ['van', 0.05, 6]];
   let spawnT = 0;
-  const targetCars = Math.round(11 * density);
+  // the routes run well past every view (frame.ts `WORLD`), so it takes this many for the town to look as busy
+  const targetCars = Math.round(20 * density);
   const spawnCar = () => {
     let u = rng() * totalW, i = 0;
     while (u > routes[i].w && i < routes.length - 1) u -= routes[i++].w;
