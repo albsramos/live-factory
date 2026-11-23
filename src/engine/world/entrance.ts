@@ -17,7 +17,7 @@ import { FnItem } from '../statics';
  * The opening in the factory's face at x, from y0 to y1 (lined up with the mullions of the floors above), its height
  * (the underside of the floor above), how far back the door stands and the door's width, centred.
  */
-export const ENTRANCE = { x: 26, y0: 52, y1: 64, h: 3.8, depth: 2.4, door: 3.6 };
+export const ENTRANCE = { x: 26, y0: 48, y1: 60, h: 3.8, depth: 2.4, door: 3.6 };
 const MID = (ENTRANCE.y0 + ENTRANCE.y1) / 2;
 
 /** where people go in and out: just in front of the door, shallow enough that a figure stays below the floor above */

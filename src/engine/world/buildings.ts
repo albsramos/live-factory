@@ -44,8 +44,9 @@ export function factory(env: Env, edge: string, yard: TruckYard, branding: Brand
       windowsY(r, pal, -40, 26, 72, 13, factoryBandsY);
       drawRoofTerrace(r, pal);
       drawEntrance(r, pal, edge);
-      // the opt-in lettering, centred on the entrance (u 8 to 20 on this face) and in its widened panel band (3.4 to 5.6)
-      if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 14, 3.9));
+      // the opt-in lettering, centred like the entrance on this face (u 12 to 24 of its 36 m) and in its widened panel
+      // band (3.4 to 5.6)
+      if (branding.isOn) onFaceX(r, 26, 36, 72, 13, (ctx) => drawLettering(r, pal, ctx, 18, 3.9));
     }),
   );
   S.push(...entrancePillars(pal, edge), ...factoryFront(pal, edge));

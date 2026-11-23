@@ -19,8 +19,9 @@ export function charger(pal: Palette, px: number, py: number, port: [number, num
   return new FnItem(
     Math.min(port[0], px - HW) - 0.1, y0, 0, Math.max(port[0], px + HW) + 0.1, Math.max(port[1], py + HD + 0.05), H,
     (r) => {
-      drawChargerPost(r, pal, px, py, spot.loading ? 'charging' : 'idle');
+      // the cable first, so it runs out from behind the post
       if (spot.loading) drawChargeCable(r, pal, [px + HW, py, 1.2], port);
+      drawChargerPost(r, pal, px, py, spot.loading ? 'charging' : 'idle');
     },
     (ctx) => boxShadow(ctx, px - HW, py - HD, px + HW, py + HD, H),
   );
