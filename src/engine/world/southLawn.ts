@@ -1,6 +1,6 @@
 // The park south of the street, between the robotaxi stop and the east road (its lawn and garden walk are
 // TAXI_LAWN and TAXI_PATHS in streetLife.ts): a café kiosk with a lit window and an awning, tables under striped
-// umbrellas with staff at them, a short queue at the counter, benches, flower beds and trees. The kiosk's door is
+// umbrellas with staff at them, a short queue at the counter, benches and trees. The kiosk's door is
 // a portal of the walkway graph, so people come and go. A random stream of its own keeps the rest of the town as it
 // was.
 
@@ -13,7 +13,6 @@ import type { WalkGraph } from '../people/crowd';
 import { Walker } from '../people/walker';
 import type { Sprites } from '../sprites';
 import { BoxItem, FnItem, TreeItem } from '../statics';
-import { flowerBeds } from './staffPark';
 
 export interface SouthLawn {
   acts: Activity[];
@@ -29,7 +28,6 @@ const DOOR = { x: 106.5, y: 58.7 };
 const FORK = { x: 106.5, y: 65.5 };
 // either side of the kiosk's path, clear of it and of the garden walk
 const TABLES = [[102.2, 60.4], [102.8, 63.2], [110.8, 60.4], [110.4, 63.2]];
-const BEDS = [[88, 72, 94, 73.2], [108.5, 70, 114.5, 71.2], [115, 58.2, 121, 59.4], [92, 86, 97, 87.2]];
 
 export function buildSouthLawn(env: Env, sprites: Sprites, edge: string): SouthLawn {
   const { pal, statics: S } = env;
@@ -67,7 +65,7 @@ export function buildSouthLawn(env: Env, sprites: Sprites, edge: string): SouthL
     ctx.lineTo(X, Y - 2.1);
     ctx.stroke();
   };
-  // eight panels round a low cone, every other one in a colour from the flower beds
+  // eight panels round a low cone, every other one in colour
   const canopy = (r: R, x: number, y: number, i: number) => {
     const ctx = r.ctx, n = 8, rad = 1.15;
     const apex = [(x - y) * C, (x + y) * 0.5 - 2.45];
@@ -77,7 +75,7 @@ export function buildSouthLawn(env: Env, sprites: Sprites, edge: string): SouthL
     });
     for (let j = 0; j < n; j++) {
       const a = rim[j], b = rim[(j + 1) % n];
-      ctx.fillStyle = j % 2 ? pal.white.top : pal.flowers[(i + 1) % pal.flowers.length];
+      ctx.fillStyle = j % 2 ? pal.white.top : pal.umbrellas[(i + 1) % pal.umbrellas.length];
       ctx.beginPath();
       ctx.moveTo(apex[0], apex[1]);
       ctx.lineTo(a[0], a[1]);
@@ -111,7 +109,6 @@ export function buildSouthLawn(env: Env, sprites: Sprites, edge: string): SouthL
     lineW(ctx, FORK.x, FORK.y, 0, DOOR.x, DOOR.y - 0.2, 0);
     ctx.stroke();
     ctx.lineCap = 'butt';
-    flowerBeds(ctx, pal, BEDS);
   };
 
   const walks = (g: WalkGraph, from: number, to: number) => {

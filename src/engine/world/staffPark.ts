@@ -1,5 +1,5 @@
 // More life in the staff park east of the pavilion (its lawn, path and first benches are in outskirts.ts): a pond
-// with a fountain, flower beds, a pergola where staff have lunch, a bench by the water, two people strolling round
+// with a fountain, a pergola where staff have lunch, a bench by the water, two people strolling round
 // the pond, and more trees. Staff only, sitting, chatting or strolling (docs/simulation.md, the parks). It draws from
 // a random stream of its own, so the rest of the town plays out as before.
 
@@ -9,51 +9,22 @@ import { C } from '../core';
 import { box, type Ctx, type R } from '../draw';
 import { groundPoly } from '../ground';
 import { Walker } from '../people/walker';
-import type { Palette } from '../palette';
 import type { Sprites } from '../sprites';
 import { BoxItem, FnItem, TreeItem } from '../statics';
 
 export interface StaffPark {
   acts: Activity[];
-  /** the pond and the flower beds, painted into the cached ground layer */
+  /** the pond, painted into the cached ground layer */
   ground(ctx: Ctx): void;
 }
 
 const POND = { x: 124, y: 4, rx: 5.2, ry: 3.6 };
-/** flower beds: x0, y0, x1, y1 */
-const BEDS = [[124, 19.4, 130, 20.7], [126, 10.6, 131.5, 11.8], [126, -16, 134, -14.7], [108, -7.6, 115, -6.4]];
 
 /** A closed ring of points round an ellipse on the ground. */
 function ellipse(cx: number, cy: number, rx: number, ry: number, n = 28) {
   const pts: number[] = [];
   for (let i = 0; i < n; i++) pts.push(cx + Math.cos((i / n) * Math.PI * 2) * rx, cy + Math.sin((i / n) * Math.PI * 2) * ry);
   return pts;
-}
-
-/** A cheap, steady hash in 0..1 of two numbers, so the flowers sit in the same places every time. */
-const hash = (a: number, b: number) => {
-  const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
-  return v - Math.floor(v);
-};
-
-/** Flower beds (x0, y0, x1, y1 each): earth, then flowers in the palette's colours, the same pattern every time. */
-export function flowerBeds(ctx: Ctx, pal: Palette, beds: number[][]) {
-  ctx.fillStyle = pal.soil;
-  ctx.beginPath();
-  for (const [x0, y0, x1, y1] of beds) groundPoly(ctx, [x0, y0, x1, y0, x1, y1, x0, y1]);
-  ctx.fill();
-  for (const [x0, y0, x1, y1] of beds) {
-    for (let x = x0 + 0.25; x < x1 - 0.1; x += 0.38) {
-      for (let y = y0 + 0.2; y < y1 - 0.1; y += 0.36) {
-        const h = hash(x, y);
-        const jx = x + (hash(y, x) - 0.5) * 0.2, jy = y + (h - 0.5) * 0.2;
-        ctx.fillStyle = pal.flowers[Math.floor(h * pal.flowers.length)];
-        ctx.beginPath();
-        ctx.arc((jx - jy) * C, (jx + jy) * 0.5, 0.15, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  }
 }
 
 export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffPark {
@@ -163,7 +134,6 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
     groundPoly(ctx, ellipse(POND.x, POND.y, POND.rx, POND.ry));
     ctx.fill();
     ctx.stroke();
-    flowerBeds(ctx, pal, BEDS);
   };
 
   return { acts, ground };
