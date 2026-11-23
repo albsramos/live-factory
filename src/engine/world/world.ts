@@ -27,6 +27,7 @@ import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
 import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
+import { buildStaffPark } from './staffPark';
 import { buildOutskirts } from './outskirts';
 import { roadZones, carSpawner } from './roads';
 import { factory, buildings, constructionSite } from './buildings';
@@ -116,6 +117,9 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // the east road and what lies past it, on a random stream of its own
   const east = buildEastSide({ ...env, rng: makeRng(opts.seed * 9157 + 41) }, sprites, edge, density);
   acts.push(...east.acts);
+  // a pond, flower beds, a pergola and more staff in the staff park, also on a stream of its own
+  const park = buildStaffPark({ ...env, rng: makeRng(opts.seed * 7451 + 53) }, sprites, edge);
+  acts.push(...park.acts);
   staffBreak(env);
   // dock and yard robots
   // two take boxes from inside the factory, through the open garage between the second dock and the bay
@@ -136,7 +140,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east);
+  const ground = groundPainter(pal, lot, outskirts, east, [park.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

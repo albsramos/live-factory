@@ -25,7 +25,7 @@ export function junctionCorners(ctx: Ctx, x0: number, y0: number, x1: number, y1
 }
 
 /** The ground layer: paved pads, plaza, lawns, roads with curbs and markings, and at night the light from windows. */
-export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts, east: EastSide) {
+export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskirts, east: EastSide, more: ((ctx: Ctx) => void)[] = []) {
   const roads = (ctx: Ctx) => {
     groundRect(ctx, 68, -180, 76, 260);
     groundRect(ctx, 56, 42, 260, 50);
@@ -62,6 +62,7 @@ export function groundPainter(pal: Palette, lot: ChargingLot, outskirts: Outskir
     ctx.fill();
     outskirts.ground(ctx);
     east.ground(ctx);
+    for (const paint of more) paint(ctx);
     // the truck's way out across the plaza corner
     ctx.strokeStyle = pal.pad;
     ctx.lineWidth = 4.2;
