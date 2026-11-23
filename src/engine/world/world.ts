@@ -120,7 +120,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // the east road and what lies past it, on a random stream of its own
   const east = buildEastSide({ ...env, rng: makeRng(opts.seed * 9157 + 41) }, sprites, edge, density);
   acts.push(...east.acts);
-  // a pond, flower beds, a pergola and more staff in the staff park, also on a stream of its own
+  // a pond, a pergola and more staff in the staff park, also on a stream of its own
   const park = buildStaffPark({ ...env, rng: makeRng(opts.seed * 7451 + 53) }, sprites, edge);
   acts.push(...park.acts);
   // a café, its tables and its garden in the park south of the street, on a stream of its own

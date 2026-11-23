@@ -146,7 +146,7 @@ export function buildOutskirts(env: Env, sprites: Sprites, edge: string): Outski
   // ----------------------------------------------------------------------------------------------- staff park
   // east of the pavilion and on north past the hub, to beyond the widest view's edge: grass with a path across it,
   // trees, benches, and people on their break. Beside the compute platform it keeps clear of the robot's rounds.
-  // east to the east road's pavement (eastSide.ts); the pond, flower beds and pergola are in staffPark.ts
+  // east to the east road's pavement (eastSide.ts); the pond and pergola are in staffPark.ts
   const lawn = [101.5, 38.2, 101.5, -5, 102.9, -7.5, 102.9, -22, 139.6, -22, 139.6, 38.2];
   // to the east road's west pavement (eastSide.ts), which runs on past the edges of every view
   const path = [[104, 40.6], [110, 32], [122, 26], [137, 19.5], [139, 18.6]];

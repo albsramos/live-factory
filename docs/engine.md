@@ -47,10 +47,10 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   wing, staff car park, second compute platform, Megapack field, charging hub, staff park), `eastSide.ts` the east road
   past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
   traffic on a random stream of its own) and the office and second charging hub beyond it, `staffPark.ts` more life in the staff park (a pond whose
-  fountain and ripples are redrawn every frame, flower beds in `pal.flowers`, a pergola with staff at lunch, people
+  fountain and ripples are redrawn every frame, a pergola with staff at lunch, people
   strolling round the pond, more trees), also on a random stream of its own, and `southLawn.ts` the café south of
   the street (a kiosk whose door is a walkway portal, tables under umbrellas drawn as two items each, table and pole
-  below, canopy above the people sitting under it, so the depth sort keeps them apart), with benches, flower beds and
+  below, canopy above the people sitting under it, so the depth sort keeps them apart), with benches and
   trees; `northBelt.ts` a lawn with rows of trees and a path along y −47 north of the yard, the Megapacks and the
   staff park, from the avenue's pavements out past the top-left edge and to the east road; `farWest.ts` a second
   staff car park west of the service road (every car stays, so it needs no routes) with someone walking between the
