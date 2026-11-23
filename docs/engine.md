@@ -38,7 +38,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   moving a call changes the scene): `roads.ts` zones and through traffic, `buildings.ts` the factory (with
   `plaza.ts`, its front: the roof terrace over the entrance, spanning 80% of the factory's front, with a green roof,
   tables and benches, two Optimus robots walking about (on a random stream of their own) and a glass pavilion under
-  a pale pointed roof plate, and the plaza's LED-edged planters, `solarRows.ts`, the solar panels on every building
+  a pale pointed roof plate, and the LED-edged planters on the plaza and in the pocket park beside it, `solarRows.ts`, the solar panels on every building
   roof in rows tilted at 45°, stopping short of the terrace on the factory's, and `lettering.ts`, its opt-in
   lettering), dock wing, pavilion, home and construction site, `streetLife.ts` trees, lamps, benches, the pocket
   park and people standing about, `walkways.ts` the walkway graph, `groundPlan.ts` the cached ground layer,
