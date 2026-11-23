@@ -11,6 +11,16 @@
   position: absolute;
   inset: 0 0 56px;
   pointer-events: none;
+  /* an oval window onto the scene: clear in the middle, melting into the page well before every edge, so nothing of
+     the town shows past it. A soft ellipse rounds the corners of two linear fades (across and down), the three
+     multiplied together, so the clear middle stays wide, like a stadium. */
+  --oval-x: linear-gradient(90deg, transparent 4%, #000 22%, #000 78%, transparent 96%);
+  --oval-y: linear-gradient(180deg, transparent 4%, #000 26%, #000 74%, transparent 98%);
+  --oval-round: radial-gradient(ellipse 54% 62% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: var(--oval-x), var(--oval-y), var(--oval-round);
+  mask-composite: intersect;
+  -webkit-mask-image: var(--oval-x), var(--oval-y), var(--oval-round);
+  -webkit-mask-composite: source-in;
 }
 
 .scene {
@@ -20,37 +30,25 @@
   aspect-ratio: auto;
 }
 
-/* darkest behind the title, clear past the middle, and a lighter fade at the right edge, so the scene sits framed */
-.fadeSide,
-.fadeEnds {
+/* a little extra shade behind the title, so it reads over the busiest part of the scene */
+.fadeSide {
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-.fadeSide {
   background: linear-gradient(
     90deg,
-    rgb(var(--look-fade) / 0.96) 0%,
-    rgb(var(--look-fade) / 0.82) 20%,
-    rgb(var(--look-fade) / 0.4) 36%,
-    rgb(var(--look-fade) / 0) 52%,
-    rgb(var(--look-fade) / 0) 80%,
-    rgb(var(--look-fade) / 0.55) 92%,
-    rgb(var(--look-fade) / 0.92) 100%
+    rgb(var(--look-fade) / 0.9) 0%,
+    rgb(var(--look-fade) / 0.7) 20%,
+    rgb(var(--look-fade) / 0.3) 36%,
+    rgb(var(--look-fade) / 0) 52%
   );
-}
-
-/* a little shade under the bar; the scene melts into the page at its lower edge */
-.fadeEnds {
-  background: linear-gradient(180deg, rgb(var(--look-fade) / 0.7) 0%, rgb(var(--look-fade) / 0) 18%, rgb(var(--look-fade) / 0) 88%, rgb(var(--look-fade)) 100%);
 }
 
 .bar,
 .inner {
   position: relative;
   inline-size: 100%;
-  max-inline-size: 2000px;
+  max-inline-size: calc(var(--look-max) + 2 * var(--look-gutter));
   margin-inline: auto;
   padding-inline: var(--look-gutter);
 }
