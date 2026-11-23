@@ -30,13 +30,14 @@
   stop. Without this, westbound cars queueing back from the park corner stopped inside the junction while the bay
   semi, its trailer still holding the corner's zones, waited for that junction: a gridlock that the deadlock
   breaker (`stuckT` in `vehicle.ts`) ended by letting cars drive through each other.
-- The bay truck only pulls out of the loading bay when the stretch from the bend to the junction is quiet
-  (`clearToLeave` in `truckBay.ts`): no westbound car heading for the bend or standing in the junction, none turning
-  south through the bend, nothing standing in the eastbound lane before the junction. Otherwise it could wait at the
-  junction with its trailer across the bend while a westbound car, held up behind the bend, still stood in the
-  junction: a loop of waits through a zone, which the deadlock breaker doesn't see (it follows vehicles, not zones).
-  A semi-only zone over the bend was tried instead and made things far worse: grouped with the merge, plaza and
-  crosswalk zones beside it, it locked the whole corner.
+- Don't enter a junction behind a semi: `roomPast` also refuses while any part of a semi lies on the car's path
+  within 25 m past the junction's exit (`semiOn` in `sense.ts`), moving or not. Without it, westbound cars queued
+  back from the bend where the bay truck's trailer swings across their turn south, one of them stopped inside the
+  junction, and the bay truck, waiting at that junction behind a car turning across it, waited on it in turn: a loop
+  of waits through a zone, which the deadlock breaker doesn't see (it follows vehicles, not zones). Two other fixes
+  were tried and dropped: a semi-only zone over the bend (grouped with the merge, plaza and crosswalk zones beside
+  it, it locked the whole corner) and holding the bay truck until the stretch was quiet (it cost truck runs, and a
+  charging-lot car pulling out ahead of it still set the loop off).
 - A vehicle keeps a zone until no part of its footprint (the box round its turned outline, plus 0.3 m) is in it, so
   a long trailer holds a crossing until it has fully passed, and lets go as soon as it has.
 - Where two movements of one car park share a driveway, tag their legs (`tag: 'in'` / `'out'`, as `StallLot` does)

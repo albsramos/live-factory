@@ -93,6 +93,27 @@ export function senseAhead(v: Vehicle): number {
  * Whether the stretch of `path` from `s0` to `s1` is free of vehicles standing or crawling on it: a car checks the
  * road past a junction before it goes in, so it never stops inside one (see `reserveZones`).
  */
+/**
+ * Whether any part of a semi (cab or trailer) lies on `path` between `s0` and `s1`, moving or not. A semi turning
+ * across the road past a junction holds it up for far longer than a car, so a car shouldn't enter the junction
+ * behind one: it would end up standing in it.
+ */
+export function semiOn(v: Vehicle, path: Path, s0: number, s1: number): boolean {
+  const m = v.hw + 0.15;
+  const near: Body[] = [];
+  for (const o of v.traffic.vehicles) if (o !== v && !o.dead && o.kind === 'semi' && o.z <= ALOFT_Z) near.push(...o.bodies);
+  if (!near.length) return false;
+  for (let s = s0; s <= Math.min(s1, path.len); s += 0.7) {
+    path.at(s, PROBE);
+    for (const b of near) {
+      const dx = PROBE.x - b.x, dy = PROBE.y - b.y;
+      const a = dx * b.hx + dy * b.hy, c = -dx * b.hy + dy * b.hx;
+      if (Math.abs(a) < b.hl + m && Math.abs(c) < b.hw + m) return true;
+    }
+  }
+  return false;
+}
+
 export function roomOn(v: Vehicle, path: Path, s0: number, s1: number): boolean {
   const m = v.hw + 0.15;
   const near: Body[] = [];

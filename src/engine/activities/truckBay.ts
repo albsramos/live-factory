@@ -60,26 +60,6 @@ export class TruckBay implements Activity {
     );
   }
 
-  /**
-   * Whether the truck may pull out. On its way out it turns through the bend onto the street and on to the
-   * junction, its trailer swinging across the bend where westbound cars turn south. If it set off while westbound
-   * cars were heading for that turn, or while cars stood queueing for the junction ahead of it, it could end up
-   * waiting for the junction with its trailer across the bend while a westbound car, stuck behind the bend, still
-   * stood in the junction: each waiting on the other. So it waits for a quiet moment on that stretch.
-   */
-  private clearToLeave(me: Vehicle) {
-    for (const o of this.env.traffic.vehicles) {
-      if (o === me || o.dead) continue;
-      // westbound, between the far side of the junction and the bend
-      if (o.hx < -0.5 && o.x > 44 && o.x < 80 && o.y > 41 && o.y < 46.5) return false;
-      // turning south through the bend
-      if (o.x > 43 && o.x < 53 && o.y > 44 && o.y < 56 && o.hy > 0.3) return false;
-      // standing in the eastbound lane before the junction
-      if (o.hx > 0.5 && o.v < 0.5 && o.x > 50 && o.x < 68 && o.y > 46 && o.y < 50.5) return false;
-    }
-    return true;
-  }
-
   private spawnTruck() {
     const { traffic, pal, rng } = this.env;
     const L = TruckBay.LANE, Y = TruckBay.STOP;
@@ -161,7 +141,7 @@ export class TruckBay implements Activity {
       case 'closing':
         if (t && t.door <= 0) {
           this.timer -= dt;
-          if (this.timer <= 0 && this.clearToLeave(t)) this.state = 'leaving';
+          if (this.timer <= 0) this.state = 'leaving';
         }
         break;
       case 'leaving':

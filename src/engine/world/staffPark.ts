@@ -15,7 +15,7 @@ import { BoxItem, FnItem, TreeItem } from '../statics';
 
 export interface StaffPark {
   acts: Activity[];
-  /** the path round the pond and across the park: from the main path at (119, 27.5) to the north belt's at y −47 */
+  /** the path round the pond, past the lake and across the park: from the main path at (119, 27.5) to the north belt's at y −47 */
   walks(g: WalkGraph, from: number, to: number): void;
   /** the pond and its paths, painted into the cached ground layer */
   ground(ctx: Ctx): void;
@@ -114,7 +114,7 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   const acts: Activity[] = [new Looper(env, 'person', stroll(0), ring[0].x, ring[0].y), new Looper(env, 'person', stroll(1), ring[1].x + 0.6, ring[1].y)];
 
   // a few more staff chatting on the grass
-  for (const group of [[[125.9, -4.6], [127.1, -4.0], [126.3, -3.2]], [[134.2, 25.4], [135.3, 26.0]], [[117.8, -7.6], [118.9, -8.2]]]) {
+  for (const group of [[[124.4, -4.6], [125.6, -4.0], [124.8, -3.2]], [[134.2, 25.4], [135.3, 26.0]], [[117.8, -7.6], [118.9, -8.2]]]) {
     const cx = group.reduce((a, p) => a + p[0], 0) / group.length, cy = group.reduce((a, p) => a + p[1], 0) / group.length;
     for (const [x, y] of group) person(x, y, 'chat', cx - x, cy - y);
   }
@@ -130,7 +130,8 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
   // the path: off the main path, onto the ring round the pond (the strollers' ring) on its south-west side, off it
   // on the north-east and on north to the north belt's path
   const IN = [[119, 27.5], [120, 19], [ring[4].x, ring[4].y]];
-  const OUT = [[ring[9].x, ring[9].y], [130.6, -6], [133, -22], [133, -47]];
+  // north: up to the lake's south shore (lake.ts), round its east side and on to the belt's path
+  const OUT = [[ring[9].x, ring[9].y], [127.5, -8], [124, -19.5], [137.5, -21.5], [137.5, -47]];
   const ground = (ctx: Ctx) => {
     ctx.strokeStyle = pal.plaza;
     ctx.lineWidth = 1.1;
@@ -156,7 +157,7 @@ export function buildStaffPark(env: Env, sprites: Sprites, edge: string): StaffP
     const ids = ring.map((p) => g.node(p.x, p.y, false, 0.5));
     for (let i = 0; i < ids.length; i++) g.link(ids[i], ids[(i + 1) % ids.length]);
     g.chain([from, g.node(120, 19), ids[4]]);
-    g.chain([ids[9], g.node(130.6, -6), g.node(133, -22), to]);
+    g.chain([ids[9], g.node(127.5, -8), g.node(124, -19.5), g.node(137.5, -21.5), to]);
   };
 
   return { acts, ground, walks };
