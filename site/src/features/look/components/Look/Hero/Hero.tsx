@@ -8,8 +8,8 @@ interface HeroProps {
 }
 
 /**
- * The header: the live scene behind everything, faded towards the left (where the title sits) and into the page at
- * the bottom. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
+ * The header: the live scene behind everything, seen through a soft oval that melts into the page before every edge,
+ * a little darker behind the title on the left. The scene ends where the stat cards begin and, on a wide screen, shows its whole height, so what
  * happens at the bottom of the frame (the robotaxi stop, the crossing) stays in view. The title's warm glow is drawn on the title block
  * itself, so it stays behind it at any width.
  */
@@ -24,7 +24,6 @@ export function Hero({ isDark }: HeroProps) {
       {/* the scene stops where the stat cards begin, so its lower edge (the robotaxi stop, the crossing) stays in view */}
       <div className={styles.stage}>
         <LivingCity className={styles.scene} theme={isDark ? 'dark' : 'light'} fit={isWide ? 'contain' : 'cover'} zoom={0.67} isBranded />
-        <div className={styles.fadeEnds} />
       </div>
       <div className={styles.fadeSide} />
 
