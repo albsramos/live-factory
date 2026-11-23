@@ -45,7 +45,7 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   `chargers.ts` the yard's chargers (posts and glowing cable in `../charging.ts`), `entrance.ts` the factory's main
   entrance (a V-shaped recess drawn as part of the face it is cut into, clipped to the opening so it needs no sort
   item, and the pillars in its mouth), `outskirts.ts` what lies beyond the classic frame for wide views (factory
-  wing, staff car park, second compute platform, Megapack field, charging hub, staff park), `eastSide.ts` the east road
+  wing, staff car park, second compute platform, carrier depot's ground, charging hub, staff park), `eastSide.ts` the east road
   past the staff park (x 142–150, a junction of its own with the street, zebras 6 m either side, its own through
   traffic on a random stream of its own) and the office and second charging hub beyond it, `staffPark.ts` more life in the staff park (a pond whose
   fountain and ripples are redrawn every frame, a pergola with staff at lunch, three LED-edged triangular planters, people
@@ -69,7 +69,8 @@ Every file stays under 300 lines; split by responsibility when one grows past th
   outside the racks' boxes, so the sort always knows the racks are inside) and `megapacks`; `details.ts` windows,
   glass, solar roofs.
 - `activities/` the scripted scenes, one per file (truck yard, the north yard's car carriers (`carrierYard.ts`, on a
-  random stream of its own, with the service roads' paving), loading bay, charging lot, robotaxi stop, crane, dog
+  random stream of its own, with the service roads' paving), the carrier depot east of the avenue (`carrierDepot.ts`,
+  on a random stream of its own; its chargers are `world/chargers.ts`'s, set up in `world.ts`), loading bay, charging lot, robotaxi stop, crane, dog
   walk, loopers, the roadster) on the shared `activity.ts`; `stallLot.ts` car parks whose cars come and go.
 - `traffic/` vehicles and the traffic model: `zone.ts` reservations, `legs.ts` a trip's legs and their zones,
   `vehicle.ts` driving, `sense.ts` what a vehicle brakes for, `meshes.ts` and `vehicleItem.ts` how vehicles look

@@ -1,6 +1,7 @@
 // The north belt: along the top of wide, zoomed-out views, north of the truck yard, the Megapacks and the staff
 // park, a strip of lawn with rows of trees and a path along y −47. West of the avenue the path runs from the avenue's
-// pavement out past the top-left of every view; east of it, from the avenue's other pavement to the east road's.
+// pavement out past the top-left of every view; east of it, from beside the avenue's other pavement to the east
+// road's (walkers don't step onto that pavement there: it is the carrier depot's crossing, activities/carrierDepot.ts).
 // It never crosses the avenue; it crosses the car carriers' two service roads at zebras (activities/carrierYard.ts).
 // Two benches with staff on them. Trees are placed from a random stream of its own, so the rest of the town plays
 // out as before.
@@ -23,7 +24,7 @@ export interface NorthBelt {
    * The path: `west` and `east` are the avenue's pavement nodes at y −47, `eastRoad` the east road's. Returns the
    * node at x 137.5 where the staff park's path comes up from the south.
    */
-  walks(g: WalkGraph, ends: { west: number; east: number; eastRoad: number }, roads: [Zone, Zone]): number;
+  walks(g: WalkGraph, ends: { west: number; eastRoad: number }, roads: [Zone, Zone]): number;
 }
 
 export const BELT_Y = -47;
@@ -91,7 +92,7 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     ctx.lineCap = 'butt';
   };
 
-  const walks = (g: WalkGraph, ends: { west: number; east: number; eastRoad: number }, roadZones: [Zone, Zone]) => {
+  const walks = (g: WalkGraph, ends: { west: number; eastRoad: number }, roadZones: [Zone, Zone]) => {
     // west: out past the top-left edge of every view (frame.ts `WORLD`)
     // across the car carriers' two service roads (activities/carrierYard.ts) at zebras
     const east = [g.node(55.2, BELT_Y), g.node(38.6, BELT_Y)];
@@ -101,7 +102,7 @@ export function buildNorthBelt(env: Env, sprites: Sprites, edge: string): NorthB
     g.link(east[1], west, roadZones[1]);
     g.link(west, g.node(-40, BELT_Y, true));
     const park = g.node(137.5, BELT_Y);
-    g.chain([ends.east, g.node(96, BELT_Y), g.node(120, BELT_Y), park, ends.eastRoad]);
+    g.chain([g.node(80.6, BELT_Y), g.node(96, BELT_Y), g.node(120, BELT_Y), park, ends.eastRoad]);
     return park;
   };
 

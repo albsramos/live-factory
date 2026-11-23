@@ -26,6 +26,8 @@ import { Roadsters } from '../activities/roadster';
 import { TruckBay } from '../activities/truckBay';
 import { TruckYard } from '../activities/truckYard';
 import { CarrierYard } from '../activities/carrierYard';
+import { CarrierDepot, DEPOT_NOSE } from '../activities/carrierDepot';
+import { charger } from './chargers';
 import type { Activity, Env } from '../activities/activity';
 import { buildEastSide } from './eastSide';
 import { buildStaffPark } from './staffPark';
@@ -145,6 +147,14 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   carriers.seed(1, 4);
   carriers.park([37.2, 41.6, 28.4, 24.2, 20.0, 15.8, 11.6]);
   acts.push(carriers);
+  // the carrier depot east of the avenue: carriers charging nose-in, now and then one leaving and one coming in, on a
+  // stream of its own; a charger beside each cab, its cable to a port on the cab's side, and both out of the way of
+  // the trailers that cut the corner across the spots north of their own (measured: they come no further east than
+  // x 82.8 there)
+  const depot = new CarrierDepot(env, makeRng(opts.seed * 3191 + 107));
+  for (const [k, dwell] of [[1, 25], [2, 120], [3, 200]]) depot.seed(k, dwell);
+  for (const s of depot.spots) S.push(charger(pal, DEPOT_NOSE + 3.95, s.y + 2.65, [DEPOT_NOSE + 2.75, s.y + 1.6, 1.1], s, true));
+  acts.push(depot);
   // lamps along the park paths, lit at night
   const lamps = buildParkLamps(env);
   staffBreak(env);
@@ -167,7 +177,7 @@ export function buildWorld(pal: Palette, sprites: Sprites, opts: WorldOptions): 
   // however long the page stays open, the crowd never grows past half again its size
   crowd.cap = Math.round(crowd.walkers.length * 1.5);
   const spawnCars = carSpawner(env, density);
-  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, (ctx) => carriers.ground(ctx), park.ground, lake.ground, west.ground], [south.ground, lamps.ground]);
+  const ground = groundPainter(pal, lot, outskirts, east, [belt.ground, (ctx) => carriers.ground(ctx), (ctx) => depot.ground(ctx), park.ground, lake.ground, west.ground], [south.ground, lamps.ground]);
 
   const update = (dt: number) => {
     spawnCars(dt);

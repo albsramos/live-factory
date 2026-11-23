@@ -59,7 +59,9 @@ any other React setup.
   delivery. Each comes down a service road from the north and stops in one of two lanes; the cars drive out from
   behind the factory and up its ramp, the upper deck first. Full, it drives on and back north up a second road,
   with walkers on the north belt's path waiting at the zebras. Seven more full carriers stand parked in rows beside the
-  lanes and north of the factory, waiting to go.
+  lanes and north of the factory, waiting to go. East of the avenue, in a depot of their own, more carriers stand
+  nose-in at chargers, their cables glowing; now and then the north-most one pulls out and turns right up the avenue,
+  and a new one comes up the avenue and backs into a free spot.
 - **Loading bay**: a semi pulls into the bay beside the factory and rolls up its curtain side. A forklift and two
   humanoid robots fill it pallet by pallet, then it closes up and drives off across the scene.
 - **Robots**: humanoid robots in a white or champagne shell, with a black glass head ringed by a thin light line and
@@ -101,7 +103,7 @@ any other React setup.
   the car is on its charger.
 - **The outskirts**, for wide views and zooming out: a new factory wing and two staff car parks under solar canopies
   to the west (a few cars come and go on the service road), with lawns and trees beyond; to the east a second compute
-  platform, a Megapack field with a robot doing its rounds, a charging hub that cars turn into off the avenue, and past
+  platform with a robot doing its rounds, a carrier depot behind it, a charging hub that cars turn into off the avenue, and past
   the staff park a second road with a junction of its own, an office and another charging hub; along the top, a belt
   of trees with a path.
 - **Day and night**: by day the glazing is a faded blue-grey glass; at night it glows warm and lights the ground in
