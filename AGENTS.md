@@ -35,6 +35,7 @@ A self-running isometric factory town for React: one `<canvas>`, no text, no dep
 ## Read before you…
 
 - edit anything in `src/engine/` → `docs/engine.md`
+- add something drawn per frame, a cache, or touch the frame loop, baking or sizing → `docs/performance.md`
 - change a route, zone, lot, walkway, or anything that moves → `docs/simulation.md`, then `npm run check:sim`
 - add or edit a component in `site/` → `docs/site.md` (and the react-component skill)
 - change `<LivingCity>`'s props → update the props table in `README.md`, and bump the version if it breaks callers
